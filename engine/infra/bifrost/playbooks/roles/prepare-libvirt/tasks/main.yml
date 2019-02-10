@@ -1,0 +1,85 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+- name: "Load distribution defaults"
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
+- name: "Install required packages"
+  package:
+    name: "{{ required_packages }}"
+    update_cache: "{{ (ansible_pkg_mgr in ['apt', 'zypper']) | ternary('yes', omit) }}"
+    state: present
+
+- name: "Restart libvirt service"
+  service: name="{{libvirt_service_name}}" state=restarted
+
+# NOTE(Shrews) We need to enable ip forwarding for the libvirt bridge to
+# operate properly with dnsmasq. This should be done before starting dnsmasq.
+- name: "Enable IP forwarding in sysctl"
+  sysctl:
+    name: "net.ipv4.ip_forward"
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+# NOTE(Shrews) Ubuntu packaging+apparmor issue prevents libvirt from loading
+# the ROM from /usr/share/misc.
+- name: "Look for sgabios in {{ sgabios_dir }}"
+  stat: path={{ sgabios_dir }}/sgabios.bin
+  register: test_sgabios_qemu
+
+- name: "Look for sgabios in /usr/share/misc"
+  stat: path=/usr/share/misc/sgabios.bin
+  register: test_sgabios_misc
+
+- name: "Place sgabios.bin"
+  command: cp /usr/share/misc/sgabios.bin /usr/share/qemu/sgabios.bin
+  when: >
+    test_sgabios_qemu == false and
+    test_sgabios_misc == true
+
+# NOTE(TheJulia): In order to prevent conflicts, stop
+# dnsmasq to prevent conflicts with libvirt restarting.
+# TODO(TheJulia): We shouldn't need to do this, but the
+# libvirt dhcp instance conflicts withour specific config
+# and taking this path allows us to not refactor dhcp at
+# this moment. Our DHCP serving should be refactored
+# so we don't need to do this.
+- name: "Stop default dnsmasq service"
+  service:
+    name: dnsmasq
+    state: stopped
+  ignore_errors: true
+
+# Ubuntu creates a default network when installing libvirt.
+# This network uses the 192.168.122.0/24 range and thus
+# conflicts with our admin network
+- name: Destroy default libvirt network
+  virt_net:
+    name: "default"
+    state: absent
+    uri: "{{ vm_libvirt_uri }}"
+
+- name: Install virtualbmc
+  pip:
+    name: virtualbmc
+    version: "{{ virtualbmc_version }}" # >1.3 needs zmq dependency.
+    virtualenv: "{{ lookup('env', 'ENGINE_VENV') }}"
+
+# vim: set ts=2 sw=2 expandtab:

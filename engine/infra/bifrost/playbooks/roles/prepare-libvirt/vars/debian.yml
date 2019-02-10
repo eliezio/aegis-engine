@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -15,22 +16,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-#-------------------------------------------------------------------------------
-# Set provisioning tool
-#-------------------------------------------------------------------------------
-# Currently, there is a single infra deployment method: bifrost
-# Examples:
-#    export INFRA_DEPLOYMENT="bifrost"
-export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
-
-#-------------------------------------------------------------------------------
-# Configure some other stuff
-#-------------------------------------------------------------------------------
-# Set the verbosity for ansible
-#
-# Examples:
-#   ENGINE_ANSIBLE_PARAMS="-v -e foo=bar"
-export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
-export ENGINE_CACHE=${ENGINE_PATH}/.cache
+sgabios_dir: /usr/share/qemu/
+libvirt_service_name: libvirt-bin
+required_packages:
+ - libvirt-bin
+ - qemu-utils
+ - qemu-kvm
+ - qemu-system-x86
+ - sgabios
+ - pkg-config
+ - libvirt-dev
+ - python-lxml
+ - python-libvirt
 
 # vim: set ts=2 sw=2 expandtab:
