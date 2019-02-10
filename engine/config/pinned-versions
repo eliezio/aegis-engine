@@ -29,5 +29,11 @@
 #-------------------------------------------------------------------------------
 # use the engine from master until the development work with the sandbox is complete
 export ENGINE_VERSION="master"
+# HEAD of openstack/requirements "stable/rocky"
+export OPENSTACK_REQUIREMENTS_VERSION=${OPENSTACK_REQUIREMENTS_VERSION:-"stable/rocky"}
+# HEAD of openstack/kolla-ansible "stable/rocky"
+export OPENSTACK_KOLLA_VERSION=${OPENSTACK_KOLLA_VERSION:-"stable/rocky"}
+# PIP version to use
+export ENGINE_ANSIBLE_PIP_VERSION="2.5.8"
 
 # vim: set ts=2 sw=2 expandtab:

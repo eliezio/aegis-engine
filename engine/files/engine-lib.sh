@@ -19,6 +19,10 @@
 # Avoid double sourcing the file
 [[ -n ${ENGINE_LIB_SOURCED:-} ]] && return 0 || export ENGINE_LIB_SOURCED=1
 
+#-------------------------------------------------------------------------------
+# Print the help message which includes the usage, the expected parameters
+# and their default values if they are not specified
+#-------------------------------------------------------------------------------
 function usage() {
     echo "
 Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s sdf]
@@ -31,6 +35,10 @@ Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s sdf]
     exit 0
 }
 
+#-------------------------------------------------------------------------------
+# Parse the arguments that are passed to the script
+# If an argument is not specified, default values for those are set
+#-------------------------------------------------------------------------------
 function parse_cmdline_opts() {
     PDF=${ENGINE_PATH}/engine/var/pdf.yml
     IDF=${ENGINE_PATH}/engine/var/idf.yml
@@ -52,6 +60,13 @@ function parse_cmdline_opts() {
     export SDF=$(realpath ${SDF})
 }
 
+#-------------------------------------------------------------------------------
+# Check some prerequisites before proceeding further.
+# Any other check that could be fatal for script to continue should be checked
+# here so we quite as early as possible. Current checks are
+# - the user shall not be root
+# - the ssh keypair shall be created in advance
+#-------------------------------------------------------------------------------
 function check_prerequisites() {
     #-------------------------------------------------------------------------------
     # We shouldn't be running as root
@@ -64,7 +79,7 @@ function check_prerequisites() {
     fi
 
     #-------------------------------------------------------------------------------
-    # Check if SSH keypair exists
+    # Check if SSH key exists
     #-------------------------------------------------------------------------------
     if [[ ! -f $HOME/.ssh/id_rsa ]]; then
         echo "ERROR: You must have SSH keypair in order to run this script!"
@@ -72,6 +87,10 @@ function check_prerequisites() {
     fi
 }
 
+#-------------------------------------------------------------------------------
+# Set few environment variables and source the other files that have additional
+# environment variables set in them for further use
+#-------------------------------------------------------------------------------
 function bootstrap_environment() {
     # Declare our virtualenv
     export ENGINE_VENV=${ENGINE_PATH}/.venv/
@@ -81,6 +100,107 @@ function bootstrap_environment() {
     source $ENGINE_PATH/engine/config/pinned-versions
     # set the BAREMETAL variable
     grep -o vendor.* ${PDF} | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
+}
+
+#-------------------------------------------------------------------------------
+# In order to install Ansible on the host, few packages need to be installed
+# before that. This function determines the distro specific package names
+# by mapping them to the package list, installs them and continues with
+# Ansible and other Python package installations. The installation of Python
+# packages are done in Virtualenv.
+# In order to protect ourselves from issues that could come from upstream,
+# OpenStack Upper Constraints is used so we install what is tested/verified.
+#-------------------------------------------------------------------------------
+function install_ansible() {
+    set -eu
+
+    # cleanup .venv in case if the script is run locally
+    /bin/rm -rf $ENGINE_VENV
+
+    # Use the upper-constraints file from the pinned requirements repository.
+    local uc="https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=${OPENSTACK_REQUIREMENTS_VERSION}"
+    local kolla_uc="https://git.openstack.org/cgit/openstack/kolla-ansible/plain/requirements.txt?h=${OPENSTACK_KOLLA_VERSION}"
+    local install_map
+
+    declare -A PKG_MAP
+
+    # workaround: for latest bindep to work, it needs to use en_US local
+    export LANG="C"
+
+    CHECK_CMD_PKGS=(
+        gcc
+        libffi
+        libopenssl
+        lsb-release
+        make
+        net-tools
+        python-devel
+        python
+        python-pyyaml
+        venv
+        wget
+        curl
+    )
+
+    source /etc/os-release || source /usr/lib/os-release
+    case ${ID,,} in
+        ubuntu|debian)
+        OS_FAMILY="Debian"
+        export DEBIAN_FRONTEND=noninteractive
+        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
+        CHECK_CMD="dpkg -l"
+        PKG_MAP=(
+            [gcc]=gcc
+            [libffi]=libffi-dev
+            [libopenssl]=libssl-dev
+            [lsb-release]=lsb-release
+            [make]=make
+            [net-tools]=net-tools
+            [pip]=python-pip
+            [python]=python-minimal
+            [python-devel]=libpython-dev
+            [python-pyyaml]=python-yaml
+            [venv]=python-virtualenv
+            [wget]=wget
+            [curl]=curl
+        )
+        EXTRA_PKG_DEPS=( apt-utils )
+        sudo apt-get update
+        ;;
+
+        *) echo "ERROR: Supported package manager not found.  Supported: apt, dnf, yum, zypper"; exit 1;;
+    esac
+
+    # Build instllation map
+    for pkgmap in ${CHECK_CMD_PKGS[@]}; do
+        install_map+=(${PKG_MAP[$pkgmap]} )
+    done
+
+    install_map+=(${EXTRA_PKG_DEPS[@]} )
+
+    ${INSTALLER_CMD} ${install_map[@]}
+
+    # Note(cinerama): If pip is linked to pip3, the rest of the install
+    # won't work. Remove the alternatives. This is due to ansible's
+    # python 2.x requirement.
+    if [[ $(readlink -f /etc/alternatives/pip) =~ "pip3" ]]; then
+        sudo -H update-alternatives --remove pip $(readlink -f /etc/alternatives/pip)
+    fi
+
+    # We need to prepare our virtualenv now
+    virtualenv --quiet --no-site-packages ${ENGINE_VENV}
+    set +u
+    source ${ENGINE_VENV}/bin/activate
+    set -u
+
+    # We are inside the virtualenv now so we should be good to use pip and python from it.
+    # TODO: move pip version to $ENGINE_PATH/engine/var/versions.yml
+    pip -q install --upgrade pip==9.0.3 # We need a version which supports the '-c' parameter
+    # TODO: move ansible-lint version to $ENGINE_PATH/engine/var/versions.yml
+    pip -q install --upgrade -c $uc -c $kolla_uc ara virtualenv pip setuptools shade ansible==$ENGINE_ANSIBLE_PIP_VERSION ansible-lint==3.4.21
+
+    ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
+    export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
 }
 
 # vim: set ts=2 sw=2 expandtab:
