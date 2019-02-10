@@ -72,4 +72,15 @@ function check_prerequisites() {
     fi
 }
 
+function bootstrap_environment() {
+    # Declare our virtualenv
+    export ENGINE_VENV=${ENGINE_PATH}/.venv/
+    # source user-vars
+    source $ENGINE_PATH/engine/config/user-vars
+    # source pinned-versions
+    source $ENGINE_PATH/engine/config/pinned-versions
+    # set the BAREMETAL variable
+    grep -o vendor.* ${PDF} | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
+}
+
 # vim: set ts=2 sw=2 expandtab:

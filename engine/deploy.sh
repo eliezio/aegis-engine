@@ -51,4 +51,12 @@ parse_cmdline_opts $*
 #-------------------------------------------------------------------------------
 check_prerequisites
 
+#-------------------------------------------------------------------------------
+# Bootstrap environment for Cloud Infra Deployment
+#-------------------------------------------------------------------------------
+echo "Info: Preparing environment for Cloud Infra deployment"
+bootstrap_environment
+# We are using sudo so we need to make sure that env_reset is not present
+sudo sed -i "s/^Defaults.*env_reset/#&/" /etc/sudoers
+
 # vim: set ts=2 sw=2 expandtab:
