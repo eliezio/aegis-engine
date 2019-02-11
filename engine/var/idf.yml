@@ -16,5 +16,82 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+idf:
+  version: 0.1
+  net_config: &net_config
+    admin:
+      interface: 0
+      network: 10.1.0.0
+      mask: 24
+    public:
+      interface: 1
+      network: 10.2.0.0
+      mask: 24
+      gateway: 10.2.0.1
+      dns:
+        - 10.2.0.1
+    mgmt:
+      interface: 2
+      network: 10.3.0.0
+      mask: 24
+    neutron:
+      interface: 3
+      network: 10.4.0.0
+      mask: 24
+  kolla: &idf_kolla
+    nodes_roles:
+      node1: [controller]
+      node2: [compute]
+    groups:
+      openstack:
+        - controller
+        - compute
+    hostnames:
+      node1: controller00
+      node2: compute00
+    network:
+      # network mapping
+      network_mapping:
+        # Admin network
+        net_admin: admin
+        # Public network
+        net_public: public
+        # Management network used by installer components to communicate
+        net_mgmt: mgmt
+        # Internal network for communication between VNF
+        net_neutron: neutron
+  kubespray: &idf_kubespray
+    nodes_roles:
+      node1: [kube-master, etcd, vault]
+      node2: [kube-node]
+    groups:
+      k8s-cluster:
+        - kube-node
+        - kube-master
+    hostnames:
+      node1: master1
+      node2: node1
+    network:
+      # network mapping
+      network_mapping:
+        # Admin network
+        net_admin: admin
+        # Public network
+        net_public: public
+        # Management network used by installer components to communicate
+        net_mgmt: mgmt
+        # Internal network for communication between VNF
+        net_neutron: neutron
+
+engine:
+  pod_name: vpod
+  net_config: *net_config
+
+  # net_config network to be used by the PXE
+  pxe_network: admin
+
+  installers:
+    kolla: *idf_kolla
+    kubespray: *idf_kubespray
 
 # vim: set ts=2 sw=2 expandtab:

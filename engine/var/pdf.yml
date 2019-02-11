@@ -16,5 +16,109 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+details:
+  pod_owner: Nordix
+  contact: infra@nordix.org
+  lab: Nordix OpenLab
+  location: N/A
+  type: production
+  link: http://wiki.nordix.org/
+##############################################################################
+jumphost:
+  name: jumphost
+  node:
+  disks:
+  os:
+  remote_management:
+  interfaces:
+##############################################################################
+nodes:
+  - name: node1
+    node: &nodeparams
+      type: virtual
+      vendor: libvirt
+      model: pc
+      arch: x86_64
+      cpus: 4
+      cpu_cflags: host-model
+      cores: 4
+      memory: 8G
+    disks: &disks
+      - name: disk1
+        disk_capacity: 80G
+        disk_type: hdd
+        disk_interface: sata
+        disk_rotation:
+    remote_params: &remote_params
+      type:
+        - ipmi: [2.0]
+      user: admin
+      pass: password
+    remote_management:
+      <<: *remote_params
+      address: 10.1.0.3
+      mac_address: "52:54:00:72:bf:cf"
+    interface_common_nic1: &interface_common_nic1
+      name: nic1
+      speed:
+      features:
+      vlan: native
+    interface_common_nic2: &interface_common_nic2
+      name: nic2
+      speed:
+      features:
+      vlan: native
+    interface_common_nic3: &interface_common_nic3
+      name: nic3
+      speed:
+      features:
+      vlan: native
+    interface_common_nic4: &interface_common_nic4
+      name: nic4
+      speed:
+      features:
+      vlan: native
+    interfaces:
+      # interface connected to admin/pxe network
+      - mac_address: "52:54:00:72:bf:cf"
+        address: 10.1.0.3
+        <<: *interface_common_nic1
+      # interface connected to public network for internet access
+      - mac_address: "52:54:00:21:4f:fb"
+        address: 10.2.0.3
+        <<: *interface_common_nic2
+      # interface connected to management network
+      - mac_address: "52:54:00:84:9b:a1"
+        address: 10.3.0.3
+        <<: *interface_common_nic3
+      # interface connected to neutron network
+      - mac_address: "52:54:00:0c:cd:cc"
+        address: 10.4.0.3
+        <<: *interface_common_nic4
+  ##############################################################################
+  - name: node2
+    node: *nodeparams
+    disks: *disks
+    remote_management:
+      <<: *remote_params
+      address: 10.1.0.4
+      mac_address: "52:54:00:b9:d4:87"
+    interfaces:
+      # interface connected to admin/pxe network
+      - mac_address: "52:54:00:b9:d4:87"
+        address: 10.1.0.4
+        <<: *interface_common_nic1
+      # interface connected to public network for internet access
+      - mac_address: "52:54:00:b7:9f:50"
+        address: 10.2.0.3
+        <<: *interface_common_nic2
+      # interface connected to management network
+      - mac_address: "52:54:00:93:da:9f"
+        address: 10.3.0.4
+        <<: *interface_common_nic3
+      # interface connected to neutron network
+      - mac_address: "52:54:00:25:d4:8f"
+        address: 10.4.0.4
+        <<: *interface_common_nic4
 
 # vim: set ts=2 sw=2 expandtab:
