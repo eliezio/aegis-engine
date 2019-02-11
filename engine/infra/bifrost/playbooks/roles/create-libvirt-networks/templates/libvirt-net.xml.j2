@@ -1,0 +1,16 @@
+<network>
+  <name>{{ item.key }}</name>
+  {% if item.key == 'public' %}
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  {% endif %}
+  <bridge name='br_{{ item.key }}' stp='on' delay='0'/>
+  <ip address='{{ item.value.network | regex_replace(".0$", "1") }}' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='{{ item.value.network | regex_replace(".0$", "2") }}' end='{{ item.value.network | regex_replace(".0$", "200") }}'/>
+    </dhcp>
+  </ip>
+</network>

@@ -16,18 +16,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+- include_tasks: create-libvirt-networks.yml
+  loop: "{{ lookup('dict', idf.net_config) }}"
 
-- hosts: localhost
-  connection: local
-  become: true
-  gather_facts: true
-  vars_files:
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
-    - "{{ engine_path }}/engine/var/global.yml"
+- name: Get libvirt networks
+  command: virsh net-list --all
+  register: libvirt_networks
 
-  roles:
-    - role: prepare-libvirt
-    - role: create-libvirt-networks
+- name: List libvirt networks
+  debug:
+    msg: >
+      {{ libvirt_networks.stdout_lines }}
 
 # vim: set ts=2 sw=2 expandtab:
