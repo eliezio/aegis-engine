@@ -1,0 +1,124 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+- name: List info on pools
+  virt_pool:
+    command: facts
+    uri: "{{ vm_libvirt_uri }}"
+
+- name: Set prealloc arg for Debian
+  set_fact:
+    prealloc: "--prealloc-metadata"
+  when:
+    - ansible_os_family == 'Debian'
+    - vm_libvirt_uri == 'qemu:///system'
+
+- name: Destroy vm '{{ vms[item] }}'
+  virt:
+    command: destroy
+    name: "{{ vms[item] }}"
+    uri: "{{ vm_libvirt_uri }}"
+  ignore_errors: true
+
+- name: Undefine vm '{{ vms[item] }}'
+  virt:
+    command: undefine
+    name: "{{ vms[item] }}"
+    uri: "{{ vm_libvirt_uri }}"
+  ignore_errors: true
+
+- name: Delete volume for vm '{{ vms[item] }}'
+  command: >
+    virsh --connect {{ vm_libvirt_uri }}
+    vol-delete --pool {{ libvirt_storage_pool }} {{ vms[item] }}.qcow2
+  ignore_errors: yes
+
+# NOTE(pas-ha) Ansible still lacks modules to operate on libvirt volumes
+- name: Create volume for vm '{{ vms[item] }}'
+  command: >
+    virsh --connect {{ vm_libvirt_uri }}
+    vol-create-as {{ libvirt_storage_pool }} {{ vms[item] }}.qcow2
+    {{ nodes[node_no].disks[0].disk_capacity }}
+    --format qcow2 {{ prealloc|default("") }}
+
+- name: Set path to the volume created
+  set_fact:
+    vm_volume_path: "{{ ansible_libvirt_pools[libvirt_storage_pool].path }}/{{ vms[item] }}.qcow2"
+
+- name: Pre-touch the vm volume
+  file:
+    state: touch
+    path: "{{ vm_volume_path }}"
+  when: vm_libvirt_uri == 'qemu:///system'
+
+# NOTE(TheJulia): CentOS default installs with an XFS root, and chattr
+# fails to set +C on XFS.  This could be more elegant, however the use
+# case is for CI testing.
+- name: Set copy-on-write for volume on non-CentOS systems
+  command: chattr +C {{ vm_volume_path }}
+  ignore_errors: yes
+  when:
+    - ansible_distribution != 'CentOS'
+    - vm_libvirt_uri == 'qemu:///system'
+
+- name: Delete logs from previous deployment
+  file:
+    path: "{{ vm_console_log_path }}/"
+    state: absent
+
+- name: Create directory for console logs
+  file:
+    path: "{{ vm_console_log_path }}"
+    state: directory
+    mode: 0755
+
+- name: Create vm '{{ vms[item] }}'
+  virt:
+    command: define
+    name: "{{ vms[item] }}"
+    uri: "{{ vm_libvirt_uri }}"
+    xml: "{{ lookup('template', 'libvirt-vm.xml.j2') }}"
+
+- name: Get list of nodes from vbmc
+  command: vbmc list
+  environment:
+    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+  register: vbmc_list
+
+# NOTE(NobodyCam): Space at the end of the find clause is required for proper matching.
+- name: Delete vm from vbmc if it is there
+  command: vbmc delete {{ vms[item] }}
+  environment:
+    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+  when: vbmc_list.stdout.find( vms[item] ) != -1
+
+- name: Set virtual IPMI port
+  set_fact:
+    virtual_ipmi_port: "{{ ( vm_ipmi_port_start|default(623) | int ) + ( node_no | int ) }}"
+
+- name: Plug vm into vbmc
+  command: vbmc add {{ vms[item] }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}
+  environment:
+    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+
+- name: Start vbmc
+  command: vbmc start {{ vms[item] }}
+  environment:
+    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+
+# vim: set ts=2 sw=2 expandtab:

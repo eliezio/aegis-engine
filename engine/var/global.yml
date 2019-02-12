@@ -16,6 +16,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
+installer_type: "{{ lookup('env', 'INSTALLER_TYPE') | default('kubespray') }}"
 virtualbmc_version: "1.3"
-
-# vim: set ts=2 sw=2 expandtab:

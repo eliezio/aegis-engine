@@ -16,19 +16,35 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+- name: Gather data from PDF and IDF
+  set_fact:
+    num_nodes: "{{ nodes | length }}"
+    vms: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.hostnames, idf.kolla.hostnames) }}"
+    networks: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.network, idf.kolla.network) }}"
 
-- hosts: localhost
-  connection: local
-  become: true
-  gather_facts: true
-  vars_files:
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
-    - "{{ engine_path }}/engine/var/global.yml"
+- include_tasks: create-libvirt-pool.yml
 
-  roles:
-    - role: prepare-libvirt
-    - role: create-libvirt-networks
-    - role: create-libvirt-vms
+- include_tasks: create-libvirt-vms.yml
+  with_items: "{{ vms }}"
+  loop_control:
+    index_var: node_no
+
+- name: Get libvirt vms
+  command: virsh list --all
+  register: libvirt_vms
+
+- name: List libvirt vms
+  debug:
+    msg: "{{ libvirt_vms.stdout_lines }}"
+
+- name: Get list of nodes from vbmc
+  command: vbmc list
+  environment:
+    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+  register: vbmc_vms
+
+- name: List vbmc nodes
+  debug:
+    msg: "{{ vbmc_vms.stdout_lines }}"
 
 # vim: set ts=2 sw=2 expandtab:

@@ -16,19 +16,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-
-- hosts: localhost
-  connection: local
-  become: true
-  gather_facts: true
-  vars_files:
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
-    - "{{ engine_path }}/engine/var/global.yml"
-
-  roles:
-    - role: prepare-libvirt
-    - role: create-libvirt-networks
-    - role: create-libvirt-vms
+vm_libvirt_uri: "{{ lookup('env', 'LIBVIRT_CONNECT_URI') | default('qemu:///system', true) }}"
+libvirt_storage_pool: "{{ lookup('env', 'LIBVIRT_STORAGE_POOL') | default('default', true) }}"
+libvirt_storage_pool_path: "/var/lib/libvirt/images"
+vm_console_log_path: "/var/log/libvirt/baremetal_logs"
 
 # vim: set ts=2 sw=2 expandtab:

@@ -24,6 +24,16 @@
 export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
 
 #-------------------------------------------------------------------------------
+# Set installer
+#-------------------------------------------------------------------------------
+# Currently, there are two kinds of installers in Cloud Infra: kolla and kubespray
+# Examples:
+#    export INSTALLER_TYPE="kolla"
+# or
+#    export INSTALLER_TYPE="kubespray"
+export INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
+
+#-------------------------------------------------------------------------------
 # Configure some other stuff
 #-------------------------------------------------------------------------------
 # Set the verbosity for ansible

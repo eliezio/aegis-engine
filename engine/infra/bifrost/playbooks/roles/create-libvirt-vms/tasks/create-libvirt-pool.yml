@@ -16,19 +16,24 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+- name: Define a libvirt pool if not defined
+  virt_pool:
+    name: "{{ libvirt_storage_pool }}"
+    state: present
+    uri: "{{ vm_libvirt_uri }}"
+    xml: "{{ lookup('template', 'libvirt-storage-pool.xml.j2') }}"
 
-- hosts: localhost
-  connection: local
-  become: true
-  gather_facts: true
-  vars_files:
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
-    - "{{ engine_path }}/engine/var/global.yml"
+- name: Ensure libvirt pool is running
+  virt_pool:
+    name: "{{ libvirt_storage_pool }}"
+    state: active
+    autostart: yes
+    uri: "{{ vm_libvirt_uri }}"
 
-  roles:
-    - role: prepare-libvirt
-    - role: create-libvirt-networks
-    - role: create-libvirt-vms
+- name: Set libvirt pool to autostart
+  virt_pool:
+    name: "{{ libvirt_storage_pool }}"
+    autostart: yes
+    uri: "{{ vm_libvirt_uri }}"
 
 # vim: set ts=2 sw=2 expandtab:
