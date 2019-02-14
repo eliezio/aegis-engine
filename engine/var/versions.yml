@@ -16,5 +16,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') | default('kubespray') }}"
+
+#-------------------------------------------------------------------------------
+# component versions used for virtual deployment
+#-------------------------------------------------------------------------------
+virtualbmc_version: "{{ lookup('env', 'VIRTUALBMC_VERSION') | default('1.3', true) }}"
