@@ -15,6 +15,39 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
+#-------------------------------------------------------------------------------
+# This file contains few environment variables that are required for engine startup.
+# Ideally there should be as few variables as possible in this file and all the variables
+# should be put into either var/global.yml or var/versions.yml but at engine startup
+# Ansible is not available and it is not that elegant to translate Ansible vars to
+# environment variables without Ansible.
+#-------------------------------------------------------------------------------
+
+# set ENGINE_VERSION
+export ENGINE_VERSION=${ENGINE_VERSION:-"master"}
+
+# remove leftovers of the previous run
+# this is set to false by default as it results in wiping out all the temporary
+# objects including .venv, .cache, ironic database, releases and so on
+# it will be set to true in CI/CD
+export CLEANUP=${CLEANUP:-"false"}
+
+# additional parameters to pass to Ansible
+export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
+
+# location of the cache the repositories will be cloned
+export ENGINE_CACHE=${ENGINE_PATH}/.cache
+
+# HEAD of openstack/requirements "stable/rocky"
+export OPENSTACK_REQUIREMENTS_VERSION=${OPENSTACK_REQUIREMENTS_VERSION:-"stable/rocky"}
+
+# HEAD of openstack/kolla-ansible "stable/rocky"
+export OPENSTACK_KOLLA_VERSION=${OPENSTACK_KOLLA_VERSION:-"stable/rocky"}
+
+# PIP version to use
+export ENGINE_ANSIBLE_PIP_VERSION="2.5.8"
+
 #-------------------------------------------------------------------------------
 # Set provisioning tool
 #-------------------------------------------------------------------------------
@@ -32,15 +65,5 @@ export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
 # or
 #    export INSTALLER_TYPE="kubespray"
 export INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
-
-#-------------------------------------------------------------------------------
-# Configure some other stuff
-#-------------------------------------------------------------------------------
-# Set the verbosity for ansible
-#
-# Examples:
-#   ENGINE_ANSIBLE_PARAMS="-v -e foo=bar"
-export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
-export ENGINE_CACHE=${ENGINE_PATH}/.cache
 
 # vim: set ts=2 sw=2 expandtab:
