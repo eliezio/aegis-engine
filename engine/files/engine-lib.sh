@@ -101,6 +101,25 @@ function bootstrap_environment() {
 }
 
 #-------------------------------------------------------------------------------
+# Remove leftovers of previous runs
+# Leftovers of previous run might result in failures, especially within CI/CD
+# so this function is important to use but it is not executed by default.
+#-------------------------------------------------------------------------------
+function cleanup() {
+    # remove venv
+    /bin/rm -rf $ENGINE_VENV
+
+    # remove cache
+    /bin/rm -rf $ENGINE_CACHE
+
+    # remove /opt/stack
+    sudo /bin/rm -rf /opt/stack
+
+    # remove /httpboot and /tftpboot
+    sudo /bin/rm -rf /httpboot /tftpboot
+}
+
+#-------------------------------------------------------------------------------
 # In order to install Ansible on the host, few packages need to be installed
 # before that. This function determines the distro specific package names
 # by mapping them to the package list, installs them and continues with

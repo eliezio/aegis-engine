@@ -52,12 +52,23 @@ parse_cmdline_opts $*
 check_prerequisites
 
 #-------------------------------------------------------------------------------
+# We are using sudo so we need to make sure that env_reset is not present
+#-------------------------------------------------------------------------------
+sudo sed -i "s/^Defaults.*env_reset/#&/" /etc/sudoers
+
+#-------------------------------------------------------------------------------
 # Bootstrap environment for Cloud Infra Deployment
 #-------------------------------------------------------------------------------
 echo "Info: Preparing environment for Cloud Infra deployment"
 bootstrap_environment
-# We are using sudo so we need to make sure that env_reset is not present
-sudo sed -i "s/^Defaults.*env_reset/#&/" /etc/sudoers
+
+#-------------------------------------------------------------------------------
+# Cleanup leftovers of previous run if it is explicitly set
+#-------------------------------------------------------------------------------
+if [[ "$CLEANUP" == "true" ]]; then
+  echo "Info: Removing leftovers of previous run"
+  cleanup
+fi
 
 #-------------------------------------------------------------------------------
 # Install Ansible
