@@ -19,13 +19,4 @@
 - include_tasks: create-libvirt-networks.yml
   loop: "{{ lookup('dict', idf.net_config) }}"
 
-- name: Get libvirt networks
-  command: virsh net-list --all
-  register: libvirt_networks
-
-- name: List libvirt networks
-  debug:
-    msg: >
-      {{ libvirt_networks.stdout_lines }}
-
 # vim: set ts=2 sw=2 expandtab:

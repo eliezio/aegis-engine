@@ -19,7 +19,7 @@
 
 - hosts: localhost
   connection: local
-  become: true
+  become: yes
   gather_facts: true
   vars_files:
     - "{{ pdf_file }}"
@@ -31,5 +31,32 @@
     - role: prepare-libvirt
     - role: create-libvirt-networks
     - role: create-libvirt-vms
+
+  tasks:
+    - name: Get libvirt networks
+      command: virsh net-list --all
+      register: libvirt_networks
+
+    - name: List libvirt networks
+      debug:
+        msg: "{{ libvirt_networks.stdout_lines }}"
+
+    - name: Get libvirt vms
+      command: virsh list --all
+      register: libvirt_vms
+
+    - name: List libvirt vms
+      debug:
+        msg: "{{ libvirt_vms.stdout_lines }}"
+
+    - name: Get list of nodes from vbmc
+      command: vbmc list
+      environment:
+        PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+      register: vbmc_vms
+
+    - name: List vbmc nodes
+      debug:
+        msg: "{{ vbmc_vms.stdout_lines }}"
 
 # vim: set ts=2 sw=2 expandtab:

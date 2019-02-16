@@ -24,27 +24,25 @@
 
 - include_tasks: create-libvirt-pool.yml
 
+- name: Stop existing virtualbmc processes
+  command: killall -w vbmc
+  ignore_errors: yes
+
+- name: Remove outdated virtualbmc folder
+  file:
+    path: "{{ ansible_env.HOME }}/.vbmc/"
+    state: absent
+
+- name: Install virtualbmc
+  pip:
+    name: virtualbmc
+    version: "{{ virtualbmc_version }}"
+    virtualenv: "{{ lookup('env', 'ENGINE_VENV') }}"
+  become: no
+
 - include_tasks: create-libvirt-vms.yml
   with_items: "{{ vms }}"
   loop_control:
     index_var: node_no
-
-- name: Get libvirt vms
-  command: virsh list --all
-  register: libvirt_vms
-
-- name: List libvirt vms
-  debug:
-    msg: "{{ libvirt_vms.stdout_lines }}"
-
-- name: Get list of nodes from vbmc
-  command: vbmc list
-  environment:
-    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
-  register: vbmc_vms
-
-- name: List vbmc nodes
-  debug:
-    msg: "{{ vbmc_vms.stdout_lines }}"
 
 # vim: set ts=2 sw=2 expandtab:

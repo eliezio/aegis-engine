@@ -48,6 +48,11 @@
     vol-delete --pool {{ libvirt_storage_pool }} {{ vms[item] }}.qcow2
   ignore_errors: yes
 
+- name: Delete logs from previous deployment
+  file:
+    path: "{{ vm_console_log_path }}/"
+    state: absent
+
 # NOTE(pas-ha) Ansible still lacks modules to operate on libvirt volumes
 - name: Create volume for vm '{{ vms[item] }}'
   command: >
@@ -60,7 +65,7 @@
   set_fact:
     vm_volume_path: "{{ ansible_libvirt_pools[libvirt_storage_pool].path }}/{{ vms[item] }}.qcow2"
 
-- name: Pre-touch the vm volume
+- name: Pre-touch the vm volume for '{{ vms[item] }}'
   file:
     state: touch
     path: "{{ vm_volume_path }}"
@@ -76,11 +81,6 @@
     - ansible_distribution != 'CentOS'
     - vm_libvirt_uri == 'qemu:///system'
 
-- name: Delete logs from previous deployment
-  file:
-    path: "{{ vm_console_log_path }}/"
-    state: absent
-
 - name: Create directory for console logs
   file:
     path: "{{ vm_console_log_path }}"
@@ -94,29 +94,16 @@
     uri: "{{ vm_libvirt_uri }}"
     xml: "{{ lookup('template', 'libvirt-vm.xml.j2') }}"
 
-- name: Get list of nodes from vbmc
-  command: vbmc list
-  environment:
-    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
-  register: vbmc_list
-
-# NOTE(NobodyCam): Space at the end of the find clause is required for proper matching.
-- name: Delete vm from vbmc if it is there
-  command: vbmc delete {{ vms[item] }}
-  environment:
-    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
-  when: vbmc_list.stdout.find( vms[item] ) != -1
-
-- name: Set virtual IPMI port
+- name: Set virtual IPMI port for '{{ vms[item] }}'
   set_fact:
     virtual_ipmi_port: "{{ ( vm_ipmi_port_start|default(623) | int ) + ( node_no | int ) }}"
 
-- name: Plug vm into vbmc
+- name: Plug vm '{{ vms[item] }}' into vbmc on port '{{ virtual_ipmi_port }}'
   command: vbmc add {{ vms[item] }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}
   environment:
     PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
 
-- name: Start vbmc
+- name: Start vbmc for '{{ vms[item] }}'
   command: vbmc start {{ vms[item] }}
   environment:
     PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
