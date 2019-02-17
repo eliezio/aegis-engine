@@ -54,11 +54,20 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   bifrost-install.yml
 
 echo "-------------------------------------------------------------------------"
-echo "Info: Enroll nodes using bifrost"
+echo "Info: Enroll and deploy nodes using bifrost"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/bifrost_inventory.py \
   bifrost-enroll.yml
+
+cd ${ENGINE_CACHE}/repos/bifrost/playbooks
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i inventory/bifrost_inventory.py \
+  bifrost-deploy.yml
+
+echo "-------------------------------------------------------------------------"
+echo "Info: Nodes are provisioned using bifrost!"
+echo "-------------------------------------------------------------------------"
 
 # vim: set ts=2 sw=2 expandtab:
