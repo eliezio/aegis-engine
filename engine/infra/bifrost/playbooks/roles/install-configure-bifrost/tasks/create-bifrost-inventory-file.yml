@@ -16,8 +16,21 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-bifrost_staticips_file: "{{ lookup('env', 'BIFROST_STATICIPS_FILE') | default('/tmp/bifroststaticips', true) }}"
-bifrost_inventory_source: "{{ lookup('env', 'BIFROST_INVENTORY_SOURCE') | default('/tmp/baremetal.yml', true) }}"
-node_default_groups: "{{ lookup('env', 'DEFAULT_HOST_GROUPS').split() | default(['baremetal'], true) }}"
+- name: Remove previous bifrost inventory {{ bifrost_inventory_source }}
+  file:
+    state: absent
+    path: "{{ bifrost_inventory_source }}"
+
+- name: Write bifrost inventory {{ bifrost_inventory_source }}
+  copy:
+    dest: "{{ bifrost_inventory_source }}"
+    content: "{{ bifrost_inventory | to_nice_yaml }}"
+
+- name: Set right permissions for bifrost inventory
+  file:
+    path: "{{ bifrost_inventory_source }}"
+    owner: "{{ ansible_env.SUDO_USER }}"
+  when: >
+    ansible_env.SUDO_USER is defined
 
 # vim: set ts=2 sw=2 expandtab:

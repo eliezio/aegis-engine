@@ -68,4 +68,11 @@
     dest: /etc/dnsmasq.d/bifrost.dhcp-hosts.d/bifroststaticips
   become: yes
 
+- include_tasks: create-bifrost-inventory-entry.yml
+  with_items: "{{ hostnames }}"
+  loop_control:
+    index_var: node_no
+
+- include_tasks: create-bifrost-inventory-file.yml
+
 # vim: set ts=2 sw=2 expandtab:

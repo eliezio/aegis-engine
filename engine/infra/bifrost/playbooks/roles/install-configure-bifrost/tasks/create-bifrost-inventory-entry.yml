@@ -1,0 +1,44 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+- name: Gather node data for '{{ hostnames[item] }}' from PDF and IDF
+  set_fact:
+    node_data:
+      name: "{{ hostnames[item] }}"
+      uuid: "{{ hostnames[item] | to_uuid }}"
+      host_groups: "{{ node_default_groups | union(host_roles[item]) }}"
+      driver: "{{ nodes[node_no].remote_management.type[0] }}"
+      driver_info:
+        power:
+          ipmi_address: "{{ nodes[node_no].remote_management.address }}"
+          ipmi_port: "{{ ( vm_ipmi_port_start|default(623) | int ) + ( node_no | int ) }}"
+          ipmi_username: "{{ nodes[node_no].remote_management.user }}"
+          ipmi_password: "{{ nodes[node_no].remote_management.pass }}"
+      nics:
+        - mac: "{{ nodes[node_no].remote_management.mac_address }}"
+      ansible_ssh_host: "{{ nodes[node_no].interfaces[idf.net_config.public.interface].address }}"
+      ipv4_address: "{{ nodes[node_no].interfaces[idf.net_config.public.interface].address }}"
+      properties:
+        cpu_arch: "{{ nodes[node_no].node.arch }}"
+        ram: "{{ ( nodes[node_no].node.memory.rstrip('G') | int ) * ( 1024 | int ) }}"
+        cpus: "{{ nodes[node_no].node.cpus }}"
+        disk_size: "{{ nodes[node_no].disks[0].disk_capacity.rstrip('G') }}"
+
+- name: Add node data of '{{ hostnames[item] }}' to bifrost inventory
+  set_fact:
+    bifrost_inventory: "{{ bifrost_inventory | combine({hostnames[item]: node_data}) }}"
