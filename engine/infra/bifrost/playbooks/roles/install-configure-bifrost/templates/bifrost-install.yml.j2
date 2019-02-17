@@ -9,7 +9,6 @@
     multinode_testing: true
     enabled_hardware_types: ipmi
     enable_keystone: false
-    download_ipa: "{{ download_ipa }}"
     cleaning: false
     testing: false
     create_image_via_dib: true
@@ -24,6 +23,8 @@
     ironicinspector_source_install: true
     ironicinspectorclient_source_install: true
     network_interface: "{{ engine.pxe_interface }}"
+    inventory_dhcp: true
+    inventory_dhcp_static_ip: false
 {% raw %}
   roles:
     - { role: bifrost-prep-for-install, when: skip_install is not defined }

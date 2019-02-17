@@ -67,6 +67,15 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   bifrost-deploy.yml
 
 echo "-------------------------------------------------------------------------"
+echo "Info: Verify nodes are accessible via SSH"
+echo "-------------------------------------------------------------------------"
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i localhost, \
+  -e pdf_file=${PDF} \
+  -e idf_file=${IDF} \
+  ${BIFROST_ROOT_DIR}/playbooks/test-connect-nodes.yml
+
+echo "-------------------------------------------------------------------------"
 echo "Info: Nodes are provisioned using bifrost!"
 echo "-------------------------------------------------------------------------"
 

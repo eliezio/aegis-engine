@@ -5,6 +5,8 @@
   gather_facts: no
   vars:
     multinode_testing: true
+    inventory_dhcp: true
+    inventory_dhcp_static_ip: false
 {% endraw %}
     network_interface: "{{ engine.pxe_interface }}"
 {% raw %}
