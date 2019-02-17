@@ -29,7 +29,7 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 # the node for virtual deployment by installing dependencies, creating libvirt
 # networks, vms, and the rest of the necesssary stuff
 if [[ "$BAREMETAL" != "true" ]]; then
-  echo "Info: Creating libvirt resources for for virtual deployment"
+  echo "Info: Create libvirt resources for virtual deployment"
   echo "-------------------------------------------------------------------------"
   ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
     -i localhost, \
@@ -40,7 +40,7 @@ fi
 
 # install and configure bifrost
 echo "-------------------------------------------------------------------------"
-echo "Info: Install and configure bifrost, generate bifrost inventory"
+echo "Info: Prepare bifrost installation and create bifrost inventory"
 echo "-------------------------------------------------------------------------"
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i localhost, \
@@ -48,19 +48,25 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -e idf_file=${IDF} \
   ${BIFROST_ROOT_DIR}/playbooks/install-configure-bifrost.yml
 
+echo "-------------------------------------------------------------------------"
+echo "Info: Install bifrost"
+echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/target \
   bifrost-install.yml
 
 echo "-------------------------------------------------------------------------"
-echo "Info: Enroll and deploy nodes using bifrost"
+echo "Info: Enroll nodes using bifrost"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/bifrost_inventory.py \
   bifrost-enroll.yml
 
+echo "-------------------------------------------------------------------------"
+echo "Info: Deploy nodes using bifrost"
+echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/bifrost_inventory.py \
