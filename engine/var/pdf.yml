@@ -73,28 +73,19 @@ nodes:
       speed:
       features:
       vlan: native
-    interface_common_nic4: &interface_common_nic4
-      name: nic4
-      speed:
-      features:
-      vlan: native
     interfaces:
-      # interface connected to admin/pxe network
+      # interface connected to admin/pxe and public networks
       - mac_address: "52:54:00:72:bf:cf"
         address: 10.1.0.3
         <<: *interface_common_nic1
-      # interface connected to public network for internet access
+      # interface connected to management network
       - mac_address: "52:54:00:21:4f:fb"
         address: 10.2.0.3
         <<: *interface_common_nic2
-      # interface connected to management network
+      # interface connected to neutron network
       - mac_address: "52:54:00:84:9b:a1"
         address: 10.3.0.3
         <<: *interface_common_nic3
-      # interface connected to neutron network
-      - mac_address: "52:54:00:0c:cd:cc"
-        address: 10.4.0.3
-        <<: *interface_common_nic4
   ##############################################################################
   - name: node2
     node: *nodeparams
@@ -104,21 +95,17 @@ nodes:
       address: 10.1.0.4
       mac_address: "52:54:00:b9:d4:87"
     interfaces:
-      # interface connected to admin/pxe network
+      # interface connected to admin/pxe and public networks
       - mac_address: "52:54:00:b9:d4:87"
         address: 10.1.0.4
         <<: *interface_common_nic1
-      # interface connected to public network for internet access
+      # interface connected to management network
       - mac_address: "52:54:00:b7:9f:50"
         address: 10.2.0.3
         <<: *interface_common_nic2
-      # interface connected to management network
+      # interface connected to neutron network
       - mac_address: "52:54:00:93:da:9f"
         address: 10.3.0.4
         <<: *interface_common_nic3
-      # interface connected to neutron network
-      - mac_address: "52:54:00:25:d4:8f"
-        address: 10.4.0.4
-        <<: *interface_common_nic4
 
 # vim: set ts=2 sw=2 expandtab:
