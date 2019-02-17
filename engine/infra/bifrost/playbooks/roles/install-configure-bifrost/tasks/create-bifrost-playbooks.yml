@@ -16,13 +16,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-bifrost_staticips_file: "{{ lookup('env', 'BIFROST_STATICIPS_FILE') | default('/tmp/bifroststaticips', true) }}"
-bifrost_inventory_source: "{{ lookup('env', 'BIFROST_INVENTORY_SOURCE') | default('/tmp/baremetal.yml', true) }}"
-node_default_groups: "{{ lookup('env', 'DEFAULT_HOST_GROUPS').split() | default(['baremetal'], true) }}"
-download_ipa: "{{ lookup('env', 'BIFROST_DOWNLOAD_IPA') | default('false', true) }}"
-create_ipa_image: "{{ lookup('env', 'BIFROST_CREATE_IPA') | default('true', true) }}"
-dib_os_release: "{{ lookup('env', 'DIB_OS_RELEASE') | default('xenial', true) }}"
-dib_os_element: "{{ lookup('env', 'DIB_OS_ELEMENT') | default('ubuntu-minimal', true) }}"
-dib_os_packages: "{{ lookup('env', 'DIB_OS_PACKAGES') | default('vim,less,bridge-utils,language-pack-en,iputils-ping,rsyslog,curl,iptables', true) }}"
+- name: Generate bifrost playbooks
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+  with_items:
+    - { src: 'bifrost-install.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-install.yml' }
+    - { src: 'bifrost-enroll.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-enroll.yml' }
+    - { src: 'bifrost-deploy.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-deploy.yml' }
 
 # vim: set ts=2 sw=2 expandtab:

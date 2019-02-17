@@ -1,0 +1,24 @@
+---
+{% raw %}
+- hosts: baremetal
+  name: Create configuration drive files and deploy machines from inventory
+  become: no
+  gather_facts: no
+  vars:
+{% endraw %}
+    network_interface: "{{ engine.pxe_interface }}"
+    multinode_testing: true
+    write_interfaces_file: true
+    ipv4_gateway: "{{ idf.net_config.public.gateway }}"
+    ipv4_nameserver: "{{ idf.net_config.public.dns | list }}"
+    inventory_dhcp: true
+    inventory_dhcp_static_ip: false
+    wait_for_node_deploy: true
+    wait_timeout: 1800
+{% raw %}
+  roles:
+    - role: bifrost-configdrives-dynamic
+      delegate_to: "{{ groups['target'][0] if groups['target'] is defined else 'localhost' }}"
+    - role: bifrost-deploy-nodes-dynamic
+      delegate_to: "{{ groups['target'][0] if groups['target'] is defined else 'localhost' }}"
+{% endraw %}
