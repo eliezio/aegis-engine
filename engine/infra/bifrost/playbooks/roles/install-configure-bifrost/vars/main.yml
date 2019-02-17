@@ -16,6 +16,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') | default('kubespray') }}"
+bifrost_git_url: https://git.openstack.org/openstack/bifrost
+
+# vim: set ts=2 sw=2 expandtab:

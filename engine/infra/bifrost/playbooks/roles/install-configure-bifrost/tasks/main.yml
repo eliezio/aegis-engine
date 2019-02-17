@@ -18,4 +18,20 @@
 # ============LICENSE_END=========================================================
 - include_tasks: cleanup-bifrost.yml
 
+- name: Clone bifrost repository and checkout '{{ bifrost_version }}'
+  git:
+    repo: "{{ bifrost_git_url }}"
+    dest: "{{ engine_cache }}/repos/bifrost"
+    version: "{{ bifrost_version }}"
+    force: yes
+  environment:
+    http_proxy: "{{ lookup('env','http_proxy') }}"
+    https_proxy: "{{ lookup('env','https_proxy') }}"
+    no_proxy: "{{ lookup('env','no_proxy') }}"
+
+- name: Install bifrost requirements
+  pip:
+    requirements: "{{ engine_cache }}/repos/bifrost/requirements.txt"
+    extra_args: --upgrade
+
 # vim: set ts=2 sw=2 expandtab:
