@@ -51,7 +51,7 @@ nodes:
         disk_rotation:
     remote_params: &remote_params
       type:
-        - ipmi: [2.0]
+        - ipmi
       user: admin
       pass: password
     remote_management:
