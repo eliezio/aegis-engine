@@ -21,4 +21,16 @@
       delegate_to: "{{ groups['target'][0] if groups['target'] is defined else 'localhost' }}"
     - role: bifrost-deploy-nodes-dynamic
       delegate_to: "{{ groups['target'][0] if groups['target'] is defined else 'localhost' }}"
+
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Get nodes from Ironic
+      command: openstack --os-cloud bifrost baremetal node list
+      register: ironic_nodes
+    - name: List Ironic nodes
+      debug:
+        msg: "{{ ironic_nodes.stdout_lines }}"
 {% endraw %}
