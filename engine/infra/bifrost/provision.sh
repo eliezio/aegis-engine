@@ -53,4 +53,12 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/target \
   bifrost-install.yml
 
+echo "-------------------------------------------------------------------------"
+echo "Info: Enroll nodes using bifrost"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_CACHE}/repos/bifrost/playbooks
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i inventory/bifrost_inventory.py \
+  bifrost-enroll.yml
+
 # vim: set ts=2 sw=2 expandtab:
