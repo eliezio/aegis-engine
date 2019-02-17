@@ -34,4 +34,38 @@
     requirements: "{{ engine_cache }}/repos/bifrost/requirements.txt"
     extra_args: --upgrade
 
+- name: Process PDF and IDF
+  set_fact:
+    num_nodes: "{{ nodes | length }}"
+    hostnames: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.hostnames, idf.kolla.hostnames) }}"
+    host_roles: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.nodes_roles, idf.kolla.nodes_roles) }}"
+    networks: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.network, idf.kolla.network) }}"
+    bifrost_inventory: {}
+
+- name: Create bifrost static ips file {{ bifrost_staticips_file }}
+  file:
+    path: "{{ bifrost_staticips_file }}"
+    state: touch
+    mode: 0644
+
+- include_tasks: create-dnsmasq-staticips.yml
+  with_items: "{{ hostnames }}"
+  loop_control:
+    index_var: node_no
+
+- name: Create DHCP hosts directory
+  file:
+    path: "/etc/dnsmasq.d/bifrost.dhcp-hosts.d"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0755
+  become: yes
+
+- name: Copy bifrost static ips file to DHCP hosts directory
+  copy:
+    src: "{{ bifrost_staticips_file }}"
+    dest: /etc/dnsmasq.d/bifrost.dhcp-hosts.d/bifroststaticips
+  become: yes
+
 # vim: set ts=2 sw=2 expandtab:
