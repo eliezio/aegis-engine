@@ -82,6 +82,9 @@ engine:
   # net_config network to be used by the PXE
   pxe_network: public
 
+  # interface to be used by the PXE
+  pxe_interface: br_public
+
   installers:
     kolla: *idf_kolla
     kubespray: *idf_kubespray
