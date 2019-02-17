@@ -66,6 +66,7 @@ function parse_cmdline_opts() {
 # here so we quite as early as possible. Current checks are
 # - the user shall not be root
 # - the ssh keypair shall be created in advance
+# - env_reset shall not be present
 #-------------------------------------------------------------------------------
 function check_prerequisites() {
     #-------------------------------------------------------------------------------
@@ -85,6 +86,11 @@ function check_prerequisites() {
         echo "ERROR: You must have SSH keypair in order to run this script!"
         exit 1
     fi
+
+    #-------------------------------------------------------------------------------
+    # We are using sudo so we need to make sure that env_reset is not present
+    #-------------------------------------------------------------------------------
+    sudo sed -i "s/^Defaults.*env_reset/#&/" /etc/sudoers
 }
 
 #-------------------------------------------------------------------------------
