@@ -48,4 +48,9 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -e idf_file=${IDF} \
   ${BIFROST_ROOT_DIR}/playbooks/install-configure-bifrost.yml
 
+cd ${ENGINE_CACHE}/repos/bifrost/playbooks
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i inventory/target \
+  bifrost-install.yml
+
 # vim: set ts=2 sw=2 expandtab:
