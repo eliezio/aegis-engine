@@ -29,7 +29,7 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 # the node for virtual deployment by installing dependencies, creating libvirt
 # networks, vms, and the rest of the necesssary stuff
 if [[ "$BAREMETAL" != "true" ]]; then
-  echo "Info: Creating libvirt resources for virtual deployment"
+  echo "Info: Creating libvirt resources for for virtual deployment"
   echo "-------------------------------------------------------------------------"
   ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
     -i localhost, \
@@ -37,5 +37,15 @@ if [[ "$BAREMETAL" != "true" ]]; then
     -e idf_file=${IDF} \
     ${BIFROST_ROOT_DIR}/playbooks/create-libvirt-resources.yml
 fi
+
+# install and configure bifrost
+echo "-------------------------------------------------------------------------"
+echo "Info: Install and configure bifrost, generate bifrost inventory"
+echo "-------------------------------------------------------------------------"
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i localhost, \
+  -e pdf_file=${PDF} \
+  -e idf_file=${IDF} \
+  ${BIFROST_ROOT_DIR}/playbooks/install-configure-bifrost.yml
 
 # vim: set ts=2 sw=2 expandtab:

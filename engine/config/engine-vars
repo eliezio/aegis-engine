@@ -55,6 +55,7 @@ export ENGINE_ANSIBLE_PIP_VERSION="2.5.8"
 # Examples:
 #    export INFRA_DEPLOYMENT="bifrost"
 export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
+export BIFROST_INVENTORY_SOURCE=${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}
 
 #-------------------------------------------------------------------------------
 # Set installer

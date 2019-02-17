@@ -112,17 +112,23 @@ function bootstrap_environment() {
 # so this function is important to use but it is not executed by default.
 #-------------------------------------------------------------------------------
 function cleanup() {
-    # remove venv
-    /bin/rm -rf $ENGINE_VENV
+    # remove engine venv, cache and .ansible
+    /bin/rm -rf $ENGINE_VENV $ENGINE_CACHE $HOME/.ansible
 
-    # remove cache
-    /bin/rm -rf $ENGINE_CACHE
+    # stop ironic-conductor service before dropping ironic database
+    sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
 
-    # remove /opt/stack
-    sudo /bin/rm -rf /opt/stack
+    # remove ironic database
+    if $(which mysql &> /dev/null); then
+        mysql_ironic_user=$(sudo grep "connection" /etc/ironic/ironic.conf | cut -d : -f 2 )
+        msyql_ironic_password=$(sudo grep "connection" /etc/ironic/ironic.conf | cut -d : -f 3)
+        sudo mysql -u${mysql_ironic_user#*//} -p${msyql_ironic_password%%@*} --execute "drop database ironic;" > /dev/null 2>&1 || true
+    fi
 
-    # remove /httpboot and /tftpboot
-    sudo /bin/rm -rf /httpboot /tftpboot
+    # restart ironic services
+    sudo systemctl restart ironic-api > /dev/null 2>&1 || true
+    sudo systemctl restart ironic-conductor > /dev/null 2>&1 || true
+    sudo systemctl restart ironic-inspector > /dev/null 2>&1 || true
 }
 
 #-------------------------------------------------------------------------------
@@ -136,9 +142,6 @@ function cleanup() {
 #-------------------------------------------------------------------------------
 function install_ansible() {
     set -eu
-
-    # cleanup .venv in case if the script is run locally
-    /bin/rm -rf $ENGINE_VENV
 
     # Use the upper-constraints file from the pinned requirements repository.
     local uc="https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=${OPENSTACK_REQUIREMENTS_VERSION}"
