@@ -104,6 +104,17 @@ function bootstrap_environment() {
     source $ENGINE_PATH/engine/config/engine-vars
     # set the BAREMETAL variable
     grep -o vendor.* ${PDF} | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
+
+    # Make sure we pass ENGINE_PATH everywhere
+    export ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"
+
+    # Make sure everybody knows where our global roles are
+    export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles"
+
+    # Update path
+    if [[ -z $(echo $PATH | grep "$HOME/.local/bin")  ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
 }
 
 #-------------------------------------------------------------------------------
