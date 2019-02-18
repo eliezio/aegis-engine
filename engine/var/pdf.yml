@@ -34,7 +34,7 @@ jumphost:
 ##############################################################################
 nodes:
   - name: node1
-    node: &nodeparams
+    node:
       type: virtual
       vendor: libvirt
       model: pc
@@ -88,7 +88,15 @@ nodes:
         <<: *interface_common_nic3
   ##############################################################################
   - name: node2
-    node: *nodeparams
+    node:
+      type: virtual
+      vendor: libvirt
+      model: pc
+      arch: x86_64
+      cpus: 2
+      cpu_cflags: host-model
+      cores: 2
+      memory: 4G
     disks: *disks
     remote_management:
       <<: *remote_params

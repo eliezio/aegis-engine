@@ -17,7 +17,7 @@
     <apic/>
     <pae/>
   </features>
-  <cpu mode='host-model'>
+  <cpu mode='{{ nodes[node_no].node.cpu_cflags }}'>
     <model fallback='allow'/>
   </cpu>
   <clock offset='utc'/>
