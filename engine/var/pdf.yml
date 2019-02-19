@@ -109,7 +109,7 @@ nodes:
         <<: *interface_common_nic1
       # interface connected to management network
       - mac_address: "52:54:00:b7:9f:50"
-        address: 10.2.0.3
+        address: 10.2.0.4
         <<: *interface_common_nic2
       # interface connected to neutron network
       - mac_address: "52:54:00:93:da:9f"
