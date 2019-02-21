@@ -133,11 +133,10 @@ function cleanup() {
     # stop ironic-conductor service before dropping ironic database
     sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
 
-    # remove ironic database
+    # remove ironic and inspector database
     if $(which mysql &> /dev/null); then
-        mysql_ironic_user=$(sudo grep "connection" /etc/ironic/ironic.conf | cut -d : -f 2 )
-        msyql_ironic_password=$(sudo grep "connection" /etc/ironic/ironic.conf | cut -d : -f 3)
-        sudo mysql -u${mysql_ironic_user#*//} -p${msyql_ironic_password%%@*} --execute "drop database ironic;" > /dev/null 2>&1 || true
+        sudo mysql --execute "drop database ironic;" > /dev/null 2>&1 || true
+        sudo mysql --execute "drop database inspector;" > /dev/null 2>&1 || true
     fi
 
     # restart ironic services
