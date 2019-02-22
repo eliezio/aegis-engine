@@ -85,6 +85,9 @@ engine:
   # interface to be used by the PXE
   pxe_interface: br_public
 
+  # define ipmi privilege level
+  priv_level: OPERATOR
+
   installers:
     kolla: *idf_kolla
     kubespray: *idf_kubespray
