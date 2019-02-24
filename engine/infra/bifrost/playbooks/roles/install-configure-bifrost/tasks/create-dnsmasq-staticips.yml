@@ -19,7 +19,7 @@
 - name: Set static ip for '{{ hostnames[item] }}' for dnsmasq in "{{ bifrost_staticips_file }}"
   lineinfile:
     path: "{{ bifrost_staticips_file }}"
-    line: "{{ nodes[node_no].interfaces[idf.net_config.public.interface].mac_address }},{{ nodes[node_no].interfaces[idf.net_config.public.interface].address }}"
+    line: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].mac_address }},{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"
     state: present
 
 # vim: set ts=2 sw=2 expandtab:

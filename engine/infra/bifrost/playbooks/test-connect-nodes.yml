@@ -32,7 +32,7 @@
     - name: Wait for hosts to be reachable via SSH
       local_action:
         module: wait_for
-        host: "{{ nodes[node_no].interfaces[idf.net_config.public.interface].address }}"
+        host: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"
         delay: 15
         state: started
         port: 22

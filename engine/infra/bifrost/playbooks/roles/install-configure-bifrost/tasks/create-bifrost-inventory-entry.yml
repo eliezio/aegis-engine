@@ -32,8 +32,8 @@
           ipmi_priv_level: "{{ engine.priv_level | default('ADMIN') }}"
       nics:
         - mac: "{{ nodes[node_no].remote_management.mac_address }}"
-      ansible_ssh_host: "{{ nodes[node_no].interfaces[idf.net_config.public.interface].address }}"
-      ipv4_address: "{{ nodes[node_no].interfaces[idf.net_config.public.interface].address }}"
+      ansible_ssh_host: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"
+      ipv4_address: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"
       properties:
         cpu_arch: "{{ nodes[node_no].node.arch }}"
         ram: "{{ ( nodes[node_no].node.memory.rstrip('G') | int ) * ( 1024 | int ) }}"

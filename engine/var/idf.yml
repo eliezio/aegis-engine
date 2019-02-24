@@ -19,20 +19,24 @@
 idf:
   version: 0.1
   net_config: &net_config
-    public:
+    admin:
       interface: 0
       network: 10.1.0.0
       mask: 24
-      gateway: 10.1.0.1
-      dns:
-        - 10.1.0.1
-    mgmt:
+    public:
       interface: 1
       network: 10.2.0.0
       mask: 24
-    neutron:
+      gateway: 10.2.0.1
+      dns:
+        - 10.2.0.1
+    mgmt:
       interface: 2
       network: 10.3.0.0
+      mask: 24
+    neutron:
+      interface: 3
+      network: 10.4.0.0
       mask: 24
   kolla: &idf_kolla
     nodes_roles:
@@ -48,7 +52,9 @@ idf:
     network:
       # network mapping
       network_mapping:
-        # Admin and public network
+        # Admin network
+        net_admin: admin
+        # Public network
         net_public: public
         # Management network used by installer components to communicate
         net_mgmt: mgmt
@@ -68,7 +74,9 @@ idf:
     network:
       # network mapping
       network_mapping:
-        # Admin and public network
+        # Admin network
+        net_admin: admin
+        # Public network
         net_public: public
         # Management network used by installer components to communicate
         net_mgmt: mgmt
@@ -80,10 +88,10 @@ engine:
   net_config: *net_config
 
   # net_config network to be used by the PXE
-  pxe_network: public
+  pxe_network: admin
 
   # interface to be used by the PXE
-  pxe_interface: br_public
+  pxe_interface: br_admin
 
   # define ipmi privilege level
   priv_level: OPERATOR
