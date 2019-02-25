@@ -1,0 +1,10 @@
+auto {{ item.name }}
+iface {{ item.name }} inet static
+    address {{ item.ip | ipaddr('address') }}
+    netmask {{ item.nw | ipaddr('netmask') }}
+{% if item.gw %}
+    gateway {{ item.gw | ipaddr('address') }}
+{% endif %}
+{% if item.dns %}
+    dns-nameservers {{ item.dns | join(' ') }}
+{% endif %}

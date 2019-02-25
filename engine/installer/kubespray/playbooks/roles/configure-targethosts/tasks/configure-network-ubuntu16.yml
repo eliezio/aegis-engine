@@ -1,0 +1,70 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+- name: Configure modules
+  lineinfile:
+    dest: /etc/modules
+    state: present
+    create: yes
+    line: "8021q"
+
+- name: Add modules
+  modprobe:
+    name: 8021q
+    state: present
+
+- name: Ensure interfaces.d folder is empty
+  file:
+    state: "{{ item }}"
+    path: "/etc/network/interfaces.d"
+  with_items:
+    - absent
+    - directory
+
+- name: Ensure /etc/interfaces can source additional files
+  copy:
+    content: |
+      auto lo
+      iface lo inet loopback
+      source /etc/network/interfaces.d/*.cfg
+    dest: "/etc/network/interfaces"
+
+- name: Configure networking for host
+  template:
+    src: "{{ distribution }}.interface.j2"
+    dest: "/etc/network/interfaces.d/{{ item.name }}.cfg"
+  with_items:
+    - { name: "{{ admin_if }}", vlan_id: "{{ (admin_vlan == 'native') | ternary(omit, admin_vlan) }}", nw: "{{ admin_nw }}", ip: "{{ admin_ip }}", gw: "{{ admin_gw }}", dns: "{{ admin_dns }}" }
+    - { name: "{{ public_if }}", vlan_id: "{{ (public_vlan == 'native') | ternary(omit, public_vlan) }}", nw: "{{ public_nw }}", ip: "{{ public_ip }}", gw: "{{ public_gw }}", dns: "{{ public_dns }}" }
+    - { name: "{{ mgmt_if }}", vlan_id: "{{ (mgmt_vlan == 'native') | ternary(omit, mgmt_vlan) }}", nw: "{{ mgmt_nw }}", ip: "{{ mgmt_ip }}", gw: "{{ mgmt_gw }}", dns: "{{ mgmt_dns }}" }
+    - { name: "{{ neutron_if }}", vlan_id: "{{ (neutron_vlan == 'native') | ternary(omit, neutron_vlan) }}", nw: "{{ neutron_nw }}", ip: "{{ neutron_ip }}", gw: "{{ neutron_gw }}", dns: "{{ neutron_dns }}" }
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Restart network service
+  shell: "/sbin/ip addr flush dev {{ item }} && /sbin/ifdown -a && /sbin/ifup -a"
+  async: 15
+  poll: 0
+  with_items:
+    - "{{ admin_if }}"
+    - "{{ public_if }}"
+    - "{{ mgmt_if }}"
+    - "{{ neutron_if }}"
+
+# vim: set ts=2 sw=2 expandtab:

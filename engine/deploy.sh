@@ -67,4 +67,9 @@ echo "-------------------------------------------------------------------------"
 #-------------------------------------------------------------------------------
 source ${ENGINE_PATH}/engine/infra/${INFRA_DEPLOYMENT}/provision.sh
 
+#-------------------------------------------------------------------------------
+# Install the stack using the selected installer
+#-------------------------------------------------------------------------------
+source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/deploy.sh
+
 # vim: set ts=2 sw=2 expandtab:
