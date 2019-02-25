@@ -29,7 +29,8 @@
           ipmi_port: "{{ ( nodes[node_no].remote_management.port | default(623) | int ) }}"
           ipmi_username: "{{ nodes[node_no].remote_management.user }}"
           ipmi_password: "{{ nodes[node_no].remote_management.pass }}"
-          ipmi_priv_level: "{{ engine.priv_level | default('ADMIN') }}"
+          ipmi_priv_level: "{{ nodes[node_no].remote_management.privilege_level | default('ADMIN') }}"
+
       nics:
         - mac: "{{ nodes[node_no].remote_management.mac_address }}"
       ansible_ssh_host: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"

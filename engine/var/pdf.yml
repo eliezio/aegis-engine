@@ -54,6 +54,7 @@ nodes:
         - ipmi
       user: admin
       pass: password
+      privilege_level: OPERATOR
     remote_management:
       <<: *remote_params
       port: 623
