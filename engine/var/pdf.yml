@@ -56,6 +56,7 @@ nodes:
       pass: password
     remote_management:
       <<: *remote_params
+      port: 623
       address: 10.1.0.1
       mac_address: "52:54:00:72:bf:cf"
     interface_common_nic1: &interface_common_nic1
@@ -109,6 +110,7 @@ nodes:
     disks: *disks
     remote_management:
       <<: *remote_params
+      port: 624
       address: 10.1.0.1
       mac_address: "52:54:00:b9:d4:87"
     interfaces:

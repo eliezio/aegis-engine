@@ -96,7 +96,7 @@
 
 - name: Set virtual IPMI port for '{{ vms[item] }}'
   set_fact:
-    virtual_ipmi_port: "{{ ( vm_ipmi_port_start|default(623) | int ) + ( node_no | int ) }}"
+    virtual_ipmi_port: "{{ ( nodes[node_no].remote_management.port | default(623) | int ) }}"
 
 - name: Plug vm '{{ vms[item] }}' into vbmc on port '{{ virtual_ipmi_port }}'
   command: vbmc add {{ vms[item] }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}
