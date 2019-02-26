@@ -27,7 +27,6 @@
     state: absent
   with_items:
     - "/opt/stack/"
-    - "{{ bifrost_staticips_file }}"
     - "/etc/dnsmasq.d/bifrost.dhcp-hosts.d/"
     - "/var/lib/misc/dnsmasq.leases"
     - "{{ ansible_env.HOME }}/.config/openstack"

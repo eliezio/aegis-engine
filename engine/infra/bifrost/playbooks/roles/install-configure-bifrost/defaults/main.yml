@@ -16,7 +16,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-bifrost_staticips_file: "{{ lookup('env', 'BIFROST_STATICIPS_FILE') | default('/tmp/bifroststaticips', true) }}"
 bifrost_inventory_source: "{{ lookup('env', 'BIFROST_INVENTORY_SOURCE') | default('/tmp/baremetal.yml', true) }}"
 node_default_groups: "{{ lookup('env', 'DEFAULT_HOST_GROUPS').split() | default(['baremetal'], true) }}"
 download_ipa: "{{ lookup('env', 'BIFROST_DOWNLOAD_IPA') | default('false', true) }}"
