@@ -28,8 +28,8 @@ idf:
       network: 10.2.0.0
       mask: 24
       gateway: 10.2.0.1
-      dns:
-        - 10.2.0.1
+      # TODO: fix this so we can provide list of dns instead of single one
+      dns: 8.8.8.8
     mgmt:
       interface: 2
       network: 10.3.0.0
