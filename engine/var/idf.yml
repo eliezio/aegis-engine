@@ -62,8 +62,8 @@ idf:
         net_neutron: neutron
   kubespray: &idf_kubespray
     nodes_roles:
-      node1: [kube-master, etcd, vault]
-      node2: [kube-node]
+      node1: [k8s-cluster, kube-master, etcd, vault]
+      node2: [k8s-cluster, kube-node]
     groups:
       k8s-cluster:
         - kube-node

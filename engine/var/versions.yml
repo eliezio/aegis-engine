@@ -36,3 +36,11 @@ ironic_client_version: "{{ lookup('env', 'IRONIC_CLIENT_VERSION') | default('e8a
 inspector_version: "{{ lookup('env', 'INSPECTOR_VERSION') | default('590a610c685d999b69421e29ec6247dc4e931c51', true) }}"
 # HEAD of ironic-inspector-client "master" as of 17.02.2019
 inspector_client_version: "{{ lookup('env', 'INSPECTOR_CLIENT_VERSION') | default('7b051723e9dd852609d29ad35ce4406bf62aa8b2', true) }}"
+
+#-------------------------------------------------------------------------------
+# versions of kubespray and kubernetes
+# Please note that kubernetes version specified below matches to the supported
+# kubernetes version is pinned kubespray. Changing it might break things.
+#-------------------------------------------------------------------------------
+kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('v2.8.3', true) }}"
+kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.12.5', true) }}"

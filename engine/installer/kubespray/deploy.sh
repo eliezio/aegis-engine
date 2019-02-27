@@ -37,4 +37,15 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
   playbooks/configure-targethosts.yml
 
+# configure installer
+echo "-------------------------------------------------------------------------"
+echo "Info: Configure installer"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}/engine/installer/kubespray
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -e pdf_file=${PDF} \
+  -e idf_file=${IDF} \
+  -i localhost, \
+  playbooks/configure-installer.yml
+
 # vim: set ts=2 sw=2 expandtab:
