@@ -17,17 +17,23 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- include: configure-network.yml
-- include: install-packages.yml
-- include: sync-time.yml
-
-# docker stuff here is put in place temporarily in order to
-# avoid hitting the kubespray bug:
-# https://github.com/kubernetes-sigs/kubespray/issues/4300
-- name: Enable and start docker service
+- name: Restart chrony service
   service:
-    name: docker
+    name: "{{ (ansible_pkg_mgr == 'apt') | ternary('chrony', 'chronyd') }}"
     state: restarted
-    enabled: yes
+
+- name: Synchronize time
+  shell: "chronyc -a 'burst 4/4' && chronyc -a makestep"
+  args:
+    executable: /bin/bash
+  changed_when: True
+  register: chrony_got_time
+  until: chrony_got_time.rc == 0
+  retries: 5
+  delay: 5
+  environment:
+    http_proxy: "{{ lookup('env','http_proxy') }}"
+    https_proxy: "{{ lookup('env','https_proxy') }}"
+    no_proxy: "{{ lookup('env','no_proxy') }}"
 
 # vim: set ts=2 sw=2 expandtab:
