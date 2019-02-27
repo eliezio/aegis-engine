@@ -17,16 +17,35 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- include: configure-network.yml
-- include: install-packages.yml
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "apt-transport-https"
+    - "ca-certificates"
+    - "curl"
+    - "gnupg-agent"
+    - "software-properties-common"
+    - "chrony"
+    - "dbus"
 
 # docker stuff here is put in place temporarily in order to
 # avoid hitting the kubespray bug:
 # https://github.com/kubernetes-sigs/kubespray/issues/4300
-- name: Enable and start docker service
-  service:
-    name: docker
-    state: restarted
-    enabled: yes
+- name: Add docker apt repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename}} stable"
+    state: present
+
+- name: Install docker version {{ docker_ce_version }}
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    allow_unauthenticated: yes
+  with_items:
+    - "docker-ce={{ docker_ce_version }}"
+    - "containerd.io"
 
 # vim: set ts=2 sw=2 expandtab:

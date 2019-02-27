@@ -16,17 +16,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-
-- include: configure-network.yml
-- include: install-packages.yml
-
-# docker stuff here is put in place temporarily in order to
-# avoid hitting the kubespray bug:
+# we need to pin docker version in order to avoid hitting the kubespray bug:
 # https://github.com/kubernetes-sigs/kubespray/issues/4300
-- name: Enable and start docker service
-  service:
-    name: docker
-    state: restarted
-    enabled: yes
+docker_ce_version: "{{ lookup('env', 'DOCKER_CE_VERSION') | default('18.06.2~ce~3-0~ubuntu', true) }}"
 
 # vim: set ts=2 sw=2 expandtab:
