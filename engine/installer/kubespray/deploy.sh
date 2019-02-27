@@ -48,4 +48,15 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i localhost, \
   playbooks/configure-installer.yml
 
+# install Kubernetes scenario
+echo "-------------------------------------------------------------------------"
+echo "Info: Install Kubernetes Scenario"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_CACHE}/repos/kubespray
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  --ssh-extra-args='-o StrictHostKeyChecking=no' \
+  --user root \
+  -i inventory/engine/bifrost_inventory.py \
+  cluster.yml
+
 # vim: set ts=2 sw=2 expandtab:
