@@ -67,4 +67,13 @@
     - "{{ mgmt_if }}"
     - "{{ neutron_if }}"
 
+# TODO: The content of /etc/resolv.conf seems to be set randomly
+# after network configuration is applied so this is yet another
+# DNS workaround to ensure we have the correct nameserver in it
+- name: Ensure resolv.conf has the correct content
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: "^nameserver "
+    line: "nameserver {{ idf.net_config.public.dns }}"
+
 # vim: set ts=2 sw=2 expandtab:
