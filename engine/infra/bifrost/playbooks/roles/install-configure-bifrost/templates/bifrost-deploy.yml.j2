@@ -33,4 +33,24 @@
     - name: List Ironic nodes
       debug:
         msg: "{{ ironic_nodes.stdout_lines }}"
+
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+{% endraw %}
+  vars_files:
+    -  "{{ bifrost_inventory_source }}"
+{% raw %}
+  tasks:
+    - name: Wait for hosts to be reachable via SSH
+      local_action:
+        module: wait_for
+        host: "{{ item }}"
+        delay: 15
+        state: started
+        port: 22
+        connect_timeout: 10
+        timeout: 300
+      with_items: "{{ vars.groups.baremetal }}"
 {% endraw %}
