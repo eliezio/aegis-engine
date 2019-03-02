@@ -33,6 +33,10 @@ export ENGINE_VERSION=${ENGINE_VERSION:-"master"}
 # it will be set to true in CI/CD
 export CLEANUP=${CLEANUP:-"false"}
 
+# to increase verbosity and keep logs for troubleshooting
+# it will be set to true in CI/CD
+export VERBOSITY=${VERBOSITY:-"false"}
+
 # additional parameters to pass to Ansible
 export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
 

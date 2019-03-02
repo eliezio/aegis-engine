@@ -25,13 +25,14 @@
 #-------------------------------------------------------------------------------
 function usage() {
     echo "
-Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s sdf]
+Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s <sdf>] [-v verbosity]
 
     -h: This message
     -p: POD Descriptor File (PDF). (Default ${ENGINE_PATH}/engine/engine/pdf.yml)
     -i: Installer Descriptor File (IDF). (Default ${ENGINE_PATH}/engine/var/idf.yml)
     -s: Scenario Descriptor File (SDF). (Default ${ENGINE_PATH}/engine/var/sdf.yml)
     -c: Wipeout leftovers before execution.
+    -v: Increase verbosity and keep logs for troubleshooting.
     "
     exit 0
 }
@@ -47,12 +48,13 @@ function parse_cmdline_opts() {
     # The default value for CLEANUP is false
     # export CLEANUP="false"
 
-    while getopts ":hp:i:s:c" o; do
+    while getopts ":hp:i:s:cv" o; do
         case "${o}" in
             p) PDF="${OPTARG}" ;;
             i) IDF="${OPTARG}" ;;
             s) SDF="${OPTARG}" ;;
             c) export CLEANUP="true" ;;
+            v) export VERBOSITY="true" ;;
             h) usage ;;
             *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
         esac

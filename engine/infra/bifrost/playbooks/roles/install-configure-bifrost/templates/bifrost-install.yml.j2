@@ -74,6 +74,31 @@
 
 - hosts: localhost
   connection: local
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Add deploy_logs_collect field into Ironic configuration file
+      blockinfile:
+        dest: /etc/ironic/ironic.conf
+        marker: "# {mark} SET IRONIC TROUBLESHOTTING PARAMETER"
+        block: |
+          [agent]
+          deploy_logs_collect = always
+      when: "{{ lookup('env', 'VERBOSITY') }} == true"
+
+    - name: Restart Ironic service
+      service:
+        name: "{{ item }}"
+        state: restarted
+      with_items:
+        - ironic-api
+        - ironic-conductor
+        - ironic-inspector
+      when:
+        - "{{ lookup('env', 'VERBOSITY') }} == true"
+
+- hosts: localhost
+  connection: local
   become: no
   gather_facts: no
   tasks:
