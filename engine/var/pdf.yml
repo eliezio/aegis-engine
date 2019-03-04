@@ -95,7 +95,7 @@ nodes:
         <<: *interface_common_nic3
       # interface connected to neutron network
       - mac_address: "52:54:00:0c:cd:cc"
-        address: 10.4.0.3
+        address: manual
         <<: *interface_common_nic4
   ##############################################################################
   - name: node2
@@ -129,7 +129,7 @@ nodes:
         <<: *interface_common_nic3
       # interface connected to neutron network
       - mac_address: "52:54:00:25:d4:8f"
-        address: 10.4.0.4
+        address: manual
         <<: *interface_common_nic4
 
 # vim: set ts=2 sw=2 expandtab:
