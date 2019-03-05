@@ -1,19 +1,19 @@
 auto {{ item.name }}
 {% if item.ip == "dhcp" %}
 iface {{ item.name }} inet dhcp
-    {% if item.gw %}
+{% if item.gw %}
   up route add default gw {{ item.gw | ipaddr('address') }}
-    {% endif %}
+{% endif %}
 {% elif item.ip == "manual" %}
 iface {{ item.name }} inet manual
 {% else %}
 iface {{ item.name }} inet static
   address {{ item.ip | ipaddr('address') }}
   netmask {{ item.nw | ipaddr('netmask') }}
-    {% if item.gw %}
+{% if item.gw %}
   gateway {{ item.gw | ipaddr('address') }}
-    {% endif %}
-    {% if item.dns %}
+{% endif %}
+{% if item.dns %}
   dns-nameservers {{ item.dns }}
-    {% endif %}
+{% endif %}
 {% endif %}
