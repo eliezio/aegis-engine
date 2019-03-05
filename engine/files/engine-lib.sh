@@ -145,6 +145,9 @@ function cleanup() {
     sudo systemctl restart ironic-api > /dev/null 2>&1 || true
     sudo systemctl restart ironic-conductor > /dev/null 2>&1 || true
     sudo systemctl restart ironic-inspector > /dev/null 2>&1 || true
+
+    # clean and remove rabbitmq service
+    sudo apt-get purge --auto-remove -y rabbitmq-server
 }
 
 #-------------------------------------------------------------------------------
