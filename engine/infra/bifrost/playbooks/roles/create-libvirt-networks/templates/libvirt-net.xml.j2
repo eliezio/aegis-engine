@@ -8,9 +8,9 @@
   </forward>
   {% endif %}
   <bridge name='br_{{ item.key }}' stp='on' delay='0'/>
-  <ip address='{{ item.value.network | regex_replace(".0$", "1") }}' netmask='255.255.255.0'>
+  <ip address='{{ item.value.network | regex_replace(".0$", ".1") }}' netmask='255.255.255.0'>
     <dhcp>
-      <range start='{{ item.value.network | regex_replace(".0$", "2") }}' end='{{ item.value.network | regex_replace(".0$", "200") }}'/>
+      <range start='{{ item.value.network | regex_replace(".0$", ".2") }}' end='{{ item.value.network | regex_replace(".0$", ".200") }}'/>
     </dhcp>
   </ip>
 </network>
