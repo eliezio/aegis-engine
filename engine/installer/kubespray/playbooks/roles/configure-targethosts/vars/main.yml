@@ -18,10 +18,6 @@ admin_gw: >-
   {%- if idf.net_config.admin.gateway is defined -%}
     {{ idf.net_config.admin.gateway }}
   {%- endif -%}
-admin_dns: >-
-  {%- if idf.net_config.admin.dns is defined -%}
-    {{ idf.net_config.admin.dns }}
-  {%- endif -%}
 
 # public network information
 public_mac: "{{ node_interfaces[idf.net_config.public.interface].mac_address }}"
@@ -41,10 +37,6 @@ public_ip: "{{ node_interfaces[idf.net_config.public.interface].address }}"
 public_gw: >-
   {%- if idf.net_config.public.gateway is defined -%}
     {{ idf.net_config.public.gateway }}
-  {%- endif -%}
-public_dns: >-
-  {%- if idf.net_config.public.dns is defined -%}
-    {{ idf.net_config.public.dns }}
   {%- endif -%}
 
 # mgmt network information
@@ -66,10 +58,6 @@ mgmt_gw: >-
   {%- if idf.net_config.mgmt.gateway is defined -%}
     {{ idf.net_config.mgmt.gateway }}
   {%- endif -%}
-mgmt_dns: >-
-  {%- if idf.net_config.mgmt.dns is defined -%}
-    {{ idf.net_config.mgmt.dns }}
-  {%- endif -%}
 
 # neutron network information
 neutron_mac: "{{ node_interfaces[idf.net_config.neutron.interface].mac_address }}"
@@ -89,10 +77,6 @@ neutron_ip: "{{ node_interfaces[idf.net_config.neutron.interface].address }}"
 neutron_gw: >-
   {%- if idf.net_config.neutron.gateway is defined -%}
     {{ idf.net_config.neutron.gateway }}
-  {%- endif -%}
-neutron_dns: >-
-  {%- if idf.net_config.neutron.dns is defined -%}
-    {{ idf.net_config.neutron.dns }}
   {%- endif -%}
 
 # vim: set ts=2 sw=2 expandtab:

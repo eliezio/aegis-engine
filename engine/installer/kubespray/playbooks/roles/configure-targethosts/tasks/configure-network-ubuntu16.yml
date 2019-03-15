@@ -50,10 +50,10 @@
     src: "{{ distribution }}.interface.j2"
     dest: "/etc/network/interfaces.d/{{ item.name }}.cfg"
   with_items:
-    - { name: "{{ admin_if }}", vlan_id: "{{ (admin_vlan == 'native') | ternary(omit, admin_vlan) }}", nw: "{{ admin_nw }}", ip: "{{ admin_ip }}", gw: "{{ admin_gw }}", dns: "{{ admin_dns }}" }
-    - { name: "{{ public_if }}", vlan_id: "{{ (public_vlan == 'native') | ternary(omit, public_vlan) }}", nw: "{{ public_nw }}", ip: "{{ public_ip }}", gw: "{{ public_gw }}", dns: "{{ public_dns }}" }
-    - { name: "{{ mgmt_if }}", vlan_id: "{{ (mgmt_vlan == 'native') | ternary(omit, mgmt_vlan) }}", nw: "{{ mgmt_nw }}", ip: "{{ mgmt_ip }}", gw: "{{ mgmt_gw }}", dns: "{{ mgmt_dns }}" }
-    - { name: "{{ neutron_if }}", vlan_id: "{{ (neutron_vlan == 'native') | ternary(omit, neutron_vlan) }}", nw: "{{ neutron_nw }}", ip: "{{ neutron_ip }}", gw: "{{ neutron_gw }}", dns: "{{ neutron_dns }}" }
+    - { name: "{{ admin_if }}", vlan_id: "{{ (admin_vlan == 'native') | ternary(omit, admin_vlan) }}", nw: "{{ admin_nw }}", ip: "{{ admin_ip }}", gw: "{{ admin_gw }}"}
+    - { name: "{{ public_if }}", vlan_id: "{{ (public_vlan == 'native') | ternary(omit, public_vlan) }}", nw: "{{ public_nw }}", ip: "{{ public_ip }}", gw: "{{ public_gw }}"}
+    - { name: "{{ mgmt_if }}", vlan_id: "{{ (mgmt_vlan == 'native') | ternary(omit, mgmt_vlan) }}", nw: "{{ mgmt_nw }}", ip: "{{ mgmt_ip }}", gw: "{{ mgmt_gw }}"}
+    - { name: "{{ neutron_if }}", vlan_id: "{{ (neutron_vlan == 'native') | ternary(omit, neutron_vlan) }}", nw: "{{ neutron_nw }}", ip: "{{ neutron_ip }}", gw: "{{ neutron_gw }}"}
   loop_control:
     label: "{{ item.name }}"
 
@@ -67,13 +67,15 @@
     - "{{ mgmt_if }}"
     - "{{ neutron_if }}"
 
-# TODO: The content of /etc/resolv.conf seems to be set randomly
-# after network configuration is applied so this is yet another
-# DNS workaround to ensure we have the correct nameserver in it
-- name: Ensure resolv.conf has the correct content
+- name: Ensure systemd resolved.conf has the correct content
   lineinfile:
-    path: /etc/resolv.conf
-    regexp: "^nameserver "
-    line: "nameserver {{ idf.net_config.public.dns }}"
+    path: /etc/systemd/resolved.conf
+    regexp: "^#?DNS=.*$"
+    line: "DNS={{ idf.net_config.public.dns | join(' ')}}"
+
+- name: Restart systemd-resolved service
+  service:
+    name: "systemd-resolved"
+    state: restarted
 
 # vim: set ts=2 sw=2 expandtab:

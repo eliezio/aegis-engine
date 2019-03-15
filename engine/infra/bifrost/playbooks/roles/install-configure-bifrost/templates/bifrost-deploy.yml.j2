@@ -10,7 +10,7 @@
     multinode_testing: true
     write_interfaces_file: true
     ipv4_gateway: "{{ idf.net_config.public.gateway }}"
-    ipv4_nameserver: "{{ idf.net_config.public.dns }}"
+    ipv4_nameserver: "{{ idf.net_config.public.dns | list }}"
     inventory_dhcp: true
     inventory_dhcp_static_ip: true
     wait_for_node_deploy: true

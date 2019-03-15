@@ -13,7 +13,4 @@ iface {{ item.name }} inet static
 {% if item.gw %}
   gateway {{ item.gw | ipaddr('address') }}
 {% endif %}
-{% if item.dns %}
-  dns-nameservers {{ item.dns }}
-{% endif %}
 {% endif %}

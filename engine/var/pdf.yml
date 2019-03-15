@@ -42,10 +42,10 @@ nodes:
       cpus: 4
       cpu_cflags: host-model
       cores: 4
-      memory: 8G
+      memory: 4G
     disks: &disks
       - name: disk1
-        disk_capacity: 80G
+        disk_capacity: 20G
         disk_type: hdd
         disk_interface: sata
         disk_rotation:
