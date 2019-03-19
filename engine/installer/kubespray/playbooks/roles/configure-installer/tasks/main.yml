@@ -42,6 +42,13 @@
     recursive: yes
     delete: yes
 
+# enable helm for all the scenarios using kubespray
+- name: Enable helm
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/addons.yml"
+    regexp: "^helm_enabled:.*"
+    line: "helm_enabled: true"
+
 # TODO: reuse of bifrost dynamic inventory is only valid for the cases that use
 # bifrost for provisioning so this needs fixing and we could perhaps switch to
 # our own inventory, dynamic or static.
