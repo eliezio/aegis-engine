@@ -14,7 +14,7 @@
     create_image_via_dib: true
     download_ipa: "{{ download_ipa }}"
     create_ipa_image: "{{ create_ipa_image }}"
-    ipa_dib_os_element: fedora
+    ipa_dib_os_element: "{{ ipa_dib_os_element }}"
     ironic_git_branch: "{{ ironic_version }}"
     network_interface: "{{ engine.pxe_interface }}"
     inventory_dhcp: true
