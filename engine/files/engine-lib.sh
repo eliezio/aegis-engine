@@ -162,9 +162,6 @@ function cleanup() {
 function install_ansible() {
     set -eu
 
-    # Use the upper-constraints file from the pinned requirements repository.
-    local uc="https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=${OPENSTACK_REQUIREMENTS_VERSION}"
-    local kolla_uc="https://git.openstack.org/cgit/openstack/kolla-ansible/plain/requirements.txt?h=${OPENSTACK_KOLLA_VERSION}"
     local install_map
 
     declare -A PKG_MAP
@@ -242,7 +239,7 @@ function install_ansible() {
     # TODO: move pip version to $ENGINE_PATH/engine/var/versions.yml
     pip -q install --upgrade pip==9.0.3 # We need a version which supports the '-c' parameter
     # TODO: move ansible-lint version to $ENGINE_PATH/engine/var/versions.yml
-    pip -q install --upgrade -c $uc -c $kolla_uc ara virtualenv pip setuptools shade ansible==$ENGINE_ANSIBLE_PIP_VERSION ansible-lint==3.4.21
+    pip -q install --upgrade ara virtualenv pip setuptools shade ansible==$ENGINE_ANSIBLE_PIP_VERSION ansible-lint==3.4.21
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"

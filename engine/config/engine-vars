@@ -43,9 +43,6 @@ export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
 # location of the cache the repositories will be cloned
 export ENGINE_CACHE=${ENGINE_PATH}/.cache
 
-# HEAD of openstack/requirements "stable/rocky"
-export OPENSTACK_REQUIREMENTS_VERSION=${OPENSTACK_REQUIREMENTS_VERSION:-"stable/rocky"}
-
 # HEAD of openstack/kolla-ansible "stable/rocky"
 export OPENSTACK_KOLLA_VERSION=${OPENSTACK_KOLLA_VERSION:-"stable/rocky"}
 

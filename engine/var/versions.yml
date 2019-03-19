@@ -24,18 +24,12 @@
 virtualbmc_version: "{{ lookup('env', 'VIRTUALBMC_VERSION') | default('1.3', true) }}"
 
 #-------------------------------------------------------------------------------
-# versions of bifrost, ironic, and other dependencies
+# bifrost and ironic versions
 #-------------------------------------------------------------------------------
-# HEAD of bifrost "master" as of 18.10.2018
-bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('0f605cd723a68e2c2bb9b30a15a08e5aba777bd5', true) }}"
+# HEAD of bifrost "master" as of 19.03.2019
+bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('81d80496d451666dbd72cc78596c58033c7da47b', true) }}"
 # HEAD of ironic "master" as of 17.02.2019
 ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('ccf2bb1ea194408eb34586ee469cf37c296e6fa4', true) }}"
-# HEAD of ironic-client "master" as of 17.02.2019
-ironic_client_version: "{{ lookup('env', 'IRONIC_CLIENT_VERSION') | default('e8a6d447f803c115ed57064e6fada3e9d6f30794', true) }}"
-# HEAD of ironic-inspector "master" as of 17.02.2019
-inspector_version: "{{ lookup('env', 'INSPECTOR_VERSION') | default('590a610c685d999b69421e29ec6247dc4e931c51', true) }}"
-# HEAD of ironic-inspector-client "master" as of 17.02.2019
-inspector_client_version: "{{ lookup('env', 'INSPECTOR_CLIENT_VERSION') | default('7b051723e9dd852609d29ad35ce4406bf62aa8b2', true) }}"
 
 #-------------------------------------------------------------------------------
 # versions of kubespray and kubernetes
