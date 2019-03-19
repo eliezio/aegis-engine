@@ -47,7 +47,10 @@ export ENGINE_CACHE=${ENGINE_PATH}/.cache
 export OPENSTACK_KOLLA_VERSION=${OPENSTACK_KOLLA_VERSION:-"stable/rocky"}
 
 # PIP version to use
-export ENGINE_ANSIBLE_PIP_VERSION="2.5.8"
+export ENGINE_PIP_VERSION="19.0.3"
+
+# Ansible version to use
+export ENGINE_ANSIBLE_VERSION="2.7.8"
 
 #-------------------------------------------------------------------------------
 # Set provisioning tool
