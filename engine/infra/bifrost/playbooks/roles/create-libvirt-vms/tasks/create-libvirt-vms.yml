@@ -42,44 +42,31 @@
     uri: "{{ vm_libvirt_uri }}"
   ignore_errors: true
 
-- name: Delete volume for vm '{{ vms[item] }}'
-  command: >
-    virsh --connect {{ vm_libvirt_uri }}
-    vol-delete --pool {{ libvirt_storage_pool }} {{ vms[item] }}.qcow2
-  ignore_errors: yes
+- name: Initialize disk information for vm '{{ vms[item] }}'
+  set_fact:
+    disks: [ ]
+    dev_suffix: "abcdefghijklmnopqrstuvwxyz"
+
+- name: Create target device names of all disks for vm '{{ vms[item] }}'
+  set_fact:
+    disks: "{{ disks + [ disk | combine( { 'dev': 'vd' + dev_suffix[disk_no] } ) ] }}"
+  with_items:
+   - "{{ nodes[node_no].disks }}"
+  loop_control:
+    loop_var: disk
+    index_var: disk_no
+
+- name: Setup volumes for vm '{{ vms[item] }}'
+  include_tasks: create-libvirt-volumes.yml
+  with_items:
+   - "{{ disks }}"
+  loop_control:
+    loop_var: disk
 
 - name: Delete logs from previous deployment
   file:
     path: "{{ vm_console_log_path }}/"
     state: absent
-
-# NOTE(pas-ha) Ansible still lacks modules to operate on libvirt volumes
-- name: Create volume for vm '{{ vms[item] }}'
-  command: >
-    virsh --connect {{ vm_libvirt_uri }}
-    vol-create-as {{ libvirt_storage_pool }} {{ vms[item] }}.qcow2
-    {{ nodes[node_no].disks[0].disk_capacity }}
-    --format qcow2 {{ prealloc|default("") }}
-
-- name: Set path to the volume created
-  set_fact:
-    vm_volume_path: "{{ ansible_libvirt_pools[libvirt_storage_pool].path }}/{{ vms[item] }}.qcow2"
-
-- name: Pre-touch the vm volume for '{{ vms[item] }}'
-  file:
-    state: touch
-    path: "{{ vm_volume_path }}"
-  when: vm_libvirt_uri == 'qemu:///system'
-
-# NOTE(TheJulia): CentOS default installs with an XFS root, and chattr
-# fails to set +C on XFS.  This could be more elegant, however the use
-# case is for CI testing.
-- name: Set copy-on-write for volume on non-CentOS systems
-  command: chattr +C {{ vm_volume_path }}
-  ignore_errors: yes
-  when:
-    - ansible_distribution != 'CentOS'
-    - vm_libvirt_uri == 'qemu:///system'
 
 - name: Create directory for console logs
   file:

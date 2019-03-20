@@ -49,6 +49,11 @@ nodes:
         disk_type: hdd
         disk_interface: sata
         disk_rotation:
+      - name: disk2
+        disk_capacity: 20G
+        disk_type: hdd
+        disk_interface: sata
+        disk_rotation:
     remote_params: &remote_params
       type:
         - ipmi

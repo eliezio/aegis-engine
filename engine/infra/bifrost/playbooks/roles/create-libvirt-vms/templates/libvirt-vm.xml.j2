@@ -27,14 +27,15 @@
   <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type='file' device='disk'>
-      <driver name='qemu' type='qcow2' cache='unsafe'/>
-      <source file='{{ vm_volume_path }}'/>
-      <backingStore/>
-      <target dev='vda' bus='virtio'/>
-      <alias name='virtio-disk0'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
-    </disk>
+    {% for disk in disks %}
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2' cache='unsafe'/>
+        <source file='{{ vm_vol_path_prefix }}-{{ disk.name }}.qcow2'/>
+        <backingStore/>
+        <target dev='{{ disk.dev }}' bus='virtio'/>
+        <alias name='virtio-disk0'/>
+      </disk>
+    {% endfor %}
     <controller type='ide' index='0'>
       <alias name='ide'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
