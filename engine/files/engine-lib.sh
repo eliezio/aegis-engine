@@ -104,10 +104,9 @@ function check_prerequisites() {
 # environment variables set in them for further use
 #-------------------------------------------------------------------------------
 function bootstrap_environment() {
-    # Declare our virtualenv
-    export ENGINE_VENV=${ENGINE_PATH}/.venv/
     # source engine-vars
     source $ENGINE_PATH/engine/config/engine-vars
+
     # set the BAREMETAL variable
     grep -o vendor.* ${PDF} | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
 

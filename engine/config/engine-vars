@@ -24,9 +24,51 @@
 # environment variables without Ansible.
 #-------------------------------------------------------------------------------
 
-# set ENGINE_VERSION
+#-------------------------------------------------------------------------------
+# Set paths of key stuff
+#-------------------------------------------------------------------------------
+# location of ENGINE_VENV
+export ENGINE_VENV=${ENGINE_PATH}/.venv/
+
+# location of the cache the repositories will be cloned
+export ENGINE_CACHE=${ENGINE_PATH}/.cache
+
+#-------------------------------------------------------------------------------
+# Set versions of the engine, pip and ansible here as we use bash
+#-------------------------------------------------------------------------------
+# the Engine version to use
 export ENGINE_VERSION=${ENGINE_VERSION:-"master"}
 
+# PIP version to use
+export ENGINE_PIP_VERSION="19.0.3"
+
+# Ansible version to use
+export ENGINE_ANSIBLE_VERSION="2.7.8"
+
+#-------------------------------------------------------------------------------
+# Set provisioning tool
+#-------------------------------------------------------------------------------
+# Currently, there is a single provisioning tool: bifrost
+# Examples:
+#    export INFRA_DEPLOYMENT="bifrost"
+# The default provisioning tool is bifrost
+export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
+export BIFROST_INVENTORY_SOURCE=${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}
+
+#-------------------------------------------------------------------------------
+# Set installer
+#-------------------------------------------------------------------------------
+# Currently, there are two kinds of installers in Cloud Infra: kolla and kubespray
+# Examples:
+#    export INSTALLER_TYPE="kolla"
+# or
+#    export INSTALLER_TYPE="kubespray"
+# The default installer is kubespray
+export INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
+
+#-------------------------------------------------------------------------------
+# Other variables
+#-------------------------------------------------------------------------------
 # remove leftovers of the previous run
 # this is set to false by default as it results in wiping out all the temporary
 # objects including .venv, .cache, ironic database, releases and so on
@@ -39,36 +81,5 @@ export VERBOSITY=${VERBOSITY:-"false"}
 
 # additional parameters to pass to Ansible
 export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
-
-# location of the cache the repositories will be cloned
-export ENGINE_CACHE=${ENGINE_PATH}/.cache
-
-# HEAD of openstack/kolla-ansible "stable/rocky"
-export OPENSTACK_KOLLA_VERSION=${OPENSTACK_KOLLA_VERSION:-"stable/rocky"}
-
-# PIP version to use
-export ENGINE_PIP_VERSION="19.0.3"
-
-# Ansible version to use
-export ENGINE_ANSIBLE_VERSION="2.7.8"
-
-#-------------------------------------------------------------------------------
-# Set provisioning tool
-#-------------------------------------------------------------------------------
-# Currently, there is a single infra deployment method: bifrost
-# Examples:
-#    export INFRA_DEPLOYMENT="bifrost"
-export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
-export BIFROST_INVENTORY_SOURCE=${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}
-
-#-------------------------------------------------------------------------------
-# Set installer
-#-------------------------------------------------------------------------------
-# Currently, there are two kinds of installers in Cloud Infra: kolla and kubespray
-# Examples:
-#    export INSTALLER_TYPE="kolla"
-# or
-#    export INSTALLER_TYPE="kubespray"
-export INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
 
 # vim: set ts=2 sw=2 expandtab:
