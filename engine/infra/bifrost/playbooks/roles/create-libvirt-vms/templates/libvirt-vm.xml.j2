@@ -1,8 +1,8 @@
 <domain type='kvm'>
-  <name>{{ vms[item] }}</name>
-  <memory unit='GiB'>{{ nodes[node_no].node.memory | regex_replace("G$", "") }}</memory>
-  <currentMemory unit='GiB'>{{ nodes[node_no].node.memory | regex_replace("G$", "") }}</currentMemory>
-  <vcpu placement='static'>{{ nodes[node_no].node.cores }}</vcpu>
+  <name>{{ hostname }}</name>
+  <memory unit='GiB'>{{ node.node.memory | regex_replace("G$", "") }}</memory>
+  <currentMemory unit='GiB'>{{ node.node.memory | regex_replace("G$", "") }}</currentMemory>
+  <vcpu placement='static'>{{ node.node.cores }}</vcpu>
   <resource>
     <partition>/machine</partition>
   </resource>
@@ -18,7 +18,7 @@
     <apic/>
     <pae/>
   </features>
-  <cpu mode='{{ nodes[node_no].node.cpu_cflags }}'>
+  <cpu mode='{{ node.node.cpu_cflags }}'>
     <model fallback='allow'/>
   </cpu>
   <clock offset='utc'/>
@@ -49,35 +49,35 @@
     </controller>
     <interface type='network'>
       <source network='{{ networks.network_mapping.net_admin }}' bridge='br_{{ networks.network_mapping.net_admin }}'/>
-      <mac address='{{ nodes[node_no].interfaces.0.mac_address }}'/>
+      <mac address='{{ node.interfaces.0.mac_address }}'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <interface type='network'>
       <source network='{{ networks.network_mapping.net_public }}' bridge='br_{{ networks.network_mapping.net_public }}'/>
-      <mac address='{{ nodes[node_no].interfaces.1.mac_address }}'/>
+      <mac address='{{ node.interfaces.1.mac_address }}'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </interface>
     <interface type='network'>
       <source network='{{ networks.network_mapping.net_mgmt }}' bridge='br_{{ networks.network_mapping.net_mgmt }}'/>
-      <mac address='{{ nodes[node_no].interfaces.2.mac_address }}'/>
+      <mac address='{{ node.interfaces.2.mac_address }}'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </interface>
     <interface type='network'>
       <source network='{{ networks.network_mapping.net_neutron }}' bridge='br_{{ networks.network_mapping.net_neutron }}'/>
-      <mac address='{{ nodes[node_no].interfaces.3.mac_address }}'/>
+      <mac address='{{ node.interfaces.3.mac_address }}'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </interface>
     <serial type='file'>
-      <source path='{{ vm_console_log_path }}/{{ vms[item] }}_console.log'/>
+      <source path='{{ vm_console_log_path }}/{{ hostname }}_console.log'/>
       <target port='1'/>
       <alias name='serial0'/>
     </serial>
     <console type='file'>
-      <source path='{{ vm_console_log_path }}/{{ vms[item] }}_console.log'/>
+      <source path='{{ vm_console_log_path }}/{{ hostname }}_console.log'/>
       <target type='serial' port='1'/>
       <alias name='serial0'/>
     </console>

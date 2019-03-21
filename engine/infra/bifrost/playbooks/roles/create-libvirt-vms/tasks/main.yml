@@ -41,8 +41,8 @@
   become: no
 
 - include_tasks: create-libvirt-vms.yml
-  with_items: "{{ vms }}"
+  with_dict: "{{ vms }}"
   loop_control:
-    index_var: node_no
+    loop_var: vm
 
 # vim: set ts=2 sw=2 expandtab:

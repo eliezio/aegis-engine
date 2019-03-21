@@ -37,7 +37,7 @@
 - name: Process PDF and IDF
   set_fact:
     num_nodes: "{{ nodes | length }}"
-    hostnames: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.hostnames, idf.kolla.hostnames) }}"
+    hosts: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.hostnames, idf.kolla.hostnames) }}"
     host_roles: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.nodes_roles, idf.kolla.nodes_roles) }}"
     networks: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.network, idf.kolla.network) }}"
     bifrost_inventory: {}
@@ -52,9 +52,9 @@
   become: yes
 
 - include_tasks: create-bifrost-inventory-entry.yml
-  with_items: "{{ hostnames }}"
+  with_dict: "{{ hosts }}"
   loop_control:
-    index_var: node_no
+    loop_var: host
 
 - include_tasks: create-bifrost-inventory-file.yml
 

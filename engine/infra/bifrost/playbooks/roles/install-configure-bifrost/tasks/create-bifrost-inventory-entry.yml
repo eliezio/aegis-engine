@@ -16,31 +16,36 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Gather node data for '{{ hostnames[item] }}' from PDF and IDF
+- name: Find node in PDF by node name '{{ host.key }}'
+  set_fact:
+    hostname: "{{ host.value }}"
+    node: "{{ nodes | selectattr('name', 'equalto', host.key) | first }}"
+
+- name: Gather node data for '{{ hostname }}' from PDF and IDF
   set_fact:
     node_data:
-      name: "{{ hostnames[item] }}"
-      uuid: "{{ hostnames[item] | to_uuid }}"
-      host_groups: "{{ node_default_groups | union(host_roles[item]) }}"
-      driver: "{{ nodes[node_no].remote_management.type[0] }}"
+      name: "{{ hostname }}"
+      uuid: "{{ hostname | to_uuid }}"
+      host_groups: "{{ node_default_groups | union(host_roles[host.key]) }}"
+      driver: "{{ node.remote_management.type[0] }}"
       driver_info:
         power:
-          ipmi_address: "{{ nodes[node_no].remote_management.address }}"
-          ipmi_port: "{{ ( nodes[node_no].remote_management.port | default(623) | int ) }}"
-          ipmi_username: "{{ nodes[node_no].remote_management.user }}"
-          ipmi_password: "{{ nodes[node_no].remote_management.pass }}"
-          ipmi_priv_level: "{{ nodes[node_no].remote_management.privilege_level | default('ADMIN') }}"
+          ipmi_address: "{{ node.remote_management.address }}"
+          ipmi_port: "{{ ( node.remote_management.port | default(623) | int ) }}"
+          ipmi_username: "{{ node.remote_management.user }}"
+          ipmi_password: "{{ node.remote_management.pass }}"
+          ipmi_priv_level: "{{ node.remote_management.privilege_level | default('ADMIN') }}"
 
       nics:
-        - mac: "{{ nodes[node_no].remote_management.mac_address }}"
-      ansible_ssh_host: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"
-      ipv4_address: "{{ nodes[node_no].interfaces[idf.net_config.admin.interface].address }}"
+        - mac: "{{ node.remote_management.mac_address }}"
+      ansible_ssh_host: "{{ node.interfaces[idf.net_config.admin.interface].address }}"
+      ipv4_address: "{{ node.interfaces[idf.net_config.admin.interface].address }}"
       properties:
-        cpu_arch: "{{ nodes[node_no].node.arch }}"
-        ram: "{{ ( nodes[node_no].node.memory.rstrip('G') | int ) * ( 1024 | int ) }}"
-        cpus: "{{ nodes[node_no].node.cpus }}"
-        disk_size: "{{ nodes[node_no].disks[0].disk_capacity.rstrip('G') }}"
+        cpu_arch: "{{ node.node.arch }}"
+        ram: "{{ ( node.node.memory.rstrip('G') | int ) * ( 1024 | int ) }}"
+        cpus: "{{ node.node.cpus }}"
+        disk_size: "{{ node.disks[0].disk_capacity.rstrip('G') }}"
 
-- name: Add node data of '{{ hostnames[item] }}' to bifrost inventory
+- name: Add node data of '{{ hostname }}' to bifrost inventory
   set_fact:
-    bifrost_inventory: "{{ bifrost_inventory | combine({hostnames[item]: node_data}) }}"
+    bifrost_inventory: "{{ bifrost_inventory | combine({hostname: node_data}) }}"

@@ -16,6 +16,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+- name: Find node in PDF by node name '{{ vm.key }}'
+  set_fact:
+    hostname: "{{ vm.value }}"
+    node: "{{ nodes | selectattr('name', 'equalto', vm.key) | first }}"
+
 - name: List info on pools
   virt_pool:
     command: facts
@@ -28,35 +33,35 @@
     - ansible_os_family == 'Debian'
     - vm_libvirt_uri == 'qemu:///system'
 
-- name: Destroy vm '{{ vms[item] }}'
+- name: Destroy vm '{{ hostname }}'
   virt:
     command: destroy
-    name: "{{ vms[item] }}"
+    name: "{{ hostname }}"
     uri: "{{ vm_libvirt_uri }}"
   ignore_errors: true
 
-- name: Undefine vm '{{ vms[item] }}'
+- name: Undefine vm '{{ hostname }}'
   virt:
     command: undefine
-    name: "{{ vms[item] }}"
+    name: "{{ hostname }}"
     uri: "{{ vm_libvirt_uri }}"
   ignore_errors: true
 
-- name: Initialize disk information for vm '{{ vms[item] }}'
+- name: Initialize disk information for vm '{{ hostname }}'
   set_fact:
     disks: [ ]
     dev_suffix: "abcdefghijklmnopqrstuvwxyz"
 
-- name: Create target device names of all disks for vm '{{ vms[item] }}'
+- name: Create target device names of all disks for vm '{{ hostname }}'
   set_fact:
     disks: "{{ disks + [ disk | combine( { 'dev': 'vd' + dev_suffix[disk_no] } ) ] }}"
   with_items:
-   - "{{ nodes[node_no].disks }}"
+   - "{{ node.disks }}"
   loop_control:
     loop_var: disk
     index_var: disk_no
 
-- name: Setup volumes for vm '{{ vms[item] }}'
+- name: Setup volumes for vm '{{ hostname }}'
   include_tasks: create-libvirt-volumes.yml
   with_items:
    - "{{ disks }}"
@@ -74,24 +79,24 @@
     state: directory
     mode: 0755
 
-- name: Create vm '{{ vms[item] }}'
+- name: Create vm '{{ hostname }}'
   virt:
     command: define
-    name: "{{ vms[item] }}"
+    name: "{{ hostname }}"
     uri: "{{ vm_libvirt_uri }}"
     xml: "{{ lookup('template', 'libvirt-vm.xml.j2') }}"
 
-- name: Set virtual IPMI port for '{{ vms[item] }}'
+- name: Set virtual IPMI port for '{{ hostname }}'
   set_fact:
-    virtual_ipmi_port: "{{ ( nodes[node_no].remote_management.port | default(623) | int ) }}"
+    virtual_ipmi_port: "{{ ( node.remote_management.port | default(623) | int ) }}"
 
-- name: Plug vm '{{ vms[item] }}' into vbmc on port '{{ virtual_ipmi_port }}'
-  command: vbmc add {{ vms[item] }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}
+- name: Plug vm '{{ hostname }}' into vbmc on port '{{ virtual_ipmi_port }}'
+  command: vbmc add {{ hostname }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}
   environment:
     PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
 
-- name: Start vbmc for '{{ vms[item] }}'
-  command: vbmc start {{ vms[item] }}
+- name: Start vbmc for '{{ hostname }}'
+  command: vbmc start {{ hostname }}
   environment:
     PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
 
