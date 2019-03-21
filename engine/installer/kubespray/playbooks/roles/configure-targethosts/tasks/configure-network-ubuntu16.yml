@@ -29,12 +29,15 @@
     name: 8021q
     state: present
 
-- name: Ensure interfaces.d folder is empty
+# TODO: we need to look into how to configure with netplan for ubuntu 18
+# For ubuntu 16.04, the way of not cleaning up the interfaces.d directory has small
+# risk if the directory has other configuration files named other than the interfaces
+# that we are configuring. Practically we do not have this issue today.
+- name: Ensure interfaces.d folder exists
   file:
     state: "{{ item }}"
     path: "/etc/network/interfaces.d"
   with_items:
-    - absent
     - directory
 
 - name: Ensure /etc/interfaces can source additional files
@@ -45,10 +48,18 @@
       source /etc/network/interfaces.d/*.cfg
     dest: "/etc/network/interfaces"
 
-- name: Configure networking for host
+- name: Ensures /tmp/network_itf directory exists and empty
+  file:
+    state: "{{ item }}"
+    path: "/tmp/network_itf"
+  with_items:
+    - absent
+    - directory
+
+- name: Prepare the networking configuration on the host
   template:
     src: "{{ distribution }}.interface.j2"
-    dest: "/etc/network/interfaces.d/{{ item.name }}.cfg"
+    dest: "/tmp/network_itf/{{ item.name }}.cfg"
   with_items:
     - { name: "{{ admin_if }}", vlan_id: "{{ (admin_vlan == 'native') | ternary(omit, admin_vlan) }}", nw: "{{ admin_nw }}", ip: "{{ admin_ip }}", gw: "{{ admin_gw }}"}
     - { name: "{{ public_if }}", vlan_id: "{{ (public_vlan == 'native') | ternary(omit, public_vlan) }}", nw: "{{ public_nw }}", ip: "{{ public_ip }}", gw: "{{ public_gw }}"}
@@ -57,8 +68,8 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Restart network service
-  shell: "/sbin/ip addr flush dev {{ item }} && /sbin/ifdown -a && /sbin/ifup -a"
+- name: Configure and restart the network service
+  shell: "/sbin/ip addr flush dev {{ item }} && /sbin/ifdown {{ item }} && cp /tmp/network_itf/{{ item }}.cfg /etc/network/interfaces.d/ && /sbin/ifup {{ item }}"
   async: 15
   poll: 0
   with_items:
@@ -72,10 +83,11 @@
     path: /etc/systemd/resolved.conf
     regexp: "^#?DNS=.*$"
     line: "DNS={{ idf.net_config.public.dns | join(' ')}}"
+  when: idf.net_config.public.dns is defined
 
 - name: Restart systemd-resolved service
   service:
-    name: "systemd-resolved"
+    name: systemd-resolved
     state: restarted
 
 # vim: set ts=2 sw=2 expandtab:
