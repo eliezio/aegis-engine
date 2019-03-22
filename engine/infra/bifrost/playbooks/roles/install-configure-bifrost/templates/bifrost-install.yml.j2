@@ -59,7 +59,7 @@
       dib_packages: "{{ dib_os_packages }}"
 {% raw %}
       extra_dib_elements: "{{ lookup('env', 'EXTRA_DIB_ELEMENTS') | default('') }}"
-      dib_elements: "vm enable-serial-console simple-init dhcp-all-interfaces devuser openssh-server growroot pip-and-virtualenv {{ extra_dib_elements }}"
+      dib_elements: "vm enable-serial-console simple-init devuser openssh-server growroot pip-and-virtualenv {{ extra_dib_elements }}"
       dib_notmpfs: true
       when:
         - create_image_via_dib | bool == true
