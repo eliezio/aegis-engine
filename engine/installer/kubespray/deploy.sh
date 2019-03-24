@@ -59,4 +59,14 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/engine/bifrost_inventory.py \
   cluster.yml
 
+# run post-deployment tasks
+echo "-------------------------------------------------------------------------"
+echo "Info: Running post deployment tasks"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}/engine/installer/kubespray
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  --ssh-extra-args='-o StrictHostKeyChecking=no' \
+  -i ${ENGINE_CACHE}/repos/kubespray/inventory/engine/bifrost_inventory.py \
+  playbooks/post-deployment.yml
+
 # vim: set ts=2 sw=2 expandtab:
