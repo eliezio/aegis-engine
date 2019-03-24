@@ -30,14 +30,15 @@
     state: present
 
 # TODO: we need to look into how to configure with netplan for ubuntu 18
-# For ubuntu 16.04, the way of not cleaning up the interfaces.d directory has small
-# risk if the directory has other configuration files named other than the interfaces
-# that we are configuring. Practically we do not have this issue today.
-- name: Ensure interfaces.d folder exists
+# Today we perform a reboot after network related confiugration changes
+# to make sure the changes are persistent and prevent various issues.
+
+- name: Ensure interfaces.d folder is empty
   file:
     state: "{{ item }}"
     path: "/etc/network/interfaces.d"
   with_items:
+    - absent
     - directory
 
 - name: Ensure /etc/interfaces can source additional files
@@ -48,18 +49,18 @@
       source /etc/network/interfaces.d/*.cfg
     dest: "/etc/network/interfaces"
 
-- name: Ensures /tmp/network_itf directory exists and empty
-  file:
-    state: "{{ item }}"
-    path: "/tmp/network_itf"
-  with_items:
-    - absent
-    - directory
+# TODO: to be removed when the network stuff is stable
+- name: Diagnosis before
+  shell: "ps aux | grep dhclient && ip a s && cat /etc/network/interfaces && df . -h"
+  register: temp1
 
-- name: Prepare the networking configuration on the host
+- name: Print diagnosis info before
+  debug: var=temp1.stdout_lines
+
+- name: Configure networking for host
   template:
     src: "{{ distribution }}.interface.j2"
-    dest: "/tmp/network_itf/{{ item.name }}.cfg"
+    dest: "/etc/network/interfaces.d/{{ item.name }}.cfg"
   with_items:
     - { name: "{{ admin_if }}", vlan_id: "{{ (admin_vlan == 'native') | ternary(omit, admin_vlan) }}", nw: "{{ admin_nw }}", ip: "{{ admin_ip }}", gw: "{{ admin_gw }}"}
     - { name: "{{ public_if }}", vlan_id: "{{ (public_vlan == 'native') | ternary(omit, public_vlan) }}", nw: "{{ public_nw }}", ip: "{{ public_ip }}", gw: "{{ public_gw }}"}
@@ -68,16 +69,6 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Configure and restart the network service
-  shell: "/sbin/ip addr flush dev {{ item }} && /sbin/ifdown {{ item }} && cp /tmp/network_itf/{{ item }}.cfg /etc/network/interfaces.d/ && /sbin/ifup {{ item }}"
-  async: 15
-  poll: 0
-  with_items:
-    - "{{ admin_if }}"
-    - "{{ public_if }}"
-    - "{{ mgmt_if }}"
-    - "{{ neutron_if }}"
-
 - name: Ensure systemd resolved.conf has the correct content
   lineinfile:
     path: /etc/systemd/resolved.conf
@@ -85,9 +76,16 @@
     line: "DNS={{ idf.net_config.public.dns | join(' ')}}"
   when: idf.net_config.public.dns is defined
 
-- name: Restart systemd-resolved service
-  service:
-    name: systemd-resolved
-    state: restarted
+- name: Reboot the machine
+  reboot:
+    reboot_timeout: 900
+
+# TODO: to be removed when the network stuff is stable
+- name: Diagnosis after
+  shell: "ps aux | grep dhclient && ip a s && cat /etc/network/interfaces && cat /etc/network/interfaces.d/* && df . -h"
+  register: temp2
+
+- name: Print diagnosis info after
+  debug: var=temp2.stdout_lines
 
 # vim: set ts=2 sw=2 expandtab:
