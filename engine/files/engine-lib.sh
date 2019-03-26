@@ -40,21 +40,32 @@ Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s <sdf>] [-v verbosity]
 #-------------------------------------------------------------------------------
 # Parse the arguments that are passed to the script
 # If an argument is not specified, default values for those are set
+#
+# The priority order is
+# - arguments: overrides the default values and values set as environment
+#   values. highest prio.
+# - env vars: overrides the default values but not the values set from command
+#   line.
+# - default values: only takes effect if the user doesn't specify the value
+#   of an argument either as an env var or from command line. lowest prio.
 #-------------------------------------------------------------------------------
 function parse_cmdline_opts() {
-    PDF=${ENGINE_PATH}/engine/var/pdf.yml
-    IDF=${ENGINE_PATH}/engine/var/idf.yml
-    SDF=${ENGINE_PATH}/engine/var/sdf.yml
-    # The default value for CLEANUP is false
-    # export CLEANUP="false"
+    # set variables to the values set in env - otherwise, set them to defaults
+    PDF=${PDF:-${ENGINE_PATH}/engine/var/pdf.yml}
+    IDF=${IDF:-${ENGINE_PATH}/engine/var/idf.yml}
+    SDF=${SDF:-${ENGINE_PATH}/engine/var/sdf.yml}
+    CLEANUP=${CLEANUP:-false}
+    VERBOSITY=${VERBOSITY:-false}
 
+    # get values passed as command line arguments, overriding the defaults or
+    # the ones set by using env variables
     while getopts ":hp:i:s:cv" o; do
         case "${o}" in
             p) PDF="${OPTARG}" ;;
             i) IDF="${OPTARG}" ;;
             s) SDF="${OPTARG}" ;;
-            c) export CLEANUP="true" ;;
-            v) export VERBOSITY="true" ;;
+            c) CLEANUP="true" ;;
+            v) VERBOSITY="true" ;;
             h) usage ;;
             *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
         esac
@@ -64,6 +75,8 @@ function parse_cmdline_opts() {
     export PDF=$(realpath ${PDF})
     export IDF=$(realpath ${IDF})
     export SDF=$(realpath ${SDF})
+    export CLEANUP=${CLEANUP}
+    export VERBOSITY=${VERBOSITY}
 }
 
 #-------------------------------------------------------------------------------
