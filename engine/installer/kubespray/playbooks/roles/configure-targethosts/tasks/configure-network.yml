@@ -17,14 +17,16 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Set facts for the node
+- name: Get node name from IDF for host "{{ inventory_hostname }}"
   set_fact:
-    node_interfaces: "{{ nodes[node_no].interfaces }}"
-    distribution: "{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}"
-  loop: "{{ lookup('dict', idf.kubespray.hostnames) }}"
-  loop_control:
-    index_var: node_no
+    node_name: "{{ item.key }}"
+  with_dict: "{{ idf.kubespray.hostnames }}"
   when: item.value == inventory_hostname
+
+- name: Set facts for the node "{{ node_name }}"
+  set_fact:
+    node: "{{ nodes | selectattr('name', 'equalto', node_name) | first }}"
+    distribution: "{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}"
 
 - name: Ensure glean rules are removed
   file:
