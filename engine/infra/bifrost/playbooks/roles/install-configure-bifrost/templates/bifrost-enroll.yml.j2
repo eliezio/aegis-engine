@@ -31,4 +31,17 @@
     - name: List Ironic nodes
       debug:
         msg: "{{ ironic_nodes.stdout_lines }}"
+
+# TODO: this is necessary to install the OS in the correct drive. This workaround can be removed once Ansible v2.8 is released, which will support
+# the root_device property in its ironic python module.
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  tasks:
 {% endraw %}
+{% for hostname, role in hosts.items() %}
+{% set node = nodes | selectattr('name', 'equalto', hostname) | first %}
+    - name: Add root_device hints to enrolled ironic nodes
+      command: "openstack --os-cloud bifrost baremetal node set {{ role }} --property root_device='{\"size\": \"{{ node.disks[0].disk_capacity.rstrip("G") }}\" }'"
+{% endfor %}

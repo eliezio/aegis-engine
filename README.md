@@ -62,6 +62,11 @@ resources, provision libvirt vms and install the selected scenario on them. The 
 process takes about 40 minutes to complete if ramdisk and deployment images are created
 in advance.
 
+Please note, in the default / embeded pdf / idf files, we have specified two disks
+for each vms we are going to create. If you are going to provide pdf / idf files yourself
+with mulitple disks, please note the current deployment script will not work when
+the disks have the same size as we specify the bootable disk based on size.
+
 # References
 
 [1] https://opnfv-releng-xci.readthedocs.io/en/latest/

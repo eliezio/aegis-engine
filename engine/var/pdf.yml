@@ -45,7 +45,7 @@ nodes:
       memory: 4G
     disks: &disks
       - name: disk1
-        disk_capacity: 20G
+        disk_capacity: 30G
         disk_type: hdd
         disk_interface: sata
         disk_rotation:
