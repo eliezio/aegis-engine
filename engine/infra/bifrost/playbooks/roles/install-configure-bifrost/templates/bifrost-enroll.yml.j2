@@ -20,18 +20,6 @@
     https_proxy: "{{ lookup('env','https_proxy') }}"
     no_proxy: "{{ lookup('env','no_proxy') }}"
 
-- hosts: localhost
-  connection: local
-  become: no
-  gather_facts: no
-  tasks:
-    - name: Get nodes from Ironic
-      command: openstack --os-cloud bifrost baremetal node list
-      register: ironic_nodes
-    - name: List Ironic nodes
-      debug:
-        msg: "{{ ironic_nodes.stdout_lines }}"
-
 # TODO: this is necessary to install the OS in the correct drive. This workaround can be removed once Ansible v2.8 is released, which will support
 # the root_device property in its ironic python module.
 - hosts: localhost
@@ -45,3 +33,16 @@
     - name: Add root_device hints to enrolled ironic nodes
       command: "openstack --os-cloud bifrost baremetal node set {{ role }} --property root_device='{\"size\": \"{{ node.disks[0].disk_capacity.rstrip("G") }}\" }'"
 {% endfor %}
+{% raw %}
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Get nodes from Ironic
+      command: openstack --os-cloud bifrost baremetal node list
+      register: ironic_nodes
+    - name: List Ironic nodes
+      debug:
+        msg: "{{ ironic_nodes.stdout_lines }}"
+{% endraw %}
