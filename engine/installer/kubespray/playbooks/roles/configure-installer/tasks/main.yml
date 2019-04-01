@@ -74,4 +74,11 @@
     - { src: "main.yaml", dest: "{{ engine_cache }}/repos/kubespray/roles/kubespray-defaults/defaults/main.yaml" }
     - { src: "docker.yml", dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/all/docker.yml" }
 
+# configure docker with iptables
+- name: Ensure docker daemon iptables option is set to true
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/all/docker.yml"
+    regexp: "^docker_iptables_enabled:.*"
+    line: "docker_iptables_enabled: true"
+
 # vim: set ts=2 sw=2 expandtab:
