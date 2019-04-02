@@ -36,14 +36,8 @@
 - name: Configure networking for {{ distribution }}
   include_tasks: "configure-network-{{ distribution }}.yml"
 
-- name: Wait for host to come back to life
-  local_action:
-    module: wait_for
-    host: "{{ ansible_host }}"
-    delay: 15
-    state: started
-    port: 22
-    connect_timeout: 10
-    timeout: 180
+- name: Reboot the machine
+  reboot:
+    reboot_timeout: 900
 
 # vim: set ts=2 sw=2 expandtab:

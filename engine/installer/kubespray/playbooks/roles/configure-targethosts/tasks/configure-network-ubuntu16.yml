@@ -49,14 +49,6 @@
       source /etc/network/interfaces.d/*.cfg
     dest: "/etc/network/interfaces"
 
-# TODO: to be removed when the network stuff is stable
-- name: Diagnosis before
-  shell: "ps aux | grep dhclient && ip a s && cat /etc/network/interfaces && df . -h"
-  register: temp1
-
-- name: Print diagnosis info before
-  debug: var=temp1.stdout_lines
-
 - name: Configure networking for host
   template:
     src: "{{ distribution }}.interface.j2"
@@ -75,17 +67,5 @@
     regexp: "^#?DNS=.*$"
     line: "DNS={{ idf.net_config.public.dns | join(' ')}}"
   when: idf.net_config.public.dns is defined
-
-- name: Reboot the machine
-  reboot:
-    reboot_timeout: 900
-
-# TODO: to be removed when the network stuff is stable
-- name: Diagnosis after
-  shell: "ps aux | grep dhclient && ip a s && cat /etc/network/interfaces && cat /etc/network/interfaces.d/* && df . -h"
-  register: temp2
-
-- name: Print diagnosis info after
-  debug: var=temp2.stdout_lines
 
 # vim: set ts=2 sw=2 expandtab:
