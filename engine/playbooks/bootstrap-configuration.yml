@@ -16,8 +16,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') | default('kubespray') }}"
-pdf_file: "{{ engine_cache }}/hwconfig/pdf.yml"
-idf_file: "{{ engine_cache }}/hwconfig/idf.yml"
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  become: no
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+
+  roles:
+    - role: bootstrap-hwconfig
+
+# vim: set ts=2 sw=2 expandtab:

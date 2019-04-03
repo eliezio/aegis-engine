@@ -32,8 +32,6 @@ echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}/engine/installer/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   --ssh-extra-args='-o StrictHostKeyChecking=no' \
-  -e pdf_file=${PDF} \
-  -e idf_file=${IDF} \
   -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
   playbooks/configure-targethosts.yml
 
@@ -43,8 +41,6 @@ echo "Info: Configure installer"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}/engine/installer/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -e pdf_file=${PDF} \
-  -e idf_file=${IDF} \
   -i localhost, \
   playbooks/configure-installer.yml
 

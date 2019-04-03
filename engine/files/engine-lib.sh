@@ -28,8 +28,8 @@ function usage() {
 Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s <sdf>] [-v verbosity]
 
     -h: This message
-    -p: POD Descriptor File (PDF). (Default ${ENGINE_PATH}/engine/engine/pdf.yml)
-    -i: Installer Descriptor File (IDF). (Default ${ENGINE_PATH}/engine/var/idf.yml)
+    -p: URI to POD Descriptor File (PDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml)
+    -i: URI to Installer Descriptor File (IDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml)
     -s: Scenario Descriptor File (SDF). (Default ${ENGINE_PATH}/engine/var/sdf.yml)
     -c: Wipeout leftovers before execution.
     -v: Increase verbosity and keep logs for troubleshooting.
@@ -51,8 +51,8 @@ Usage: $(basename ${0}) [-p <pdf>] [-i <idf>] [-s <sdf>] [-v verbosity]
 #-------------------------------------------------------------------------------
 function parse_cmdline_opts() {
     # set variables to the values set in env - otherwise, set them to defaults
-    PDF=${PDF:-${ENGINE_PATH}/engine/var/pdf.yml}
-    IDF=${IDF:-${ENGINE_PATH}/engine/var/idf.yml}
+    PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
+    IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
     SDF=${SDF:-${ENGINE_PATH}/engine/var/sdf.yml}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
@@ -72,8 +72,8 @@ function parse_cmdline_opts() {
     done
 
     # Do all the exports
-    export PDF=$(realpath ${PDF})
-    export IDF=$(realpath ${IDF})
+    export PDF=${PDF}
+    export IDF=${IDF}
     export SDF=$(realpath ${SDF})
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
@@ -119,9 +119,6 @@ function check_prerequisites() {
 function bootstrap_environment() {
     # source engine-vars
     source $ENGINE_PATH/engine/config/engine-vars
-
-    # set the BAREMETAL variable
-    grep -o vendor.* ${PDF} | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
 
     # Make sure we pass ENGINE_PATH everywhere
     export ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"

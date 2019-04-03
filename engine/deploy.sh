@@ -63,6 +63,17 @@ install_ansible
 echo "-------------------------------------------------------------------------"
 
 #-------------------------------------------------------------------------------
+# Bootstrap hwconfig and swconfig
+#-------------------------------------------------------------------------------
+echo "Info: Bootstrapping hardware and software configuration"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}/engine
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i localhost, \
+  playbooks/bootstrap-configuration.yml
+echo "-------------------------------------------------------------------------"
+
+#-------------------------------------------------------------------------------
 # Provision nodes using the selected provisioning tool
 #-------------------------------------------------------------------------------
 source ${ENGINE_PATH}/engine/infra/${INFRA_DEPLOYMENT}/provision.sh

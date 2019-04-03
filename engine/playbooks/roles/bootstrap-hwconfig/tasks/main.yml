@@ -16,8 +16,21 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') | default('kubespray') }}"
-pdf_file: "{{ engine_cache }}/hwconfig/pdf.yml"
-idf_file: "{{ engine_cache }}/hwconfig/idf.yml"
+- name: Ensure hwconfig path exists and empty
+  file:
+    path: "{{ hwconfig_path }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
+
+- name: Get PDF and IDF files
+  get_url:
+    url: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - { src: "{{ lookup('env', 'PDF') }}", dest: "{{ pdf_file }}" }
+    - { src: "{{ lookup('env', 'IDF') }}", dest: "{{ idf_file }}" }
+
+# vim: set ts=2 sw=2 expandtab:
