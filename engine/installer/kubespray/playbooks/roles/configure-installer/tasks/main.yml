@@ -63,17 +63,6 @@
     src: "k8s-cluster.yml"
     dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/k8s-cluster.yml"
 
-# TODO: this task is put here in order to avoid hitting the kubespray bug:
-# https://github.com/kubernetes-sigs/kubespray/issues/4300
-
-- name: WORKAROUND - Place main.yml and docker.yml
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  with_items:
-    - { src: "main.yaml", dest: "{{ engine_cache }}/repos/kubespray/roles/kubespray-defaults/defaults/main.yaml" }
-    - { src: "docker.yml", dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/all/docker.yml" }
-
 # configure docker with iptables
 - name: Ensure docker daemon iptables option is set to true
   lineinfile:
