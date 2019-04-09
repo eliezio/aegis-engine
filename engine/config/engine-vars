@@ -56,17 +56,6 @@ export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
 export BIFROST_INVENTORY_SOURCE=${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}
 
 #-------------------------------------------------------------------------------
-# Set installer
-#-------------------------------------------------------------------------------
-# Currently, there are two kinds of installers in Cloud Infra: kolla and kubespray
-# Examples:
-#    export INSTALLER_TYPE="kolla"
-# or
-#    export INSTALLER_TYPE="kubespray"
-# The default installer is kubespray
-export INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
-
-#-------------------------------------------------------------------------------
 # Other variables
 #-------------------------------------------------------------------------------
 # remove leftovers of the previous run
