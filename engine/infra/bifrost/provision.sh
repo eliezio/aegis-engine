@@ -26,7 +26,7 @@ export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/an
 export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugins/modules:${ENGINE_CACHE}/repos/bifrost/playbooks/library"
 
 # set the BAREMETAL variable
-grep -o vendor.* ${ENGINE_CACHE}/hwconfig/pdf.yml | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
+grep -o vendor.* ${ENGINE_CACHE}/config/pdf.yml | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
 
 # if we are not doing baremetal provisioning and deployment, we need to prepare
 # the node for virtual deployment by installing dependencies, creating libvirt

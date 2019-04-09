@@ -24,6 +24,7 @@
   vars_files:
     - "{{ engine_path }}/engine/var/global.yml"
 
+# TODO: enable the execution of scenario specific post-deployment tasks
   roles:
     - role: post-deployment
 

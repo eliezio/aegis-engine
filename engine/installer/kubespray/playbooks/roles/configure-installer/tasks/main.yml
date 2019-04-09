@@ -72,12 +72,4 @@
     regexp: "^docker_iptables_enabled:.*"
     line: "docker_iptables_enabled: true"
 
-# scenario specific settings - this task will go into k8-calico-nofeature in swconfig repo
-# set networking plugin to calico
-- name: Set network plugin to calico
-  lineinfile:
-    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/k8s-cluster.yml"
-    regexp: "^kube_network_plugin:.*"
-    line: "kube_network_plugin: calico"
-
 # vim: set ts=2 sw=2 expandtab:

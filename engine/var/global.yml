@@ -18,6 +18,10 @@
 # ============LICENSE_END=========================================================
 engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
 engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
+config_path: "{{ engine_cache }}/config"
 installer_type: "{{ lookup('env', 'INSTALLER_TYPE') | default('kubespray') }}"
-pdf_file: "{{ engine_cache }}/hwconfig/pdf.yml"
-idf_file: "{{ engine_cache }}/hwconfig/idf.yml"
+pdf_file: "{{ config_path }}/pdf.yml"
+idf_file: "{{ config_path }}/idf.yml"
+sdf_file: "{{ config_path }}/sdf.yml"
+distro: "{{ lookup('env', 'DISTRO') | default('ubuntu') }}"
+deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture') }}"

@@ -16,6 +16,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-hwconfig_path: "{{ engine_cache }}/hwconfig"
+
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ sdf_file }}"
+
+  roles:
+    - role: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
 
 # vim: set ts=2 sw=2 expandtab:

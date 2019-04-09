@@ -16,13 +16,21 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Ensure hwconfig path exists and empty
+- name: Ensure config path exists and empty
   file:
-    path: "{{ hwconfig_path }}"
+    path: "{{ config_path }}"
     state: "{{ item }}"
   with_items:
     - absent
     - directory
+
+- name: Remove existing PDF and IDF files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ pdf_file }}"
+    - "{{ idf_file }}"
 
 - name: Get PDF and IDF files
   get_url:

@@ -16,6 +16,33 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-# placeholder
+
+# this file contains scenarios that are declared as deployable by the engine.
+#
+# the format of the entry for a scenario is:
+#
+# scenario:
+#   <scenario name>:
+#     scm: <scm type - generally git>
+#     src: <URI to the repo to clone from>
+#     version: <version to checkout - could be branch, SHA1, tag>
+#     refspec: <optional - gerrit refspec to checkout, refs/changes/XY/123/4>
+#     installers:
+#       <installer name>:
+#         role: <relative path to the role in source repository>
+#         distros:
+#           - <supported distro>
+
+# Kubernetes based scenarios
+scenario:
+  k8-calico-nofeature:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    installers:
+      kubespray:
+        role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
+        distros:
+          - ubuntu
 
 # vim: set ts=2 sw=2 expandtab:

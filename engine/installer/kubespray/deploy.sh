@@ -44,6 +44,15 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i localhost, \
   playbooks/configure-installer.yml
 
+# bootstrap scenario
+echo "-------------------------------------------------------------------------"
+echo "Info: Bootstrap scenario"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}/engine/installer/kubespray
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i localhost, \
+  playbooks/bootstrap-scenario.yml
+
 # install Kubernetes scenario
 echo "-------------------------------------------------------------------------"
 echo "Info: Install Kubernetes Scenario"
