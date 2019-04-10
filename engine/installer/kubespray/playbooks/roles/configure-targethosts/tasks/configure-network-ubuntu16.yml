@@ -49,17 +49,21 @@
       source /etc/network/interfaces.d/*.cfg
     dest: "/etc/network/interfaces"
 
+- name: Compute mapping dict from mac address to device name
+  set_fact:
+    device_mac_dict: "{{ (device_mac_dict | default({})) | combine({item.macaddress: item.device}) }}"
+  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
+
+- name: Compute mapping dict from mac address to interface name (device name with/without VLAN info)
+  set_fact:
+    if_mac_dict: "{{ ( if_mac_dict | default({}) ) | combine({item.mac_address: (item.vlan == 'native') | ternary(device_mac_dict[item.mac_address], device_mac_dict[item.mac_address] + '.' + item.vlan) }) }}"
+  loop: "{{ node.interfaces }}"
+
 - name: Configure networking for host
   template:
     src: "{{ distribution }}.interface.j2"
-    dest: "/etc/network/interfaces.d/{{ item.name }}.cfg"
-  with_items:
-    - { name: "{{ admin_if }}", vlan_id: "{{ (admin_vlan == 'native') | ternary(omit, admin_vlan) }}", nw: "{{ admin_nw }}", ip: "{{ admin_ip }}", gw: "{{ admin_gw }}"}
-    - { name: "{{ public_if }}", vlan_id: "{{ (public_vlan == 'native') | ternary(omit, public_vlan) }}", nw: "{{ public_nw }}", ip: "{{ public_ip }}", gw: "{{ public_gw }}"}
-    - { name: "{{ mgmt_if }}", vlan_id: "{{ (mgmt_vlan == 'native') | ternary(omit, mgmt_vlan) }}", nw: "{{ mgmt_nw }}", ip: "{{ mgmt_ip }}", gw: "{{ mgmt_gw }}"}
-    - { name: "{{ neutron_if }}", vlan_id: "{{ (neutron_vlan == 'native') | ternary(omit, neutron_vlan) }}", nw: "{{ neutron_nw }}", ip: "{{ neutron_ip }}", gw: "{{ neutron_gw }}"}
-  loop_control:
-    label: "{{ item.name }}"
+    dest: "/etc/network/interfaces.d/{{ item.value }}.cfg"
+  loop: "{{ if_mac_dict | dict2items }}"
 
 - name: Ensure systemd resolved.conf has the correct content
   lineinfile:

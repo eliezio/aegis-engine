@@ -1,16 +1,23 @@
-auto {{ item.name }}
-{% if item.ip == "dhcp" %}
-iface {{ item.name }} inet dhcp
-{% if item.gw %}
-  up route add default gw {{ item.gw | ipaddr('address') }}
+{%- set macaddress = item.key -%}
+{%- set device = item.value -%}
+{%- for selected_net_name, selected_net in idf.net_config.iteritems() if node.interfaces[selected_net.interface].mac_address == macaddress -%}
+{%- set selected_inf = node.interfaces[selected_net.interface] -%}
+
+auto {{ device }}
+{% if selected_inf.address == "dhcp" %}
+iface {{ device }} inet dhcp
+{% if selected_net.gateway is defined %}
+up route add default gateway {{ selected_net.gateway | ipaddr('address') }}
 {% endif %}
-{% elif item.ip == "manual" %}
-iface {{ item.name }} inet manual
+{% elif selected_inf.address == "manual" %}
+iface {{ device }} inet manual
 {% else %}
-iface {{ item.name }} inet static
-  address {{ item.ip | ipaddr('address') }}
-  netmask {{ item.nw | ipaddr('netmask') }}
-{% if item.gw %}
-  gateway {{ item.gw | ipaddr('address') }}
+iface {{ device }} inet static
+address {{ selected_inf.address | ipaddr('address') }}
+netmask {{ (selected_net.network + "/" + (selected_net.mask | string)) | ipaddr('netmask') }}
+{% if selected_net.gateway is defined %}
+gateway {{ selected_net.gateway | ipaddr('address') }}
 {% endif %}
 {% endif %}
+
+{%- endfor -%}

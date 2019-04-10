@@ -38,6 +38,7 @@
 
 - name: Reboot the machine
   reboot:
-    reboot_timeout: 900
+    connect_timeout: 30
+    reboot_timeout: 600
 
 # vim: set ts=2 sw=2 expandtab:
