@@ -19,8 +19,8 @@
 - name: Gather data from PDF and IDF
   set_fact:
     num_nodes: "{{ nodes | length }}"
-    vms: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.hostnames, idf.kolla.hostnames) }}"
-    networks: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.network, idf.kolla.network) }}"
+    vms: "{{ idf[installer_type].hostnames }}"
+    networks: "{{ idf[installer_type].network }}"
 
 - include_tasks: create-libvirt-pool.yml
 

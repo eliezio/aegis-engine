@@ -37,9 +37,9 @@
 - name: Process PDF and IDF
   set_fact:
     num_nodes: "{{ nodes | length }}"
-    hosts: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.hostnames, idf.kolla.hostnames) }}"
-    host_roles: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.nodes_roles, idf.kolla.nodes_roles) }}"
-    networks: "{{ ('kubespray' in installer_type) | ternary(idf.kubespray.network, idf.kolla.network) }}"
+    hosts: "{{ idf[installer_type].hostnames }}"
+    host_roles: "{{ idf[installer_type].nodes_roles }}"
+    networks: "{{ idf[installer_type].network }}"
     bifrost_inventory: {}
 
 - name: Create DHCP hosts directory
