@@ -42,6 +42,13 @@
     recursive: yes
     delete: yes
 
+# update ControlPersist to 60m to inline with max time
+- name: Update ControlPersist in ansible config
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/ansible.cfg"
+    regexp: "^ssh_args.*"
+    line: "ssh_args = -o ControlMaster=auto -o ControlPersist=60m -o ConnectionAttempts=100 -o UserKnownHostsFile=/dev/null"
+
 # enable helm for all the scenarios using kubespray
 - name: Enable helm
   lineinfile:
