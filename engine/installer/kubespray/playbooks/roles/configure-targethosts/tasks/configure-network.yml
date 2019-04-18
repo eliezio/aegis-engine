@@ -36,9 +36,4 @@
 - name: Configure networking for {{ distribution }}
   include_tasks: "configure-network-{{ distribution }}.yml"
 
-- name: Reboot the machine
-  reboot:
-    connect_timeout: 30
-    reboot_timeout: 600
-
 # vim: set ts=2 sw=2 expandtab:
