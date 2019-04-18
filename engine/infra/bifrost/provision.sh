@@ -34,6 +34,7 @@ grep -o vendor.* ${ENGINE_CACHE}/config/pdf.yml | grep -q libvirt && export BARE
 if [[ "$BAREMETAL" != "true" ]]; then
   echo "Info: Create libvirt resources for virtual deployment"
   echo "-------------------------------------------------------------------------"
+  cd ${ENGINE_PATH}
   ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
     -i localhost, \
     ${BIFROST_ROOT_DIR}/playbooks/create-libvirt-resources.yml
@@ -43,6 +44,7 @@ fi
 echo "-------------------------------------------------------------------------"
 echo "Info: Prepare bifrost installation and create bifrost inventory"
 echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i localhost, \
   ${BIFROST_ROOT_DIR}/playbooks/install-configure-bifrost.yml

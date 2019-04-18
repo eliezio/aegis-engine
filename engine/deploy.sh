@@ -67,10 +67,10 @@ echo "-------------------------------------------------------------------------"
 #-------------------------------------------------------------------------------
 echo "Info: Bootstrapping hardware and software configuration"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}/engine
+cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i localhost, \
-  playbooks/bootstrap-configuration.yml
+  engine/playbooks/bootstrap-configuration.yml
 echo "-------------------------------------------------------------------------"
 
 #-------------------------------------------------------------------------------

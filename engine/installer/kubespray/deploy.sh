@@ -29,29 +29,28 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 echo "-------------------------------------------------------------------------"
 echo "Info: Configure target hosts"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}/engine/installer/kubespray
+cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  --ssh-extra-args='-o StrictHostKeyChecking=no' \
   -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
-  playbooks/configure-targethosts.yml
+  ${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml
 
 # configure installer
 echo "-------------------------------------------------------------------------"
 echo "Info: Configure installer"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}/engine/installer/kubespray
+cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i localhost, \
-  playbooks/configure-installer.yml
+  -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
+  ${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml
 
 # bootstrap scenario
 echo "-------------------------------------------------------------------------"
 echo "Info: Bootstrap scenario"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}/engine/installer/kubespray
+cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i localhost, \
-  playbooks/bootstrap-scenario.yml
+  -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
+  ${INSTALLER_ROOT_DIR}/playbooks/bootstrap-scenario.yml
 
 # install Kubernetes scenario
 echo "-------------------------------------------------------------------------"
@@ -68,10 +67,9 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
 echo "-------------------------------------------------------------------------"
 echo "Info: Running post deployment tasks"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}/engine/installer/kubespray
+cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  --ssh-extra-args='-o StrictHostKeyChecking=no' \
   -i ${ENGINE_CACHE}/repos/kubespray/inventory/engine/bifrost_inventory.py \
-  playbooks/post-deployment.yml
+  ${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml
 
 # vim: set ts=2 sw=2 expandtab:
