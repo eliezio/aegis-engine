@@ -69,8 +69,8 @@
   lineinfile:
     path: /etc/systemd/resolved.conf
     regexp: "^#?DNS=.*$"
-    line: "DNS={{ idf.net_config.public.dns | join(' ')}}"
-  when: idf.net_config.public.dns is defined
+    line: "DNS={{ idf.net_config[engine.public_network | default('public')].dns | join(' ')}}"
+  when: idf.net_config[engine.public_network | default('public')].dns is defined
 
 - name: Reboot the machine
   shell: "sleep 5 && reboot"
