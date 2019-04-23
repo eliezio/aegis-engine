@@ -41,4 +41,11 @@
     owner: "{{ ansible_env.SUDO_USER }}"
     mode: 0644
 
+# TODO: get rid of this task once the bug in upstream kubespray is fixed
+- name: WORKAROUND - Remove erroneous line from kubeconfig file
+  lineinfile:
+    path: "/home/{{ ansible_env.SUDO_USER }}/.kube/config"
+    regexp: "^\\[kubeconfig\\] Writing.*"
+    state: absent
+
 # vim: set ts=2 sw=2 expandtab:
