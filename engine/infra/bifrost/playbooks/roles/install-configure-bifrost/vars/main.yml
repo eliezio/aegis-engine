@@ -16,6 +16,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-bifrost_git_url: https://git.openstack.org/openstack/bifrost
+bifrost_git_url: https://opendev.org/openstack/bifrost.git
 
 # vim: set ts=2 sw=2 expandtab:
