@@ -16,44 +16,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Add the OS specific variables
-  include_vars: '{{ ansible_os_family }}.yml'
-
-- name: Remove NTP if installed
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes
-  with_items:
-    - "ntp"
-
-- name: Install Chrony
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
-  with_items:
-    - "chrony"
-
-- name: Copy the chrony.conf template file
-  template:
-    src: "chrony.conf.j2"
-    dest: "{{ chrony_config_location }}"
-    owner: "root"
-    group: "root"
-    mode: "0755"
-  become: true
-  when: idf.ntp_servers is defined
-
-- name: Restart chrony
-  service:
-    name: "{{ chrony_service_name }}"
-    state: "restarted"
-  become: true
-
-
-- name: "NTP should be synchronized"
-  shell: timedatectl  | grep 'synchronized'
-  register: synchronized
-  changed_when: false
-  until: "'yes' in synchronized.stdout"
-  retries: 300
-  delay: 2
+chrony_service_name: chronyd
+chrony_config_location: /etc/chrony.conf
+chrony_config_driftfile: /var/lib/chrony/drift
+chrony_config_keyfile: /etc/chrony.keys
+chrony_config_logdir: /var/log/chrony
 
 # vim: set ts=2 sw=2 expandtab:
