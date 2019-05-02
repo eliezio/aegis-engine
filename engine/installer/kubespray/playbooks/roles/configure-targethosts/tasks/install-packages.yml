@@ -17,11 +17,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Set distribution
-  set_fact:
-    distribution: "{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}"
-
-- name: Install packages on {{ distribution }}
-  include_tasks: "install-packages-{{ distribution }}.yml"
+- name: Install packages on {{ ansible_os_family }}
+  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
 
 # vim: set ts=2 sw=2 expandtab:

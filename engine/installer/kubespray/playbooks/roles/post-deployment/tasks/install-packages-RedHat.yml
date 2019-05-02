@@ -16,16 +16,22 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Load distribution variables
-  include_vars:
-    file: "{{ distro }}.yml"
+- name: Add google kubernetes repository
+  yum_repository:
+    name: Kubernetes
+    description: Google Kubernetes yum repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    enabled: yes
+  become: yes
 
-- name: Generate bifrost playbooks
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dst }}"
-  with_items:
-    - { src: 'bifrost-install.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-install.yml' }
-    - { src: 'bifrost-enroll-deploy.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-enroll-deploy.yml' }
+- name: Add google kubernetes yum repository
+  command: "yum-config-manager --add-repo https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64 --nogpgcheck"
+  register: yumcfg_status
+  become: yes
+
+- name: Add google kubernetes yum repository
+  command: "yum install -y --nogpgcheck kubectl"
+  register: yumpkg_status
+  become: yes
 
 # vim: set ts=2 sw=2 expandtab:

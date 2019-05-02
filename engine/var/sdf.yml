@@ -43,7 +43,8 @@ scenario:
       kubespray:
         role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
         distros:
-          - ubuntu
+          - ubuntu1804
+          - centos7
   k8-flannel-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -52,7 +53,7 @@ scenario:
       kubespray:
         role: scenarios/k8-flannel-nofeature/kubespray/role/k8-flannel-nofeature
         distros:
-          - ubuntu
+          - ubuntu1804
   k8-canal-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -61,7 +62,7 @@ scenario:
       kubespray:
         role: scenarios/k8-canal-nofeature/kubespray/role/k8-canal-nofeature
         distros:
-          - ubuntu
+          - ubuntu1804
   k8-cilium-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -70,7 +71,7 @@ scenario:
       kubespray:
         role: scenarios/k8-cilium-nofeature/kubespray/role/k8-cilium-nofeature
         distros:
-          - ubuntu
+          - ubuntu1804
   k8-weave-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -79,7 +80,7 @@ scenario:
       kubespray:
         role: scenarios/k8-weave-nofeature/kubespray/role/k8-weave-nofeature
         distros:
-          - ubuntu
+          - ubuntu1804
   k8-multus-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -88,6 +89,6 @@ scenario:
       kubespray:
         role: scenarios/k8-multus-nofeature/kubespray/role/k8-multus-nofeature
         distros:
-          - ubuntu
+          - ubuntu1804
 
 # vim: set ts=2 sw=2 expandtab:

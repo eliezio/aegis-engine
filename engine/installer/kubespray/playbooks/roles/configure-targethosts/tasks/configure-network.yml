@@ -26,14 +26,13 @@
 - name: Set facts for the node "{{ node_name }}"
   set_fact:
     node: "{{ nodes | selectattr('name', 'equalto', node_name) | first }}"
-    distribution: "{{ ansible_distribution | lower }}{{ ansible_distribution_major_version }}"
 
 - name: Ensure glean rules are removed
   file:
     path: "/etc/udev/rules.d/99-glean.rules"
     state: absent
 
-- name: Configure networking for {{ distribution }}
-  include_tasks: "configure-network-{{ distribution }}.yml"
+- name: Configure networking for {{ ansible_os_family }}
+  include_tasks: "configure-network-{{ ansible_os_family }}.yml"
 
 # vim: set ts=2 sw=2 expandtab:

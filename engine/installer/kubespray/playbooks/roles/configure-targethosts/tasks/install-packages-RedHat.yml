@@ -16,16 +16,29 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Load distribution variables
-  include_vars:
-    file: "{{ distro }}.yml"
-
-- name: Generate bifrost playbooks
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dst }}"
+- name: Install packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
   with_items:
-    - { src: 'bifrost-install.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-install.yml' }
-    - { src: 'bifrost-enroll-deploy.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-enroll-deploy.yml' }
+    - "yum-utils"
+    - "device-mapper-persistent-data"
+    - "lvm2"
+    - "ca-certificates"
+    - "curl"
+    - "chrony"
+    - "dbus"
+
+- name: Add docker-ce yum repository
+  command: "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo"
+  register: yumcfg_status
+  become: yes
+
+- name: Install docker
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+  with_items:
+    - "docker-ce"
+    - "docker-ce-cli"
+    - "containerd.io"
 
 # vim: set ts=2 sw=2 expandtab:

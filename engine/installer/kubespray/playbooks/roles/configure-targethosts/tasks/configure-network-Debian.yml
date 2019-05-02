@@ -1,0 +1,89 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+- name: Configure modules
+  lineinfile:
+    dest: /etc/modules
+    state: present
+    create: yes
+    line: "8021q"
+
+- name: Add modules
+  modprobe:
+    name: 8021q
+    state: present
+
+# TODO: we need to look into how to configure with netplan for ubuntu 18
+# Today we perform a reboot after network related confiugration changes
+# to make sure the changes are persistent and prevent various issues.
+
+- name: Ensure interfaces.d folder is empty
+  file:
+    state: "{{ item }}"
+    path: "/etc/network/interfaces.d"
+  with_items:
+    - absent
+    - directory
+
+- name: Ensure /etc/interfaces can source additional files
+  copy:
+    content: |
+      auto lo
+      iface lo inet loopback
+      source /etc/network/interfaces.d/*.cfg
+    dest: "/etc/network/interfaces"
+
+- name: Compute mapping dict from mac address to device name
+  set_fact:
+    device_mac_dict: "{{ (device_mac_dict | default({})) | combine({item.macaddress: item.device}) }}"
+  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
+
+- name: Compute mapping dict from mac address to interface name (device name with/without VLAN info)
+  set_fact:
+    if_mac_dict: "{{ ( if_mac_dict | default({}) ) | combine({item.mac_address: (item.vlan == 'native') | ternary(device_mac_dict[item.mac_address], device_mac_dict[item.mac_address] + '.' + item.vlan) }) }}"
+  loop: "{{ node.interfaces }}"
+
+- name: Configure networking for host
+  template:
+    src: "{{ ansible_os_family }}.interface.j2"
+    dest: "/etc/network/interfaces.d/{{ item.value }}.cfg"
+  loop: "{{ if_mac_dict | dict2items }}"
+
+- name: Ensure systemd resolved.conf has the correct content
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: "^#?DNS=.*$"
+    line: "DNS={{ idf.net_config[engine.public_network | default('public')].dns | join(' ')}}"
+  when: idf.net_config[engine.public_network | default('public')].dns is defined
+
+- name: Reboot the machine
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+
+- name: Wait for host to come back to life
+  wait_for_connection:
+    connect_timeout: 10
+    sleep: 5
+    delay: 120
+    timeout: 300
+  register: result
+  until: result | succeeded
+  retries: 3
+# vim: set ts=2 sw=2 expandtab:

@@ -27,15 +27,15 @@ function usage() {
     echo "
 Usage: $(basename ${0}) [-d <installer type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-v] [-c] [-h]
 
-    -h: This message
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -s: Scenario which the SUT is deployed with. (Default k8-calico-nofeature)
     -b: URI to Scenario Baseline File. (SDF) (Default file://\$ENGINE_PATH/engine/var/sdf.yml)
-    -o: Operating System to provision nodes with. (Default Ubuntu1804)
     -p: URI to POD Descriptor File (PDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml)
     -i: URI to Installer Descriptor File (IDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml)
+    -o: Operating System to provision nodes with and could either be ubuntu1804 or centos7. (Default ubuntu1804)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
+    -h: This message.
     "
     exit 0
 }
@@ -57,7 +57,7 @@ function parse_cmdline_opts() {
     INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
     DEPLOY_SCENARIO=${DEPLOY_SCENARIO:-k8-calico-nofeature}
     SDF=${SDF:-"file://${ENGINE_PATH}/engine/var/sdf.yml"}
-    DISTRO=${DISTRO:-ubuntu}
+    DISTRO=${DISTRO:-ubuntu1804}
     PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
     CLEANUP=${CLEANUP:-false}

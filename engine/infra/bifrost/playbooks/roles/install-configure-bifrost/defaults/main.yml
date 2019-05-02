@@ -21,12 +21,11 @@ node_default_groups: "{{ lookup('env', 'DEFAULT_HOST_GROUPS').split() | default(
 # diskimage-builder variables
 # download_ipa is set to false as we don't want bifrost itself to download it
 download_ipa: "{{ lookup('env', 'BIFROST_DOWNLOAD_IPA') | default('false', true) }}"
+dib_os_packages: "{{ lookup('env', 'DIB_OS_PACKAGES') | default('vim,less,bridge-utils,language-pack-en,iputils-ping,rsyslog,curl,iptables', true) }}"
 # create_ipa_image is set to true which will enable us to use prebuilt image
 create_ipa_image: "{{ lookup('env', 'BIFROST_CREATE_IPA') | default('true', true) }}"
 ipa_dib_os_element: "{{ lookup('env', 'IPA_DIB_OS_ELEMENT') | default('coreos', true) }}"
-dib_os_release: "{{ lookup('env', 'DIB_OS_RELEASE') | default('bionic', true) }}"
-dib_os_element: "{{ lookup('env', 'DIB_OS_ELEMENT') | default('ubuntu-minimal', true) }}"
-dib_os_packages: "{{ lookup('env', 'DIB_OS_PACKAGES') | default('vim,less,bridge-utils,language-pack-en,iputils-ping,rsyslog,curl,iptables', true) }}"
+
 # this variable is set to false by default in order to ensure the deployment image is built if
 # running outside of CI/CD. If it is run as part of CI/CD, it will be overriden within job to
 # download and use a prebuilt deployment image.
@@ -35,7 +34,7 @@ use_prebuilt_deployment_image: "{{ lookup('env', 'USE_PREBUILT_DEPLOYMENT_IMAGE'
 # it needs to be overriden if running outside of Nordix CI/CD
 arm_url: "{{ lookup('env', 'ARM_URL') | default('https://artifactory.nordix.org/artifactory/cloud-infra/dib', true) }}"
 # prebuilt images
-deployment_image: "{{ arm_url }}/deployment_image/{{ dib_os_release }}/deployment_image.qcow2"
+deployment_image: "{{ arm_url }}/deployment_image/{{ distro }}/deployment_image.qcow2"
 ipa_initramfs: "{{ arm_url }}/ipa_image/{{ ipa_dib_os_element }}/ipa.initramfs"
 ipa_vmlinuz: "{{ arm_url }}/ipa_image/{{ ipa_dib_os_element }}/ipa.vmlinuz"
 

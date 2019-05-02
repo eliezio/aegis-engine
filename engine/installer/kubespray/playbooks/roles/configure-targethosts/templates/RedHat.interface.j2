@@ -1,0 +1,25 @@
+{%- set macaddress = item.key -%}
+{%- set device = item.value -%}
+{%- for selected_net_name, selected_net in idf.net_config.iteritems() if node.interfaces[selected_net.interface].mac_address == macaddress -%}
+{%- set selected_inf = node.interfaces[selected_net.interface] -%}
+TYPE=Ethernet
+DEVICE={{ device }}
+ONBOOT=yes
+HWADDR={{ macaddress }}
+{% if selected_inf.address == "dhcp" %}
+BOOTPROTO=dhcp
+{% elif selected_inf.address != "manual" %}
+BOOTPROTO=none
+IPADDR={{ selected_inf.address | ipaddr('address') }}
+NETMASK={{ (selected_net.network + "/" + (selected_net.mask | string)) | ipaddr('netmask') }}
+{% endif %}
+{% if selected_net.gateway is defined %}
+GATEWAY={{ selected_net.gateway | ipaddr('address') }}
+{% endif %}
+{% if selected_net.dns is defined %}
+{% for dns in selected_net.dns %}
+DNS{{ loop.index0 }}={{ dns }}
+{% endfor %}
+{% endif %}
+
+{%- endfor -%}
