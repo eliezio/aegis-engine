@@ -1,0 +1,157 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+- name: Delete existing rook cluster if any
+  k8s:
+    definition: "{{ lookup('template', config_file) }}"
+    state: absent
+  with_items:
+    - external-dashboard-https.yaml.j2
+    - pool.yaml.j2
+    - storageclass.yaml.j2
+    - toolbox.yaml.j2
+    - cluster.yaml.j2
+  loop_control:
+    loop_var: config_file
+  ignore_errors: yes
+  tags: reset
+
+- name: Delete existing rook cluster CRD if any
+  k8s:
+    api_version: apiextensions.k8s.io/v1beta1
+    state: absent
+    kind: CustomResourceDefinition
+    name: cephclusters.ceph.rook.io
+  ignore_errors: yes
+  tags: reset
+
+- name: Delete existing rook operator if any
+  k8s:
+    state: absent
+    definition: "{{ lookup('template', 'operator.yaml.j2') }}"
+  ignore_errors: yes
+  tags: reset
+
+- name: Wait until rook cluster namespace is deleted
+  k8s_facts:
+    kind: Namespace
+    name: "{{ rook_cluster_namespace }}"
+  register: result
+  until: not result.resources
+  retries: 10
+  delay: 5
+  tags: reset
+
+- name: Wait until rook operator namespace is deleted
+  k8s_facts:
+    kind: Namespace
+    name: "{{ rook_operator_namespace }}"
+  register: result
+  until: not result.resources
+  retries: 10
+  delay: 5
+  tags: reset
+
+- name: Create rook operator
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'operator.yaml.j2') }}"
+
+- name: Wait until rook-ceph-agent daemonset is available
+  k8s_facts:
+    kind: DaemonSet
+    namespace: "{{ rook_operator_namespace }}"
+    name: rook-ceph-agent
+    field_selectors:
+      - status.numberAvailable is defined
+      - status.numberAvailable = status.currentNumberScheduled
+  register: rook_operator_status
+  until: rook_operator_status.resources
+  retries: 10
+  delay: 5
+
+- name: Create rook cluster
+  k8s:
+    state: present
+    definition: "{{ lookup('template', config_file) }}"
+  with_items:
+    - cluster.yaml.j2
+    - toolbox.yaml.j2
+  loop_control:
+    loop_var: config_file
+
+- name: Wait until rook cluster deployment is complete
+  k8s_facts:
+    kind: CephCluster
+    name: rook-ceph
+    namespace: "{{ rook_cluster_namespace }}"
+    field_selectors:
+      - status.state = "Created"
+  register: rook_cluster_status
+  until:
+    - rook_cluster_status.resources
+  retries: 10
+  delay: 5
+
+- name: Wait until MGR pods are available
+  k8s_facts:
+    kind: Pod
+    namespace: "{{ rook_cluster_namespace }}"
+    label_selectors:
+      - app = rook-ceph-mgr
+    field_selectors:
+      - status.phase=Running
+  register: rook_mgr_status
+  until:
+    - rook_mgr_status.resources is defined
+    - rook_mgr_status.resources
+  retries: 30
+  delay: 10
+
+- name: Wait until OSD pods are available
+  k8s_facts:
+    kind: Pod
+    namespace: "{{ rook_cluster_namespace }}"
+    label_selectors:
+      - app = rook-ceph-osd
+    field_selectors:
+      - status.phase=Running
+  register: rook_osd_status
+  until:
+    - rook_osd_status.resources is defined
+    - rook_osd_status.resources
+  retries: 30
+  delay: 10
+
+- name: Create rook block storage
+  k8s:
+    state: present
+    definition: "{{ lookup('template', config_file) }}"
+  with_items:
+    - pool.yaml.j2
+    - storageclass.yaml.j2
+  loop_control:
+    loop_var: config_file
+
+- name: Create rook external dashboard
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'external-dashboard-https.yaml.j2') }}"
+
+# vim: set ts=2 sw=2 expandtab:

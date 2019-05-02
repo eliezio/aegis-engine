@@ -1,4 +1,3 @@
----
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -17,26 +16,21 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Add Google official gpg key
-  apt_key:
-    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
-    state: present
-
-- name: Add kubernetes apt repository
-  apt_repository:
-    repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
-    state: present
-
-- name: Install kubectl
-  apt:
-    name: kubectl
-    state: present
-    update_cache: yes
-    allow_unauthenticated: yes
-
-- name: Install openshift
-  pip:
-    name: openshift
-    state: present
-
-# vim: set ts=2 sw=2 expandtab:
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: "{{ rook_block_pool_name }}"
+  namespace: "{{ rook_cluster_namespace }}"
+spec:
+  # The failure domain will spread the replicas of the data across different failure zones
+  failureDomain: osd
+  # The root of the crush hierarchy that will be used for the pool. If not set, will use "default".
+  crushRoot: default
+  # For a pool based on raw copies, specify the number of copies. A size of 1 indicates no redundancy.
+  replicated:
+    size: "{{ rook_block_pool_replicas }}"
+  # For an erasure-coded pool, comment out the replicated size above and uncomment the following settings.
+  # Make sure you have enough OSDs to support the replica size or sum of the erasure coding and data chunks.
+  #erasureCoded:
+  #  dataChunks: 2
+  #  codingChunks: 1

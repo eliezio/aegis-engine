@@ -44,4 +44,9 @@
     regexp: "^\\[kubeconfig\\] Writing.*"
     state: absent
 
+- name: Install rook cluster
+  include_tasks: "configure-rook-cluster.yml"
+  vars:
+    ansible_become: false
+
 # vim: set ts=2 sw=2 expandtab:
