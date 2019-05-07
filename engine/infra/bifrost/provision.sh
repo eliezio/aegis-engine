@@ -28,52 +28,33 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 # set the BAREMETAL variable
 grep -o vendor.* ${ENGINE_CACHE}/config/pdf.yml | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
 
-# if we are not doing baremetal provisioning and deployment, we need to prepare
-# the node for virtual deployment by installing dependencies, creating libvirt
-# networks, vms, and the rest of the necesssary stuff
-if [[ "$BAREMETAL" != "true" ]]; then
-  echo "Info: Create libvirt resources for virtual deployment"
-  echo "-------------------------------------------------------------------------"
-  cd ${ENGINE_PATH}
-  ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-    -i localhost, \
-    ${BIFROST_ROOT_DIR}/playbooks/create-libvirt-resources.yml
-fi
-
-# install and configure bifrost
-echo "-------------------------------------------------------------------------"
-echo "Info: Prepare bifrost installation and create bifrost inventory"
+# create libvirt resources if not baremetal, install and configure bifrost
+echo "Info: Prepare nodes, configure bifrost and create bifrost inventory"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i localhost, \
-  ${BIFROST_ROOT_DIR}/playbooks/install-configure-bifrost.yml
-
+  -e baremetal=$BAREMETAL \
+  ${BIFROST_ROOT_DIR}/playbooks/main.yml
 echo "-------------------------------------------------------------------------"
+
+# install bifrost and enroll & deploy nodes
 echo "Info: Install bifrost"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/target \
   bifrost-install.yml
-
 echo "-------------------------------------------------------------------------"
-echo "Info: Enroll nodes using bifrost"
+
+echo "Info: Enroll and deploy nodes using bifrost"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/bifrost_inventory.py \
-  bifrost-enroll.yml
+  bifrost-enroll-deploy.yml
+echo "-------------------------------------------------------------------------"
 
-echo "-------------------------------------------------------------------------"
-echo "Info: Deploy nodes using bifrost"
-echo "-------------------------------------------------------------------------"
-cd ${ENGINE_CACHE}/repos/bifrost/playbooks
-ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i inventory/bifrost_inventory.py \
-  bifrost-deploy.yml
-
-echo "-------------------------------------------------------------------------"
 echo "Info: Nodes are provisioned using bifrost!"
 echo "-------------------------------------------------------------------------"
 

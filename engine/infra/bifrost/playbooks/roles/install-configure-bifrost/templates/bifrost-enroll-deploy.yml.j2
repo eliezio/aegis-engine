@@ -1,4 +1,5 @@
 {% raw %}
+# enroll nodes using bifrost
 - hosts: baremetal
   name: "Enroll nodes into Ironic"
   become: no
@@ -45,4 +46,60 @@
     - name: List Ironic nodes
       debug:
         msg: "{{ ironic_nodes.stdout_lines }}"
+{% endraw %}
+
+# deploy nodes using bifrost
+{% raw %}
+- hosts: baremetal
+  name: Create configuration drive files and deploy machines from inventory
+  become: no
+  gather_facts: no
+  vars:
+{% endraw %}
+    network_interface: "{{ engine.pxe_interface }}"
+    multinode_testing: true
+    write_interfaces_file: true
+    addressing_mode: dhcp
+    inventory_dhcp: true
+    inventory_dhcp_static_ip: true
+    wait_for_node_deploy: true
+    wait_timeout: 1800
+{% raw %}
+  roles:
+    - role: bifrost-configdrives-dynamic
+      delegate_to: "{{ groups['target'][0] if groups['target'] is defined else 'localhost' }}"
+    - role: bifrost-deploy-nodes-dynamic
+      delegate_to: "{{ groups['target'][0] if groups['target'] is defined else 'localhost' }}"
+
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Get nodes from Ironic
+      command: openstack --os-cloud bifrost baremetal node list
+      register: ironic_nodes
+    - name: List Ironic nodes
+      debug:
+        msg: "{{ ironic_nodes.stdout_lines }}"
+
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+{% endraw %}
+  vars_files:
+    -  "{{ bifrost_inventory_source }}"
+{% raw %}
+  tasks:
+    - name: Wait for hosts to be reachable via SSH
+      local_action:
+        module: wait_for
+        host: "{{ item }}"
+        delay: 15
+        state: started
+        port: 22
+        connect_timeout: 10
+        timeout: 600
+      with_items: "{{ vars.groups.baremetal }}"
 {% endraw %}

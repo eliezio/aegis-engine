@@ -16,12 +16,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Generate bifrost playbooks
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dst }}"
-  with_items:
-    - { src: 'bifrost-install.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-install.yml' }
-    - { src: 'bifrost-enroll-deploy.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-enroll-deploy.yml' }
+
+- name: Create libvirt resources
+  import_playbook: create-libvirt-resources.yml
+  when: not baremetal
+
+- name: Install and configure bifrost
+  import_playbook: install-configure-bifrost.yml
 
 # vim: set ts=2 sw=2 expandtab:
