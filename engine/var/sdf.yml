@@ -80,5 +80,14 @@ scenario:
         role: scenarios/k8-weave-nofeature/kubespray/role/k8-weave-nofeature
         distros:
           - ubuntu
+  k8-multus-nofeature:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    installers:
+      kubespray:
+        role: scenarios/k8-multus-nofeature/kubespray/role/k8-multus-nofeature
+        distros:
+          - ubuntu
 
 # vim: set ts=2 sw=2 expandtab:
