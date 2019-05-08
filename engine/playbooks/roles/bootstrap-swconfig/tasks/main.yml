@@ -62,4 +62,14 @@
     https_proxy: "{{ lookup('env','https_proxy') }}"
     no_proxy: "{{ lookup('env','no_proxy') }}"
 
+- name: Check if the role for the scenario exists
+  stat:
+    path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
+  register: role_directory
+
+- name: Fail if the role for the scenario '{{ deploy_scenario }}' does not exist
+  fail:
+    msg: "Role for the scenario '{{ deploy_scenario }}' doesn't exist in infra/swconfig repo!"
+  when: not role_directory.stat.exists
+
 # vim: set ts=2 sw=2 expandtab:
