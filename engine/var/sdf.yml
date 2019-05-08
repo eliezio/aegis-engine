@@ -62,5 +62,14 @@ scenario:
         role: scenarios/k8-canal-nofeature/kubespray/role/k8-canal-nofeature
         distros:
           - ubuntu
+  k8-cilium-nofeature:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    installers:
+      kubespray:
+        role: scenarios/k8-cilium-nofeature/kubespray/role/k8-cilium-nofeature
+        distros:
+          - ubuntu
 
 # vim: set ts=2 sw=2 expandtab:
