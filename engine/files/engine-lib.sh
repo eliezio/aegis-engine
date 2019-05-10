@@ -25,14 +25,16 @@
 #-------------------------------------------------------------------------------
 function usage() {
     echo "
-Usage: $(basename ${0}) [-d <installer type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-v] [-c] [-h]
+Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-t <heat template>] [-v] [-c] [-h]
 
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
+    -r: Provisioner type to use for provisioning nodes. (Default bifrost)
     -s: Scenario which the SUT is deployed with. (Default k8-calico-nofeature)
     -b: URI to Scenario Baseline File. (SDF) (Default file://\$ENGINE_PATH/engine/var/sdf.yml)
     -p: URI to POD Descriptor File (PDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml)
     -i: URI to Installer Descriptor File (IDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml)
-    -o: Operating System to provision nodes with and could either be ubuntu1804 or centos7. (Default ubuntu1804)
+    -t: URI to OpenStack Heat Orchestration Template. (HOT) (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=stacks/city-k8s.yml)
+    -o: Operating System to provision nodes with. (Default ubuntu1804)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
@@ -55,25 +57,29 @@ Usage: $(basename ${0}) [-d <installer type>] [-s <scenario>] [-b <scenario base
 function parse_cmdline_opts() {
     # set variables to the values set in env - otherwise, set them to defaults
     INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
+    PROVISIONER_TYPE=${PROVISIONER_TYPE:-bifrost}
     DEPLOY_SCENARIO=${DEPLOY_SCENARIO:-k8-calico-nofeature}
     SDF=${SDF:-"file://${ENGINE_PATH}/engine/var/sdf.yml"}
     DISTRO=${DISTRO:-ubuntu1804}
     PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
+    HOT=${HOT:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=stacks/city-k8s.yml"}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
 
     # get values passed as command line arguments, overriding the defaults or
     # the ones set by using env variables
-    while getopts ":hd:s:b:o:p:i:cv" o; do
+    while getopts ":hd:r:s:b:o:p:i:t:cv" o; do
         case "${o}" in
             h) usage ;;
             d) INSTALLER_TYPE="${OPTARG}" ;;
+            r) PROVISIONER_TYPE="${OPTARG}" ;;
             s) DEPLOY_SCENARIO="${OPTARG}" ;;
             b) SDF="${OPTARG}" ;;
             o) DISTRO="${OPTARG}" ;;
             p) PDF="${OPTARG}" ;;
             i) IDF="${OPTARG}" ;;
+            t) HOT="${OPTARG}" ;;
             c) CLEANUP="true" ;;
             v) VERBOSITY="true" ;;
             *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
@@ -82,11 +88,13 @@ function parse_cmdline_opts() {
 
     # Do all the exports
     export INSTALLER_TYPE=${INSTALLER_TYPE}
+    export PROVISIONER_TYPE=${PROVISIONER_TYPE}
     export DEPLOY_SCENARIO=${DEPLOY_SCENARIO}
     export SDF=${SDF}
     export DISTRO=${DISTRO}
     export PDF=${PDF}
     export IDF=${IDF}
+    export HOT=${HOT}
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
 }

@@ -46,28 +46,13 @@ export ENGINE_PIP_VERSION="19.0.3"
 export ENGINE_ANSIBLE_VERSION="2.7.8"
 
 #-------------------------------------------------------------------------------
-# Set provisioning tool
+# Set the inventory for bifrost
 #-------------------------------------------------------------------------------
-# Currently, there is a single provisioning tool: bifrost
-# Examples:
-#    export INFRA_DEPLOYMENT="bifrost"
-# The default provisioning tool is bifrost
-export INFRA_DEPLOYMENT=${INFRA_DEPLOYMENT:-bifrost}
 export BIFROST_INVENTORY_SOURCE=${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}
 
 #-------------------------------------------------------------------------------
 # Other variables
 #-------------------------------------------------------------------------------
-# remove leftovers of the previous run
-# this is set to false by default as it results in wiping out all the temporary
-# objects including .venv, .cache, ironic database, releases and so on
-# it will be set to true in CI/CD
-export CLEANUP=${CLEANUP:-"false"}
-
-# to increase verbosity and keep logs for troubleshooting
-# it will be set to true in CI/CD
-export VERBOSITY=${VERBOSITY:-"false"}
-
 # additional parameters to pass to Ansible
 export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
 

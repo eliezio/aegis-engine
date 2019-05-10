@@ -39,6 +39,8 @@ scenario:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
+    provisioners:
+      - bifrost
     installers:
       kubespray:
         role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
@@ -49,6 +51,8 @@ scenario:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
+    provisioners:
+      - bifrost
     installers:
       kubespray:
         role: scenarios/k8-flannel-nofeature/kubespray/role/k8-flannel-nofeature
@@ -58,6 +62,8 @@ scenario:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
+    provisioners:
+      - bifrost
     installers:
       kubespray:
         role: scenarios/k8-canal-nofeature/kubespray/role/k8-canal-nofeature
@@ -67,6 +73,8 @@ scenario:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
+    provisioners:
+      - bifrost
     installers:
       kubespray:
         role: scenarios/k8-cilium-nofeature/kubespray/role/k8-cilium-nofeature
@@ -76,6 +84,8 @@ scenario:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
+    provisioners:
+      - bifrost
     installers:
       kubespray:
         role: scenarios/k8-weave-nofeature/kubespray/role/k8-weave-nofeature
@@ -85,6 +95,8 @@ scenario:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
+    provisioners:
+      - bifrost
     installers:
       kubespray:
         role: scenarios/k8-multus-nofeature/kubespray/role/k8-multus-nofeature

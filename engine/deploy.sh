@@ -76,7 +76,7 @@ echo "-------------------------------------------------------------------------"
 #-------------------------------------------------------------------------------
 # Provision nodes using the selected provisioning tool
 #-------------------------------------------------------------------------------
-source ${ENGINE_PATH}/engine/infra/${INFRA_DEPLOYMENT}/provision.sh
+source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
 
 #-------------------------------------------------------------------------------
 # Install the stack using the selected installer

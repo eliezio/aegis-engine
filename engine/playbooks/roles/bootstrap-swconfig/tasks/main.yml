@@ -50,6 +50,11 @@
     path: "{{ engine_cache }}/repos/swconfig"
     state: absent
 
+- name: Fail if the scenario '{{ deploy_scenario }}' is not supported by the provisioner '{{ provisioner_type }}'
+  fail:
+    msg: "'{{ deploy_scenario }}' is not supported by the provisioner '{{ provisioner_type }}'"
+  when: provisioner_type not in scenario[deploy_scenario].provisioners
+
 - name: Clone the scenario repository and checkout version '{{ scenario[deploy_scenario].version }}'
   git:
     repo: "{{ scenario[deploy_scenario].src }}"
