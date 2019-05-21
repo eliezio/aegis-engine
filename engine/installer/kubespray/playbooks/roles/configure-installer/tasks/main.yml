@@ -63,6 +63,13 @@
     regexp: "^# kubeconfig_localhost:.*"
     line: "kubeconfig_localhost: true"
 
+# set k8s version to install
+- name: Set k8s version to '{{ kubernetes_version }}'
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/k8s-cluster.yml"
+    regexp: "^kube_version:.*"
+    line: "kube_version: {{ kubernetes_version }}"
+
 # TODO: reuse of bifrost dynamic inventory is only valid for the cases that use
 # bifrost for provisioning so this needs fixing and we could perhaps switch to
 # our own inventory, dynamic or static.

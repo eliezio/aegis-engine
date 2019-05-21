@@ -38,7 +38,9 @@ ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('ccf2bb1ea194408eb
 #-------------------------------------------------------------------------------
 # HEAD of kubespray as of 19.04.2019
 kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('05dc2b3a097fda2ffff7a77f4ca843d0e41dec76', true) }}"
-# Kubernetes version supported by the pinned kubespray version - just for information purposes for the timebeing
+# Kubernetes version to install
+# Please note that changing version to anything other than what is pinned below might not work as expected.
+# It should always be checked with kubespray to ensure what is pinned here is supported by it.
 kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.14.0', true) }}"
 
 #-------------------------------------------------------------------------------
