@@ -25,7 +25,7 @@ rook_use_host_network: "false"
 rook_node_device_filter: "vdb"
 
 rook_block_pool_name: "block-pool"
-rook_block_pool_replicas: 3
+rook_block_pool_replicas: 1
 
 rook_block_storage_name: "block-storage"
 rook_block_storage_fs: "xfs"

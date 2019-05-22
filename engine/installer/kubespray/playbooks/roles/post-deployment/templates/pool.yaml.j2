@@ -28,7 +28,7 @@ spec:
   crushRoot: default
   # For a pool based on raw copies, specify the number of copies. A size of 1 indicates no redundancy.
   replicated:
-    size: "{{ rook_block_pool_replicas }}"
+    size: {{ rook_block_pool_replicas }}
   # For an erasure-coded pool, comment out the replicated size above and uncomment the following settings.
   # Make sure you have enough OSDs to support the replica size or sum of the erasure coding and data chunks.
   #erasureCoded:
