@@ -19,7 +19,7 @@
 
 - name: Create libvirt resources
   import_playbook: create-libvirt-resources.yml
-  when: not baremetal
+  when: baremetal|bool == false
 
 - name: Install and configure bifrost
   import_playbook: install-configure-bifrost.yml
