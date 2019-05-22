@@ -60,6 +60,9 @@ cd ${ENGINE_CACHE}/repos/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   --ssh-extra-args='-o StrictHostKeyChecking=no' \
   --user root \
+  -e "http_proxy=${http_proxy:-}" \
+  -e "https_proxy=${https_proxy:-}" \
+  -e "additional_no_proxy=${no_proxy:-}" \
   -i inventory/engine/bifrost_inventory.py \
   cluster.yml
 

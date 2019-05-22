@@ -32,6 +32,31 @@
     path: "/etc/udev/rules.d/99-glean.rules"
     state: absent
 
+- name: Add proxy settings to /etc/environment on localhost
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    regexp: "^no_proxy"
+    line: "no_proxy={{ idf.proxy_settings.no_proxy }}"
+  delegate_to: localhost
+  remote_user: root
+  become: true
+  when:
+    idf.proxy_settings is defined
+
+- name: Add proxy settings to /etc/environment on target node
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    regexp: "^{{ item.name }}"
+    line: "{{ item.name }}={{ item.value }}"
+  with_items:
+    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}' }
+    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}' }
+    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}' }
+  when:
+    idf.proxy_settings is defined
+
 - name: Configure networking for {{ ansible_os_family }}
   include_tasks: "configure-network-{{ ansible_os_family }}.yml"
 

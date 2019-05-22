@@ -48,6 +48,30 @@
   with_items:
     - "{{ if_mac_dict | dict2items }}"
 
+- name: Proxy configuration for yum
+  block:
+  - name: Check that the /etc/yum.conf exists
+    stat:
+      path: /etc/yum.conf
+    register: stat_result
+
+  - name: Create /etc/yum.conf, if it doesn't exist
+    file:
+      path: /etc/yum.conf
+      state: touch
+    when: stat_result.stat.exists == False
+
+  - name: Add proxy setting to /etc/yum.conf
+    lineinfile:
+      dest: /etc/yum.conf
+      state: present
+      regexp: "^{{ item.name }}"
+      line: "{{ item.name }}={{ item.value }} "
+    with_items:
+      - {name: 'proxy', value: '"{{ idf.proxy_settings.http_proxy }}"' }
+  when:
+    idf.proxy_settings is defined
+
 - name: Restart network
   service:
     name: network
