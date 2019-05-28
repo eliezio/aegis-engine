@@ -18,6 +18,17 @@
 # ============LICENSE_END=========================================================
 
 #-------------------------------------------------------------------------------
+# Please note that changing versions of components to anything other than what
+# is pinned in this file might not work as expected so you can attempt that as
+# you wish but it is not officially supported by the Engine as the version bumps
+# are done in a controlled manner and tested in Nordix CI/CD.
+#
+# If you want to try it, you should always check with Nordix Infra and upstream
+# projects to ensure the support for the versions you intend to use are compatible
+# with each other.
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # component versions used for virtual deployment
 #-------------------------------------------------------------------------------
 # virtualbmc version 1.3+ needs zmq dependency.
@@ -32,19 +43,16 @@ bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('81d80496d451666
 ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('ccf2bb1ea194408eb34586ee469cf37c296e6fa4', true) }}"
 
 #-------------------------------------------------------------------------------
-# versions of kubespray and kubernetes
-# Please note that kubernetes version specified below matches to the supported
-# kubernetes version is pinned kubespray. Changing it might break things.
+# kubespray and kubernetes versions
 #-------------------------------------------------------------------------------
 # HEAD of kubespray as of 22.05.2019
 kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('1e470b047354c2767d22ca28c1c1d0fc81f34107', true) }}"
-# Kubernetes version to install
-# Please note that changing version to anything other than what is pinned below might not work as expected.
-# It should always be checked with kubespray to ensure what is pinned here is supported by it.
-kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.14.1', true) }}"
+# Kubernetes version that is supported by the pinned kubespray version
 
+kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.14.1', true) }}"
 #-------------------------------------------------------------------------------
-# rook and ceph versions
+# rook, ceph, and helm versions
 #-------------------------------------------------------------------------------
 rook_version: "{{ lookup('env', 'ROOK_VERSION') | default('v0.9.3', true) }}"
 ceph_version: "{{ lookup('env', 'CEPH_VERSION') | default('v13.2.5-20190319', true) }}"
+helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.12.3', true) }}"

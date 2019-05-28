@@ -70,6 +70,13 @@
     regexp: "^kube_version:.*"
     line: "kube_version: {{ kubernetes_version }}"
 
+# set helm version to install
+- name: Set helm version to '{{ helm_version }}'
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^helm_version:.*"
+    line: "helm_version: {{ helm_version }}"
+
 # TODO: reuse of bifrost dynamic inventory is only valid for the cases that use
 # bifrost for provisioning so this needs fixing and we could perhaps switch to
 # our own inventory, dynamic or static.

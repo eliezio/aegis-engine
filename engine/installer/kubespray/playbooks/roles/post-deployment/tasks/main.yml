@@ -42,4 +42,29 @@
   vars:
     ansible_become: false
 
+- name: Download helm client
+  unarchive:
+    src: "{{ helm_client_download_url }}"
+    remote_src: yes
+    dest: /tmp
+
+- name: Place helm and tiller binaries to /usr/local/bin
+  copy:
+    src: "/tmp/linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - helm
+    - tiller
+
+- name: Delete temporary files and folders
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/tmp/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    - "/tmp/linux-amd64"
+
 # vim: set ts=2 sw=2 expandtab:
