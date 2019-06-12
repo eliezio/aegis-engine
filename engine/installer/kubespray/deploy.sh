@@ -31,7 +31,7 @@ echo "Info: Configure target hosts"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
   ${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml
 
 # configure installer
@@ -40,7 +40,7 @@ echo "Info: Configure installer"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
   ${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml
 
 # bootstrap scenario
@@ -49,30 +49,28 @@ echo "Info: Bootstrap scenario"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
   ${INSTALLER_ROOT_DIR}/playbooks/bootstrap-scenario.yml
 
-# install Kubernetes scenario
+# install scenario
 echo "-------------------------------------------------------------------------"
-echo "Info: Install Kubernetes Scenario"
+echo "Info: Install scenario ${DEPLOY_SCENARIO}"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  --ssh-extra-args='-o StrictHostKeyChecking=no' \
-  --become --become-user=root \
   -e "http_proxy=${http_proxy:-}" \
   -e "https_proxy=${https_proxy:-}" \
   -e "additional_no_proxy=${no_proxy:-}" \
-  -i inventory/engine/bifrost_inventory.py \
+  -i inventory/engine/inventory.ini \
   cluster.yml
 
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"
-echo "Info: Running post deployment tasks"
+echo "Info: Execute post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/repos/kubespray/inventory/engine/bifrost_inventory.py \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
   ${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml
 
 # vim: set ts=2 sw=2 expandtab:

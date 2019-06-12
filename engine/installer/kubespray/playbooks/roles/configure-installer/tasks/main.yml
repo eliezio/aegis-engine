@@ -42,6 +42,13 @@
     recursive: yes
     delete: yes
 
+# place generated kubespray inventory to kubespray/inventory/engine
+- name: Place inventory
+  copy:
+    src: "{{ config_path }}/inventory.ini"
+    dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/inventory.ini"
+    mode: 0644
+
 # update ControlPersist to 60m to inline with max time
 - name: Update ControlPersist in ansible config
   lineinfile:
@@ -76,15 +83,6 @@
     path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
     regexp: "^helm_version:.*"
     line: "helm_version: {{ helm_version }}"
-
-# TODO: reuse of bifrost dynamic inventory is only valid for the cases that use
-# bifrost for provisioning so this needs fixing and we could perhaps switch to
-# our own inventory, dynamic or static.
-- name: Place bifrost_inventory.py in Kubespray inventory
-  file:
-    src: "{{ engine_cache }}/repos/bifrost/playbooks/inventory/bifrost_inventory.py"
-    dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/bifrost_inventory.py"
-    state: link
 
 # configure docker with iptables
 - name: Ensure docker daemon iptables option is set to true

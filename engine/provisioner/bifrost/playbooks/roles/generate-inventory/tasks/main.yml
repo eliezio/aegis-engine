@@ -16,31 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- name: Ensure config path exists and empty
-  file:
-    path: "{{ config_path }}"
-    state: "{{ item }}"
-  with_items:
-    - absent
-    - directory
 
-- name: Remove existing PDF and IDF files
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
-
-# TODO: Remove the IDF from path - the IDF is copied from the change https://gerrit.nordix.org/#/c/1445/
-# in order to test the change done to engine - change will be amended and rolled back to original
-- name: Get PDF and IDF files
-  get_url:
-    url: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0644
-  with_items:
-    - { src: "{{ lookup('env', 'PDF') }}", dest: "{{ pdf_file }}" }
-    - { src: "{{ lookup('env', 'IDF') }}", dest: "{{ idf_file }}" }
-
-# vim: set ts=2 sw=2 expandtab:
+# generate kubespray inventory from PDF and IDF
+- include: generate-kubespray-inventory.yml
+  when: installer_type == 'kubespray'

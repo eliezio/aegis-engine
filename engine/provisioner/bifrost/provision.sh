@@ -55,6 +55,14 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   bifrost-enroll-deploy.yml
 echo "-------------------------------------------------------------------------"
 
+echo "Info: Generate Ansible inventory"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_CACHE}/repos/bifrost/playbooks
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i localhost, \
+  ${BIFROST_ROOT_DIR}/playbooks/generate-inventory.yml
+
+echo "-------------------------------------------------------------------------"
 echo "Info: Nodes are provisioned using bifrost!"
 echo "-------------------------------------------------------------------------"
 
