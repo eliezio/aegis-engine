@@ -43,13 +43,16 @@ bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('81d80496d451666
 ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('ccf2bb1ea194408eb34586ee469cf37c296e6fa4', true) }}"
 
 #-------------------------------------------------------------------------------
-# kubespray and kubernetes versions
+# kubespray, kubernetes, and kubectl versions
 #-------------------------------------------------------------------------------
 # HEAD of kubespray as of 22.05.2019
 kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('1e470b047354c2767d22ca28c1c1d0fc81f34107', true) }}"
 # Kubernetes version that is supported by the pinned kubespray version
-
 kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.14.1', true) }}"
+# version of the kubectl should generally match to the version of kubernetes itself
+# but it would be good to have possibility to override it in case if someone needs it for some reason
+kubectl_version: "{{ lookup('env', 'KUBECTL_VERSION') | default(kubernetes_version, true) }}"
+
 #-------------------------------------------------------------------------------
 # rook, ceph, and helm versions
 #-------------------------------------------------------------------------------

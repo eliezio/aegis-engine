@@ -17,8 +17,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install packages on {{ ansible_os_family }}
-  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+- name: Install openshift
+  pip:
+    name: openshift
+    state: present
 
 - name: Ensure /home/{{ ansible_env.SUDO_USER }}/.kube folder exists and empty
   file:
@@ -41,6 +43,14 @@
   include_tasks: "configure-rook-cluster.yml"
   vars:
     ansible_become: false
+
+- name: Download kubectl and place it to /usr/local/bin
+  get_url:
+    url: "{{ kubectl_download_url }}"
+    dest: /usr/local/bin/kubectl
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Download helm client
   unarchive:
