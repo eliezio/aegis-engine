@@ -59,7 +59,7 @@ echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   --ssh-extra-args='-o StrictHostKeyChecking=no' \
-  --user root \
+  --become --become-user=root \
   -e "http_proxy=${http_proxy:-}" \
   -e "https_proxy=${https_proxy:-}" \
   -e "additional_no_proxy=${no_proxy:-}" \
