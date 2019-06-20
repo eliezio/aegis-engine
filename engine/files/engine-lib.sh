@@ -97,6 +97,8 @@ function parse_cmdline_opts() {
     export HOT=${HOT}
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
+
+    log_summary
 }
 
 #-------------------------------------------------------------------------------
@@ -272,6 +274,53 @@ function install_ansible() {
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
+}
+
+#-------------------------------------------------------------------------------
+# Log summary & parameters to console
+#-------------------------------------------------------------------------------
+function log_summary() {
+    echo
+    echo "#---------------------------------------------------#"
+    echo "#                   Environment                     #"
+    echo "#---------------------------------------------------#"
+    echo "User         : $USER"
+    echo "Hostname     : $HOSTNAME"
+    echo "Host OS      : $(source /etc/os-release &>/dev/null || source /usr/lib/os-release &>/dev/null; ID=${ID%%-*}; echo ${ID,,})"
+    echo "IP           : $(hostname -I | cut -d' ' -f1)"
+    echo
+    echo "#---------------------------------------------------#"
+    echo "#                Deployment Started                 #"
+    echo "#---------------------------------------------------#"
+    echo "Date & Time  : $(date -u '+%F %T UTC')"
+    echo "Scenario     : $DEPLOY_SCENARIO"
+    echo "Target OS    : $DISTRO"
+    echo "Installer    : $INSTALLER_TYPE"
+    echo "Provisioner  : $PROVISIONER_TYPE"
+    echo "SDF          : $SDF"
+    if [[ "$PROVISIONER_TYPE" == "heat" ]]; then
+      echo "Heat Template: $HOT"
+    else
+      echo "PDF          : $PDF"
+      echo "IDF          : $IDF"
+    fi
+    echo "Cleanup      : $CLEANUP"
+    echo "Verbosity    : $VERBOSITY"
+    echo "#---------------------------------------------------#"
+    echo
+}
+
+#-------------------------------------------------------------------------------
+# Log elapsed time to console
+#-------------------------------------------------------------------------------
+function log_elapsed_time() {
+    elapsed_time=$SECONDS
+    echo "#---------------------------------------------------#"
+    echo "#                Deployment Completed               #"
+    echo "#---------------------------------------------------#"
+    echo "Date & Time  : $(date -u '+%F %T UTC')"
+    echo "Elapsed      : $(($elapsed_time / 60)) minutes and $(($elapsed_time % 60)) seconds"
+    echo "#---------------------------------------------------#"
 }
 
 # vim: set ts=2 sw=2 expandtab:

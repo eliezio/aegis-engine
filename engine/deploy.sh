@@ -83,4 +83,9 @@ source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
 #-------------------------------------------------------------------------------
 source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/deploy.sh
 
+#-------------------------------------------------------------------------------
+# Log total time it took to finish to console
+#-------------------------------------------------------------------------------
+log_elapsed_time
+
 # vim: set ts=2 sw=2 expandtab:
