@@ -17,12 +17,47 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+# check if post-deployment.yml exists in engine cache on localhost
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  become: yes
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ sdf_file }}"
+
+  tasks:
+    - name: Check if any post-deployment task defined for '{{ deploy_scenario }}' role
+      stat:
+        path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}/tasks/post-deployment.yml"
+      register: post_deployment_yml
+
+# run the scenario post-deployment tasks before running the common post-deployment tasks
+- hosts: all
+  gather_facts: true
+  become: yes
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ sdf_file }}"
+
+  tasks:
+    - name: Execute post-deployment tasks of '{{ deploy_scenario }}' role
+      include_role:
+        name: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
+        tasks_from: post-deployment
+      when:
+        - hostvars['localhost'].post_deployment_yml.stat.exists
+
+# run common post-deployment tasks
 - hosts: baremetal
   remote_user: root
   gather_facts: true
   become: true
   vars_files:
     - "roles/post-deployment/vars/main.yml"
+
   tasks:
     - name: Install necessary utilities for CEPH
       apt:
@@ -57,7 +92,6 @@
     - "{{ pdf_file }}"
     - "{{ idf_file }}"
 
-# TODO: enable the execution of scenario specific post-deployment tasks
   roles:
     - role: post-deployment
 
