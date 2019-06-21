@@ -74,6 +74,12 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
 echo "-------------------------------------------------------------------------"
 
 #-------------------------------------------------------------------------------
+# Source scenario overrides
+#-------------------------------------------------------------------------------
+source $(find ${SCENARIO_OVERRIDES}) &>/dev/null &&
+  echo "Info: Sourced scenario overrides" || :
+
+#-------------------------------------------------------------------------------
 # Provision nodes using the selected provisioning tool
 #-------------------------------------------------------------------------------
 source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
