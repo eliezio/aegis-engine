@@ -17,13 +17,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Get node name from IDF for host "{{ inventory_hostname }}"
+- name: Get node names from IDF
   set_fact:
     node_name: "{{ item.key }}"
   with_dict: "{{ idf.kubespray.hostnames }}"
   when: item.value == inventory_hostname
 
-- name: Set facts for the node "{{ node_name }}"
+- name: Set facts for the nodes
   set_fact:
     node: "{{ nodes | selectattr('name', 'equalto', node_name) | first }}"
 
@@ -43,7 +43,7 @@
   when:
     idf.proxy_settings is defined
 
-- name: Add proxy settings to /etc/environment on target node
+- name: Add proxy settings to /etc/environment on target nodes
   lineinfile:
     dest: /etc/environment
     state: present

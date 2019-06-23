@@ -1,0 +1,133 @@
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+heat_template_version: 2017-02-24
+
+description: Common template for the instances
+
+parameters:
+  # parameters for instances
+  instance_name:
+    type: string
+    label: Name
+    description: Instance name
+
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to use for instances
+
+  flavor:
+    type: string
+    label: Flavor
+    description: Flavor to use for instances
+
+  volume_name:
+    type: string
+    label: Volume name
+    description: Volume name
+
+  volume_size:
+    type: string
+    label: Volume
+    description: Volume size to use for instances
+
+  keypair:
+    type: string
+    label: Key name
+    description: Keypair to usedfor the instances
+
+  private_network:
+    type: string
+    label: Private network name or ID
+    description: Network to attach instances to
+
+resources:
+  wait_condition:
+    type: OS::Heat::WaitCondition
+    properties:
+      handle: { get_resource: wait_handle }
+      count: 1
+      timeout: 600
+
+  wait_handle:
+    type: OS::Heat::WaitConditionHandle
+
+  root_login:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        disable_root: false
+
+  boot_script:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config:
+        str_replace:
+          params:
+            wc_notify: { get_attr: ['wait_handle', 'curl_cli'] }
+          template: |
+            #!/bin/bash -ex
+
+            echo "Running boot script"
+
+            # we need python for ansible
+            sudo apt update
+            sudo apt install -y python python-dev
+
+            # notify completion
+            wc_notify --data-binary '{"status": "SUCCESS"}'
+
+  boot_config:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: root_login}
+      - config: {get_resource: boot_script}
+
+  volume:
+    type: OS::Cinder::Volume
+    properties:
+      name: { get_param: volume_name }
+      size: { get_param: volume_size }
+
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume }
+      instance_uuid: { get_resource: instance }
+      mountpoint: /dev/vdb
+
+  instance:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: instance_name }
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: keypair }
+      networks:
+        - network: { get_param: private_network }
+      user_data_format: SOFTWARE_CONFIG
+      user_data: { get_resource: boot_config }
+
+outputs:
+  instance_ip:
+    value: {get_attr: [instance, first_address]}
+
+# vim: set ts=2 sw=2 expandtab:

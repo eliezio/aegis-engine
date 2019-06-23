@@ -16,16 +16,23 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-local_user: "{{ lookup('env', 'USER') }}"
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-engine_venv: "{{ lookup('env', 'ENGINE_VENV') }}"
-config_path: "{{ engine_cache }}/config"
-provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
-pdf_file: "{{ config_path }}/pdf.yml"
-idf_file: "{{ config_path }}/idf.yml"
-sdf_file: "{{ config_path }}/sdf.yml"
-heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
-distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804') }}"
-deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture') }}"
+
+- name: Get IPs of master nodes
+  shell: "openstack stack output show {{ stack_name }} master_ip -c output_value -f json"
+  register: stack_output_master_ip
+
+- name: Get IPs of worker nodes
+  shell: "openstack stack output show {{ stack_name }} worker_ip -c output_value -f json"
+  register: stack_output_worker_ip
+
+- name: Register IPs of master and worker nodes
+  set_fact:
+    master_ip: "{{ stack_output_master_ip.stdout }}"
+    worker_ip: "{{ stack_output_worker_ip.stdout }}"
+
+- name: Generate kubespray inventory
+  template:
+    src: inventory_kubespray.ini.j2
+    dest: "{{ config_path }}/inventory.ini"
+
+# vim: set ts=2 sw=2 expandtab:

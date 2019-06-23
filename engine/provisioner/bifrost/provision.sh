@@ -21,7 +21,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-BIFROST_ROOT_DIR="$(dirname $(realpath ${BASH_SOURCE[0]}))"
+PROVISIONER_ROOT_DIR="$(dirname $(realpath ${BASH_SOURCE[0]}))"
 export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles:${ENGINE_CACHE}/repos/bifrost/playbooks/roles"
 export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugins/modules:${ENGINE_CACHE}/repos/bifrost/playbooks/library"
 
@@ -34,7 +34,7 @@ echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -e baremetal=$BAREMETAL \
-  ${BIFROST_ROOT_DIR}/playbooks/main.yml
+  ${PROVISIONER_ROOT_DIR}/playbooks/main.yml
 echo "-------------------------------------------------------------------------"
 
 # Bifrost looks at environment variable VENV to see if it needs to use
@@ -69,9 +69,7 @@ echo "Info: Generate Ansible inventory"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i inventory/bifrost_inventory.py \
-  --ssh-extra-args ' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'\
-  ${BIFROST_ROOT_DIR}/playbooks/generate-inventory.yml
+  ${PROVISIONER_ROOT_DIR}/playbooks/generate-inventory.yml
 
 echo "-------------------------------------------------------------------------"
 echo "Info: Nodes are provisioned using bifrost!"

@@ -113,5 +113,16 @@ scenario:
         role: scenarios/os-nosdn-nofeature/kolla/role/os-nosdn-nofeature
         distros:
           - ubuntu1804
+  onap-oom-nofeature:
+    scm: git
+    src: ssh://localhost///local/repos/nordix/swconfig
+    version: configure-kubespray-onap
+    provisioners:
+      - heat
+    installers:
+      kubespray:
+        role: scenarios/onap-oom-nofeature/kubespray/role/onap-oom-nofeature
+        distros:
+          - ubuntu1804
 
 # vim: set ts=2 sw=2 expandtab:

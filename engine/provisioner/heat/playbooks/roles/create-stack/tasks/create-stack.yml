@@ -16,16 +16,35 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-local_user: "{{ lookup('env', 'USER') }}"
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-engine_venv: "{{ lookup('env', 'ENGINE_VENV') }}"
-config_path: "{{ engine_cache }}/config"
-provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
-pdf_file: "{{ config_path }}/pdf.yml"
-idf_file: "{{ config_path }}/idf.yml"
-sdf_file: "{{ config_path }}/sdf.yml"
-heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
-distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804') }}"
-deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture') }}"
+
+- name: Delete stack '{{ stack_name }}'
+  os_stack:
+    name: "{{ stack_name }}"
+    state: absent
+    wait: yes
+  ignore_errors: no
+
+- name: Create stack '{{ stack_name }}'
+  os_stack:
+    name: "{{ stack_name }}"
+    state: present
+    template: "{{ engine_cache }}/config/heat-template.yaml"
+    environment:
+      - "{{ engine_cache }}/config/heat-environment.yaml"
+    wait: yes
+  ignore_errors: no
+  register: stack_create_output
+
+- name: Log stack create output to console
+  debug:
+    msg: "{{ stack_create_output }}"
+
+- name: Get stack list
+  shell: openstack stack list --property name={{ stack_name }}
+  register: stack_list_output
+
+- name: Log stack list output to console
+  debug:
+    msg: "{{ stack_list_output.stdout_lines }}"
+
+# vim: set ts=2 sw=2 expandtab:

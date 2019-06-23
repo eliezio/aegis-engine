@@ -25,7 +25,7 @@
 #-------------------------------------------------------------------------------
 function usage() {
     echo "
-Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-t <heat template>] [-v] [-c] [-h]
+Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-v] [-c] [-h]
 
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -r: Provisioner type to use for provisioning nodes. (Default bifrost)
@@ -33,7 +33,8 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -b: URI to Scenario Baseline File. (SDF) (Default file://\$ENGINE_PATH/engine/var/sdf.yml)
     -p: URI to POD Descriptor File (PDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml)
     -i: URI to Installer Descriptor File (IDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml)
-    -t: URI to OpenStack Heat Orchestration Template. (HOT) (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=stacks/city-k8s.yml)
+    -u: If provisioner is Heat, path to OpenStack openrc file. (No default)
+    -e: URI to OpenStack Heat Environment File specific to cloud and scenario. (Default https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml)
     -o: Operating System to provision nodes with. (Default ubuntu1804)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
@@ -63,13 +64,13 @@ function parse_cmdline_opts() {
     DISTRO=${DISTRO:-ubuntu1804}
     PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
-    HOT=${HOT:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=stacks/city-k8s.yml"}
+    HEAT_ENV_FILE=${HEAT_ENV_FILE:-"https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml"}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
 
     # get values passed as command line arguments, overriding the defaults or
     # the ones set by using env variables
-    while getopts ":hd:r:s:b:o:p:i:t:cv" o; do
+    while getopts ":hd:r:s:b:o:p:i:e:u:cv" o; do
         case "${o}" in
             h) usage ;;
             d) INSTALLER_TYPE="${OPTARG}" ;;
@@ -79,12 +80,26 @@ function parse_cmdline_opts() {
             o) DISTRO="${OPTARG}" ;;
             p) PDF="${OPTARG}" ;;
             i) IDF="${OPTARG}" ;;
-            t) HOT="${OPTARG}" ;;
+            e) HEAT_ENV_FILE="${OPTARG}" ;;
+            u) OPENRC="${OPTARG}" ;;
             c) CLEANUP="true" ;;
             v) VERBOSITY="true" ;;
             *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
         esac
     done
+
+    # if provisioner type is heat, we need openrc as well
+    if [[ "$PROVISIONER_TYPE" == "heat" && -z "${OPENRC:-}" ]]; then
+      echo "Error: You must provide path to openrc file in order to use Heat as provisioner!"
+      exit 1
+    fi
+
+    # check if specified openrc exists
+    if [[ "$PROVISIONER_TYPE" == "heat" && ! -f $OPENRC ]]; then
+      echo "Error: Specified openrc file '$OPENRC' does not exist!"
+      exit 1
+    fi
+
 
     # Do all the exports
     export INSTALLER_TYPE=${INSTALLER_TYPE}
@@ -94,7 +109,7 @@ function parse_cmdline_opts() {
     export DISTRO=${DISTRO}
     export PDF=${PDF}
     export IDF=${IDF}
-    export HOT=${HOT}
+    export HEAT_ENV_FILE=${HEAT_ENV_FILE}
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
 
@@ -274,7 +289,8 @@ function install_ansible() {
     # TODO: move $ENGINE_PIP_VERSION to $ENGINE_PATH/engine/var/versions.yml
     pip -q install --upgrade pip==$ENGINE_PIP_VERSION # We need a version which supports the '-c' parameter
     # TODO: move ansible-lint version to $ENGINE_PATH/engine/var/versions.yml
-    pip -q install --upgrade ara==0.16.4 virtualenv pip setuptools shade ansible==$ENGINE_ANSIBLE_VERSION ansible-lint==3.4.21
+    pip -q install --upgrade ara==0.16.4 virtualenv pip setuptools shade \
+        ansible==$ENGINE_ANSIBLE_VERSION ansible-lint==3.4.21
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
@@ -301,17 +317,19 @@ function log_summary() {
     echo "Target OS    : $DISTRO"
     echo "Installer    : $INSTALLER_TYPE"
     echo "Provisioner  : $PROVISIONER_TYPE"
-    echo "SDF          : $SDF"
     if [[ "$PROVISIONER_TYPE" == "heat" ]]; then
-      echo "Heat Template: $HOT"
+      echo "Openrc File  : $OPENRC"
+      echo "Heat Env File: $HEAT_ENV_FILE"
     else
       echo "PDF          : $PDF"
       echo "IDF          : $IDF"
     fi
+    echo "SDF          : $SDF"
     echo "Cleanup      : $CLEANUP"
     echo "Verbosity    : $VERBOSITY"
     echo "#---------------------------------------------------#"
     echo
+
 }
 
 #-------------------------------------------------------------------------------

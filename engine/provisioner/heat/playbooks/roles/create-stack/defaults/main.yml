@@ -16,16 +16,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-local_user: "{{ lookup('env', 'USER') }}"
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-engine_venv: "{{ lookup('env', 'ENGINE_VENV') }}"
-config_path: "{{ engine_cache }}/config"
-provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
-pdf_file: "{{ config_path }}/pdf.yml"
-idf_file: "{{ config_path }}/idf.yml"
-sdf_file: "{{ config_path }}/sdf.yml"
-heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
-distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804') }}"
-deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture') }}"
+stack_name: "{{ lookup('env', 'STACK_NAME') | default('nordix-onap-custom', true) }}"
+
+# vim: set ts=2 sw=2 expandtab:
