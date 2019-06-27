@@ -17,11 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install openshift
-  pip:
-    name: openshift
-    state: present
-
 - name: Ensure /home/{{ ansible_env.SUDO_USER }}/.kube folder exists and empty
   file:
     path: "/home/{{ ansible_env.SUDO_USER }}/.kube"
@@ -39,10 +34,19 @@
     owner: "{{ ansible_env.SUDO_USER }}"
     mode: 0644
 
-- name: Install rook cluster
-  include_tasks: "configure-rook-cluster.yml"
-  vars:
-    ansible_become: false
+# TODO: disable rook/ceph for heat based deployments that use jumphosts
+# this requires work to enable it if it is desired to have rook/ceph for heat
+- block:
+  - name: Install openshift
+    pip:
+      name: openshift
+      state: present
+
+  - name: Install rook cluster
+    include_tasks: "configure-rook-cluster.yml"
+    vars:
+      ansible_become: false
+  when: provisioner_type == "bifrost"
 
 - name: Download kubectl and place it to /usr/local/bin
   get_url:
