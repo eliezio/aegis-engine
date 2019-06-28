@@ -37,11 +37,6 @@ parameters:
     label: Flavor
     description: Flavor to use for k8s master instances
 
-  master_volume_size:
-    type: string
-    label: Volume
-    description: Volume size to use for k8s master instances
-
   # parameters for k8s worker instances
   no_of_worker_nodes:
     type: number
@@ -58,28 +53,54 @@ parameters:
     label: Flavor
     description: Flavor to use for k8s worker instances
 
-  worker_volume_size:
-    type: string
-    label: Volume
-    description: Size of the volume to use for k8s worker instances
-
+  # common parameters
   keypair:
     type: string
-    label: Key name
-    description: Keypair to use for the instances
+    label: Keypair
+    description: Keypair to use on instances
 
-  private_network:
+  public_network:
     type: string
-    label: Private network name or ID
-    description: Network to attach instances to
+    label: Public Network
+    description: Public network
+
+  dns_nameservers:
+    type: comma_delimited_list
+    label: DNS nameservers
+    description: DNS nameservers
 
 resources:
-  name_nonce:
-    type: OS::Heat::RandomString
+  # create private network subnet
+  private_network:
+    type: OS::Neutron::Net
     properties:
-      length: 8
-      sequence: lowercase
+      name:
+        list_join: ['.', ['network', { get_param: 'OS::stack_name' } ]]
 
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name:
+        list_join:  ['.', ['subnet', { get_param: 'OS::stack_name' } ]]
+      network_id: { get_resource: private_network }
+      cidr: 10.1.0.0/24
+      dns_nameservers: { get_param: dns_nameservers }
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      name:
+        list_join:  ['.', ['router', { get_param: 'OS::stack_name' } ]]
+      external_gateway_info:
+        network: { get_param: public_network }
+
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet: { get_resource: private_subnet }
+
+  # create master nodes
   master_nodes:
     type: OS::Heat::ResourceGroup
     properties:
@@ -88,21 +109,13 @@ resources:
         type: heat-server.yaml
         properties:
           instance_name:
-            str_replace:
-              template: master%index%-$NONCE
-              params:
-                $NONCE: { get_resource: name_nonce }
+            list_join: ['.', ['master%index%', { get_param: 'OS::stack_name' } ]]
           image: { get_param: master_image }
           flavor: { get_param: master_flavor }
           keypair: { get_param: keypair }
-          volume_name:
-            str_replace:
-              template: volume-master%index%-$NONCE
-              params:
-                $NONCE: { get_resource: name_nonce }
-          volume_size: { get_param: master_volume_size }
-          private_network: { get_param: private_network }
+          private_network: { get_resource: private_network }
 
+  # create worker nodes
   worker_nodes:
     type: OS::Heat::ResourceGroup
     properties:
@@ -111,20 +124,11 @@ resources:
         type: heat-server.yaml
         properties:
           instance_name:
-            str_replace:
-              template: worker%index%-$NONCE
-              params:
-                $NONCE: { get_resource: name_nonce }
+            list_join: ['.', ['worker%index%', { get_param: 'OS::stack_name' } ]]
           image: { get_param: worker_image }
           flavor: { get_param: worker_flavor }
           keypair: { get_param: keypair }
-          volume_name:
-            str_replace:
-              template: volume-worker%index%-$NONCE
-              params:
-                $NONCE: { get_resource: name_nonce }
-          volume_size: { get_param: worker_volume_size }
-          private_network: { get_param: private_network }
+          private_network: { get_resource: private_network }
 
 outputs:
   master_ip:

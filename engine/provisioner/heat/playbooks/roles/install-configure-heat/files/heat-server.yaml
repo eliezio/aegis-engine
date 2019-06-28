@@ -37,16 +37,6 @@ parameters:
     label: Flavor
     description: Flavor to use for instances
 
-  volume_name:
-    type: string
-    label: Volume name
-    description: Volume name
-
-  volume_size:
-    type: string
-    label: Volume
-    description: Volume size to use for instances
-
   keypair:
     type: string
     label: Key name
@@ -100,19 +90,6 @@ resources:
       parts:
       - config: {get_resource: root_login}
       - config: {get_resource: boot_script}
-
-  volume:
-    type: OS::Cinder::Volume
-    properties:
-      name: { get_param: volume_name }
-      size: { get_param: volume_size }
-
-  volume_attachment:
-    type: OS::Cinder::VolumeAttachment
-    properties:
-      volume_id: { get_resource: volume }
-      instance_uuid: { get_resource: instance }
-      mountpoint: /dev/vdb
 
   instance:
     type: OS::Nova::Server

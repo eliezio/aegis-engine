@@ -17,16 +17,23 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+# this is an example heat environment file and the resources are limited
+# in order to ensure using the engine without proper environment file
+# does not result in too much usage on the cloud
 parameters:
+  # parameters for master nodes
   no_of_master_nodes: 1
   master_image: Ubuntu 18.04 Bionic Beaver
-  master_flavor: 4C-8GB-150GB
-  master_volume_size: 20
-  no_of_worker_nodes: 2
+  master_flavor: 1C-2GB-50GB
+
+  # parameters for worker nodes
+  no_of_worker_nodes: 1
   worker_image: Ubuntu 18.04 Bionic Beaver
-  worker_flavor: 4C-8GB-150GB
-  worker_volume_size: 20
-  keypair: fdegir-key
-  private_network: onap-net
+  worker_flavor: 1C-2GB-50GB
+
+  # common parameters
+  public_network: ext-net
+
+  dns_nameservers: ['8.8.8.8', '8.8.4.4', '1.1.1.1']
 
 # vim: set ts=2 sw=2 expandtab:
