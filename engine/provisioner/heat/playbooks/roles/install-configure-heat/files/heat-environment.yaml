@@ -21,6 +21,10 @@
 # in order to ensure using the engine without proper environment file
 # does not result in too much usage on the cloud
 parameters:
+  # parameters for jumphost
+  jumphost_image: Ubuntu 18.04 Bionic Beaver
+  jumphost_flavor: 1C-2GB-50GB
+
   # parameters for master nodes
   no_of_master_nodes: 1
   master_image: Ubuntu 18.04 Bionic Beaver

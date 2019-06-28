@@ -21,6 +21,17 @@ heat_template_version: 2017-02-24
 description: Kubespray cluster template to deploy ONAP
 
 parameters:
+  # parameteres for jumphost instance
+  jumphost_image:
+    type: string
+    label: Image name or ID
+    description: Image to use for jumphost instance
+
+  jumphost_flavor:
+    type: string
+    label: Flavor
+    description: Flavor to use for jumphost instance
+
   # parameters for k8s master instances
   no_of_master_nodes:
     type: number
@@ -100,6 +111,21 @@ resources:
       router_id: { get_resource: router }
       subnet: { get_resource: private_subnet }
 
+  # create jumphost
+  jumphost:
+    type: OS::Heat::ResourceGroup
+    properties:
+      resource_def:
+        type: heat-jumphost.yaml
+        properties:
+          instance_name:
+            list_join: ['.', ['jumphost', { get_param: 'OS::stack_name' } ]]
+          image: { get_param: jumphost_image }
+          flavor: { get_param: jumphost_flavor }
+          keypair: { get_param: keypair }
+          private_network: { get_resource: private_network }
+          public_network: { get_param: public_network }
+
   # create master nodes
   master_nodes:
     type: OS::Heat::ResourceGroup
@@ -131,6 +157,8 @@ resources:
           private_network: { get_resource: private_network }
 
 outputs:
+  jumphost_ip:
+    value: {get_attr: [jumphost, instance_ip]}
   master_ip:
     value: {get_attr: [master_nodes, instance_ip]}
   worker_ip:

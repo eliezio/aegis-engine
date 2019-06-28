@@ -17,17 +17,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- hosts: localhost
-  connection: local
+- hosts: jumphost
   gather_facts: true
   become: no
   vars_files:
     - "{{ engine_path }}/engine/var/global.yml"
-  vars:
-    ansible_python_interpreter: "/usr/bin/env python"
 
-  roles:
-    - role: install-configure-heat
-    - role: create-stack
+  tasks:
+    - name: Copy SSH keys to jumphost for target node access
+      copy:
+        src: "{{ item }}"
+        dest: "/root/.ssh/"
+        owner: "root"
+        group: "root"
+        mode: 0600
+      with_items:
+        - "/home/{{ local_user }}/.ssh/id_rsa"
+        - "/home/{{ local_user }}/.ssh/id_rsa.pub"
 
 # vim: set ts=2 sw=2 expandtab:

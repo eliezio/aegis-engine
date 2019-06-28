@@ -17,6 +17,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- name: Get IP of jumphost
+  shell: "openstack stack output show {{ stack_name }} jumphost_ip -c output_value -f json"
+  register: stack_output_jumphost_ip
+
 - name: Get IPs of master nodes
   shell: "openstack stack output show {{ stack_name }} master_ip -c output_value -f json"
   register: stack_output_master_ip
@@ -27,6 +31,7 @@
 
 - name: Register IPs of master and worker nodes
   set_fact:
+    jumphost_ip: "{{ stack_output_jumphost_ip.stdout }}"
     master_ip: "{{ stack_output_master_ip.stdout }}"
     worker_ip: "{{ stack_output_worker_ip.stdout }}"
 

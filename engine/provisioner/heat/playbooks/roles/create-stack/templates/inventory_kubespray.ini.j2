@@ -1,17 +1,27 @@
 [all:vars]
 ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
+[baremetal:vars]
+{% for ip in jumphost_ip.output_value %}
+ansible_ssh_common_args='-o ProxyCommand="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p root@{{ ip }}"'
+{% endfor %}
+
 [baremetal]
 # order of nodes is not significant
 {% for ip in master_ip.output_value %}
-master{{loop.index0}} ansible_host={{ ip }} ip={{ ip }} ansible_become=yes ansible_become_user=root
+master{{loop.index0}} ansible_host={{ ip }} ip={{ ip }} ansible_user=root
 {% endfor %}
 {% for ip in worker_ip.output_value %}
-worker{{loop.index0}} ansible_host={{ ip }} ip={{ ip }} ansible_become=yes ansible_become_user=root
+worker{{loop.index0}} ansible_host={{ ip }} ip={{ ip }} ansible_user=root
 {% endfor %}
 
 [localhost]
 127.0.0.1 ansible_connection=local ansible_python_interpreter={{ engine_venv }}/bin/python
+
+[jumphost]
+{% for ip in jumphost_ip.output_value %}
+jumphost ansible_host={{ ip }} ip={{ ip }} ansible_user=root
+{% endfor %}
 
 [kube-master]
 {% for ip in master_ip.output_value %}

@@ -31,6 +31,7 @@
   with_items:
     - heat-template.yaml
     - heat-server.yaml
+    - heat-jumphost.yaml
 
 - name: Get Heat environment file
   get_url:

@@ -35,7 +35,7 @@
 
 # run the scenario post-deployment tasks before running the common post-deployment tasks
 - hosts: all
-  gather_facts: true
+  gather_facts: yes
   become: yes
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
