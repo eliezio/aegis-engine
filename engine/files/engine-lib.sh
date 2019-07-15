@@ -286,7 +286,7 @@ function log_summary() {
     echo "#---------------------------------------------------#"
     echo "User         : $USER"
     echo "Hostname     : $HOSTNAME"
-    echo "Host OS      : $(source /etc/os-release &>/dev/null || source /usr/lib/os-release &>/dev/null; ID=${ID%%-*}; echo ${ID,,})"
+    echo "Host OS      : $(source /etc/os-release &>/dev/null || source /usr/lib/os-release &>/dev/null; echo ${PRETTY_NAME})"
     echo "IP           : $(hostname -I | cut -d' ' -f1)"
     echo
     echo "#---------------------------------------------------#"
