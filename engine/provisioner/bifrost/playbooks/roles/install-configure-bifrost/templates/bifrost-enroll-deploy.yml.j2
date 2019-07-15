@@ -95,7 +95,7 @@
     - name: Wait for hosts to be reachable via SSH
       local_action:
         module: wait_for
-        host: "{{ item }}"
+        host: "{{ hostvars[item].ansible_ssh_host }}"
         delay: 15
         state: started
         port: 22

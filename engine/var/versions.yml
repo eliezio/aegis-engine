@@ -37,10 +37,10 @@ virtualbmc_version: "{{ lookup('env', 'VIRTUALBMC_VERSION') | default('1.3', tru
 #-------------------------------------------------------------------------------
 # bifrost and ironic versions
 #-------------------------------------------------------------------------------
-# HEAD of bifrost "master" as of 19.03.2019
-bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('81d80496d451666dbd72cc78596c58033c7da47b', true) }}"
-# HEAD of ironic "master" as of 17.02.2019
-ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('ccf2bb1ea194408eb34586ee469cf37c296e6fa4', true) }}"
+# HEAD of bifrost "master" as of 15.07.2019
+bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('cd559480c95867d272b8a32240e50c390646665b', true) }}"
+# HEAD of ironic "master" as of 15.07.2019
+ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('1fcd7a477d1d45febf1a444fb8ff4c04f91660a2', true) }}"
 
 #-------------------------------------------------------------------------------
 # kubespray, kubernetes, and kubectl versions
