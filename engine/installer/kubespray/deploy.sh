@@ -45,12 +45,12 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
 
 # bootstrap scenario
 echo "-------------------------------------------------------------------------"
-echo "Info: Bootstrap scenario"
+echo "Info: Execute scenario pre deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i ${ENGINE_CACHE}/config/inventory.ini \
-  ${INSTALLER_ROOT_DIR}/playbooks/bootstrap-scenario.yml
+  ${INSTALLER_ROOT_DIR}/playbooks/pre-deployment.yml
 
 # install scenario
 echo "-------------------------------------------------------------------------"
@@ -66,7 +66,7 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
 
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"
-echo "Info: Execute post deployment tasks"
+echo "Info: Execute scenario and common post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \

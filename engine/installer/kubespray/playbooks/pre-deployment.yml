@@ -17,15 +17,36 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+# check if pre-deployment.yml exists in engine cache on localhost
 - hosts: localhost
   connection: local
-  gather_facts: true
+  gather_facts: false
+  become: yes
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
     - "{{ engine_path }}/engine/var/global.yml"
     - "{{ sdf_file }}"
 
-  roles:
-    - role: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
+  tasks:
+    - name: Check if any pre-deployment task defined for '{{ deploy_scenario }}' role
+      stat:
+        path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}/tasks/pre-deployment.yml"
+      register: pre_deployment_yml
+
+# run the scenario pre-deployment tasks before running the deployment itself
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ sdf_file }}"
+
+  tasks:
+    - name: Execute pre-deployment tasks of '{{ deploy_scenario }}' role
+      include_role:
+        name: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
+        tasks_from: pre-deployment
+      when: hostvars['localhost'].pre_deployment_yml.stat.exists == True
 
 # vim: set ts=2 sw=2 expandtab:
