@@ -102,5 +102,16 @@ scenario:
         role: scenarios/k8-multus-nofeature/kubespray/role/k8-multus-nofeature
         distros:
           - ubuntu1804
+  os-nosdn-nofeature:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    provisioners:
+      - bifrost
+    installers:
+      kolla:
+        role: scenarios/os-nosdn-nofeature/kolla/role/os-nosdn-nofeature
+        distros:
+          - ubuntu1804
 
 # vim: set ts=2 sw=2 expandtab:
