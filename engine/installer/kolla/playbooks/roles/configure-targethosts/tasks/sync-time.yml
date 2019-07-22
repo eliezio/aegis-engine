@@ -1,4 +1,4 @@
-#!/bin/bash
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -16,22 +16,44 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+- name: Add the OS specific variables
+  include_vars: '{{ ansible_os_family }}.yml'
 
-set -o errexit
-set -o nounset
-set -o pipefail
+- name: Remove NTP if installed
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes
+  with_items:
+    - "ntp"
 
-INSTALLER_ROOT_DIR="$(dirname $(realpath ${BASH_SOURCE[0]}))"
-export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles:${ENGINE_CACHE}/repos/bifrost/playbooks/roles"
-export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugins/modules:${ENGINE_CACHE}/repos/bifrost/playbooks/library"
+- name: Install Chrony
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+  with_items:
+    - "chrony"
 
-# configure target hosts
-echo "-------------------------------------------------------------------------"
-echo "Info: Configure target hosts"
-echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/config/inventory.ini \
-  ${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml
+- name: Copy the chrony.conf template file
+  template:
+    src: "chrony.conf.j2"
+    dest: "{{ chrony_config_location }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  become: true
+  when: idf.ntp_servers is defined
+
+- name: Restart chrony
+  service:
+    name: "{{ chrony_service_name }}"
+    state: "restarted"
+  become: true
+
+
+- name: "NTP should be synchronized"
+  shell: timedatectl  | grep 'synchronized'
+  register: synchronized
+  changed_when: false
+  until: "'yes' in synchronized.stdout"
+  retries: 300
+  delay: 2
 
 # vim: set ts=2 sw=2 expandtab:

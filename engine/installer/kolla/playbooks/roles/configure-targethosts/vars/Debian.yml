@@ -1,4 +1,4 @@
-#!/bin/bash
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -16,22 +16,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-
-set -o errexit
-set -o nounset
-set -o pipefail
-
-INSTALLER_ROOT_DIR="$(dirname $(realpath ${BASH_SOURCE[0]}))"
-export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles:${ENGINE_CACHE}/repos/bifrost/playbooks/roles"
-export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugins/modules:${ENGINE_CACHE}/repos/bifrost/playbooks/library"
-
-# configure target hosts
-echo "-------------------------------------------------------------------------"
-echo "Info: Configure target hosts"
-echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/config/inventory.ini \
-  ${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml
+chrony_service_name: chrony
+chrony_config_location: /etc/chrony/chrony.conf
+chrony_config_driftfile: /var/lib/chrony/chrony.drift
+chrony_config_keyfile: /etc/chrony/chrony.keys
+chrony_config_logdir: /var/log/chrony
 
 # vim: set ts=2 sw=2 expandtab:
