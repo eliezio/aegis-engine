@@ -17,11 +17,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# generate kubespray inventory from PDF and IDF
-- include: generate-kubespray-inventory.yml
-  when: installer_type == 'kubespray'
+- name: Generate Kolla inventory from PDF and IDF
+  template:
+    src:  inventory_kolla.ini.j2
+    dest: "{{ config_path }}/inventory.ini"
 
-# generate kolla inventory from PDF and IDF
-- include: generate-kolla-inventory.yml
-  when: installer_type == 'kolla'
-
+# vim: set ts=2 sw=2 expandtab:

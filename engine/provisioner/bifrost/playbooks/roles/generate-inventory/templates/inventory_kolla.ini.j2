@@ -1,0 +1,13 @@
+[all:vars]
+ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+
+[baremetal]
+{% for node in nodes %}
+{% set ansible_host = node.interfaces[idf.net_config[engine.pxe_network].interface].address %}
+{% set ip = node.interfaces[idf.net_config[engine.kolla_network | default('public')].interface].address %}
+{{ idf[installer_type].hostnames[node.name] }} ansible_host={{ ansible_host }} ip={{ ip }} ansible_become=yes ansible_become_user=root
+{% endfor %}
+
+[localhost]
+127.0.0.1 ansible_connection=local
+
