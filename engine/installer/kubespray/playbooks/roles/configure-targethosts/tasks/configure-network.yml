@@ -39,7 +39,6 @@
     regexp: "^no_proxy"
     line: "no_proxy={{ idf.proxy_settings.no_proxy }}"
   delegate_to: localhost
-  remote_user: root
   become: true
   when:
     idf.proxy_settings is defined

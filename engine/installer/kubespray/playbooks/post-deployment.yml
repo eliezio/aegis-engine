@@ -51,7 +51,6 @@
 
 # run common post-deployment tasks
 - hosts: baremetal
-  remote_user: root
   gather_facts: true
   become: true
   vars_files:

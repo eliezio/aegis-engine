@@ -5,7 +5,7 @@ ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 {% for node in nodes %}
 {% set ansible_host = node.interfaces[idf.net_config[engine.pxe_network].interface].address %}
 {% set ip = node.interfaces[idf.net_config[engine.kubespray_network | default('public')].interface].address %}
-{{ idf[installer_type].hostnames[node.name] }} ansible_host={{ ansible_host }} ip={{ ip }} ansible_become=yes ansible_become_user=root
+{{ idf[installer_type].hostnames[node.name] }} ansible_host={{ ansible_host }} ip={{ ip }} ansible_user=root
 {% endfor %}
 
 [localhost]
