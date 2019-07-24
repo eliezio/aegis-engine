@@ -54,6 +54,14 @@ kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.14.1',
 kubectl_version: "{{ lookup('env', 'KUBECTL_VERSION') | default(kubernetes_version, true) }}"
 
 #-------------------------------------------------------------------------------
+# kolla-ansible and openstack versions
+#-------------------------------------------------------------------------------
+# kolla-ansible for rocky as of 26.07.2019
+kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('7.1.1', true) }}"
+# openstack version that is supported by the pinned kolla-ansibe version
+openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('rocky', true) }}"
+
+#-------------------------------------------------------------------------------
 # rook, ceph, and helm versions
 #-------------------------------------------------------------------------------
 rook_version: "{{ lookup('env', 'ROOK_VERSION') | default('v0.9.3', true) }}"

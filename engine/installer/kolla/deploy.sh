@@ -34,4 +34,46 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i ${ENGINE_CACHE}/config/inventory.ini \
   ${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml
 
+# configure kolla installer
+echo "-------------------------------------------------------------------------"
+echo "Info: Configure kolla installer"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  ${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml
+
+# TODO: we need to run scenario pre-deployment tasks here in order to configure
+# bootstrap scenario
+echo "-------------------------------------------------------------------------"
+echo "Info: Execute scenario pre deployment tasks"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  ${INSTALLER_ROOT_DIR}/playbooks/pre-deployment.yml
+
+# kolla-ansible: bootstrap servers
+echo "-------------------------------------------------------------------------"
+echo "Info: Bootstrap servers"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+kolla-ansible \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  --configdir ${ENGINE_CACHE}/config \
+  --passwords ${ENGINE_CACHE}/config/passwords.yml \
+  -e @${ENGINE_CACHE}/config/kolla-ansible-extra-vars.yml \
+  bootstrap-servers
+
+# TODO: Add pre-checks, deploy and post-deploy for kolla-ansible
+
+# run post-deployment tasks
+echo "-------------------------------------------------------------------------"
+echo "Info: Execute scenario and common post deployment tasks"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  ${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml
+
 # vim: set ts=2 sw=2 expandtab:
