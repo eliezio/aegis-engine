@@ -26,7 +26,5 @@ required_packages:
  - sgabios
  - pkg-config
  - libvirt-dev
- - python-lxml
- - python-libvirt
 
 # vim: set ts=2 sw=2 expandtab:

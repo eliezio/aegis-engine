@@ -33,7 +33,6 @@ echo "Info: Prepare nodes, configure bifrost and create bifrost inventory"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i localhost, \
   -e baremetal=$BAREMETAL \
   ${BIFROST_ROOT_DIR}/playbooks/main.yml
 echo "-------------------------------------------------------------------------"
@@ -59,7 +58,6 @@ echo "Info: Generate Ansible inventory"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i localhost, \
   ${BIFROST_ROOT_DIR}/playbooks/generate-inventory.yml
 
 echo "-------------------------------------------------------------------------"
