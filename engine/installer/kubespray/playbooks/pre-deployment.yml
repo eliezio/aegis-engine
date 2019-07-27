@@ -17,10 +17,25 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# check if pre-deployment.yml exists in engine cache on localhost
+# check if any pre-deployment task defined for the scenario
 - hosts: localhost
   connection: local
-  gather_facts: false
+  gather_facts: no
+  become: no
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ sdf_file }}"
+
+  tasks:
+    - name: Check if any pre-deployment task defined for '{{ deploy_scenario }}' scenario
+      stat:
+        path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}/tasks/pre-deployment.yml"
+      register: pre_deployment_yml
+
+# run the scenario pre-deployment tasks before running the deployment itself
+- hosts: all
+  gather_facts: yes
   become: yes
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
@@ -28,22 +43,7 @@
     - "{{ sdf_file }}"
 
   tasks:
-    - name: Check if any pre-deployment task defined for '{{ deploy_scenario }}' role
-      stat:
-        path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}/tasks/pre-deployment.yml"
-      register: pre_deployment_yml
-
-# run the scenario pre-deployment tasks before running the deployment itself
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ sdf_file }}"
-
-  tasks:
-    - name: Execute pre-deployment tasks of '{{ deploy_scenario }}' role
+    - name: Execute pre-deployment tasks of '{{ deploy_scenario }}' scenario
       include_role:
         name: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
         tasks_from: pre-deployment
