@@ -17,18 +17,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# check if post-deployment.yml exists in engine cache on localhost
+# check if any post-deployment task defined for the scenario
 - hosts: localhost
   connection: local
-  gather_facts: true
-  become: yes
+  gather_facts: no
+  become: no
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
     - "{{ engine_path }}/engine/var/global.yml"
     - "{{ sdf_file }}"
 
   tasks:
-    - name: Check if any post-deployment task defined for '{{ deploy_scenario }}' role
+    - name: Check if any post-deployment task defined for '{{ deploy_scenario }}' scenario
       stat:
         path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}/tasks/post-deployment.yml"
       register: post_deployment_yml
@@ -43,46 +43,20 @@
     - "{{ sdf_file }}"
 
   tasks:
-    - name: Execute post-deployment tasks of '{{ deploy_scenario }}' role
+    - name: Execute post-deployment tasks of '{{ deploy_scenario }}' scenario
       include_role:
         name: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
         tasks_from: post-deployment
       when: hostvars['localhost'].post_deployment_yml.stat.exists == True
 
 # run common post-deployment tasks
-- hosts: baremetal
-  gather_facts: true
-  become: true
-  vars_files:
-    - "roles/post-deployment/vars/main.yml"
-
-  tasks:
-    - name: Install necessary utilities for CEPH
-      apt:
-        name:
-          - xfsprogs
-          - gdisk
-        state: present
-    - name: Remove existing rook data directories
-      file:
-        path: "{{ rook_data_dir_path }}"
-        state: absent
-      ignore_errors: yes
-      tags: reset
-    - name: Remove existing rook storage directories
-      file:
-        path: "{{ rook_storage_dir_path }}"
-        state: absent
-      ignore_errors: yes
-      tags: reset
-    - name: Remove existing rook ceph osds
-      script: "roles/post-deployment/files/clean-ceph-osd.sh {{ rook_node_device_filter }}"
-      ignore_errors: yes
-      tags: reset
-
-- hosts: localhost
-  connection: local
-  gather_facts: true
+# NOTE: none of the common post-deployment tasks is currently applicable to the
+# clusters provisioned using heat so we execute the role only for the clusters
+# provisioned using bifrost.
+# in future, when statement could be moved to tasks in role if the current
+# tasks become relevant or new tasks are added.
+- hosts: all
+  gather_facts: yes
   become: yes
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
@@ -92,5 +66,6 @@
 
   roles:
     - role: post-deployment
+      when: provisioner_type == 'bifrost'
 
 # vim: set ts=2 sw=2 expandtab:

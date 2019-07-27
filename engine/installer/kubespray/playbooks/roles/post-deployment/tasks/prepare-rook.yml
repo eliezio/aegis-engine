@@ -17,21 +17,27 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# NOTE: Install OpenShift and configure kubectl & helm on localhost
-# we operate against Kubernetes cluster from localhost
-- include_tasks: configure-localhost.yml
-  when: "'localhost' in group_names"
-
-# NOTE: Prepare for installing CEPH using Rook
-# Rook data directories/osds are on target nodes
-- include_tasks: prepare-rook.yml
-  when: "'baremetal' in group_names"
-
-# NOTE: Install CEPH using Rook
-# installation is driven from localhost against Kubernetes cluster
-- include_tasks: install-rook.yml
-  vars:
-    ansible_become: no
-  when: "'localhost' in group_names"
+- name: Install necessary utilities for CEPH
+  apt:
+    name:
+      - xfsprogs
+      - gdisk
+    state: present
+- name: Remove existing rook data directories
+  file:
+    path: "{{ rook_data_dir_path }}"
+    state: absent
+  ignore_errors: yes
+  tags: reset
+- name: Remove existing rook storage directories
+  file:
+    path: "{{ rook_storage_dir_path }}"
+    state: absent
+  ignore_errors: yes
+  tags: reset
+- name: Remove existing rook ceph osds
+  script: "roles/post-deployment/files/clean-ceph-osd.sh {{ rook_node_device_filter }}"
+  ignore_errors: yes
+  tags: reset
 
 # vim: set ts=2 sw=2 expandtab:
