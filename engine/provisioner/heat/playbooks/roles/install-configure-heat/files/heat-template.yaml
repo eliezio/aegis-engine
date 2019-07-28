@@ -32,43 +32,43 @@ parameters:
     label: Flavor
     description: Flavor to use for jumphost instance
 
-  # parameters for k8s master instances
+  # parameters for master instances
   no_of_master_nodes:
     type: number
     label: No of k8s master nodes
-    description: Number of master nodes in k8s cluster
+    description: Number of master nodes in cluster
 
   master_image:
     type: string
     label: Image name or ID
-    description: Image to use for k8s master instances
+    description: Image to use for master instances
 
   master_flavor:
     type: string
     label: Flavor
-    description: Flavor to use for k8s master instances
+    description: Flavor to use for master instances
 
-  # parameters for k8s worker instances
+  # parameters for worker instances
   no_of_worker_nodes:
     type: number
     label: No of k8s worker nodes
-    description: Number of worker nodes in k8s cluster
+    description: Number of worker nodes in cluster
 
   worker_image:
     type: string
     label: Image name or ID
-    description: Image to use for k8s worker instances
+    description: Image to use for worker instances
 
   worker_flavor:
     type: string
     label: Flavor
-    description: Flavor to use for k8s worker instances
+    description: Flavor to use for worker instances
 
   # common parameters
   keypair:
     type: string
-    label: Keypair
-    description: Keypair to use on instances
+    label: Key name
+    description: Keypair to use for instances
 
   public_network:
     type: string
@@ -81,6 +81,57 @@ parameters:
     description: DNS nameservers
 
 resources:
+  # create external security group
+  external_security_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name:
+        list_join: ['.', ['external-sg', { get_param: 'OS::stack_name' } ]]
+      description: >
+        Security Group to place jumphost in
+      rules: [
+        {
+          remote_ip_prefix: 0.0.0.0/0,
+          protocol: tcp,
+          port_range_min: 22,
+          port_range_max: 22
+        }
+      ]
+
+  # create internal security group
+  internal_security_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name:
+        list_join: ['.', ['internal-sg', { get_param: 'OS::stack_name' } ]]
+      description: >
+        Security Group to place jumphost and cluster instances in
+      rules: [
+        {
+          remote_ip_prefix: 0.0.0.0/0,
+          direction: ingress,
+          protocol: icmp
+        }
+      ]
+
+  # create tcp security group rule for internal_security_group
+  internal_security_group_rule_tcp:
+    type: OS::Neutron::SecurityGroupRule
+    properties:
+      security_group: { get_resource: internal_security_group }
+      remote_group: { get_resource: internal_security_group }
+      direction: ingress
+      protocol: tcp
+
+  # create udp security group rule for internal_security_group
+  internal_security_group_rule_udp:
+    type: OS::Neutron::SecurityGroupRule
+    properties:
+      security_group: { get_resource: internal_security_group }
+      remote_group: { get_resource: internal_security_group }
+      direction: ingress
+      protocol: udp
+
   # create private network subnet
   private_network:
     type: OS::Neutron::Net
@@ -125,6 +176,8 @@ resources:
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
           public_network: { get_param: public_network }
+          internal_security_group: { get_resource: internal_security_group }
+          external_security_group: { get_resource: external_security_group }
 
   # create master nodes
   master_nodes:
@@ -140,6 +193,7 @@ resources:
           flavor: { get_param: master_flavor }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
+          internal_security_group: { get_resource: internal_security_group }
 
   # create worker nodes
   worker_nodes:
@@ -155,6 +209,7 @@ resources:
           flavor: { get_param: worker_flavor }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
+          internal_security_group: { get_resource: internal_security_group }
 
 outputs:
   jumphost_ip:

@@ -18,7 +18,7 @@
 
 heat_template_version: 2017-02-24
 
-description: Common template for the instances
+description: Common template for instances to install cluster on
 
 parameters:
   # parameters for instances
@@ -40,7 +40,12 @@ parameters:
   keypair:
     type: string
     label: Key name
-    description: Keypair to usedfor the instances
+    description: Keypair to use for instances
+
+  internal_security_group:
+    type: string
+    label: Internal Security Group
+    description: Security Group to place jumphost and cluster instances in
 
   private_network:
     type: string
@@ -91,6 +96,14 @@ resources:
       - config: {get_resource: root_login}
       - config: {get_resource: boot_script}
 
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: private_network }
+      replacement_policy: AUTO
+      security_groups:
+        - { get_param: internal_security_group }
+
   instance:
     type: OS::Nova::Server
     properties:
@@ -99,7 +112,7 @@ resources:
       flavor: { get_param: flavor }
       key_name: { get_param: keypair }
       networks:
-        - network: { get_param: private_network }
+        - port: { get_resource: port }
       user_data_format: SOFTWARE_CONFIG
       user_data: { get_resource: boot_config }
 

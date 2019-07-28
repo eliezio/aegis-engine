@@ -18,7 +18,7 @@
 
 heat_template_version: 2017-02-24
 
-description: Common template for the instances
+description: Common template for jumphost instance
 
 parameters:
   # parameters for instances
@@ -40,7 +40,17 @@ parameters:
   keypair:
     type: string
     label: Key name
-    description: Keypair to usedfor the instances
+    description: Keypair to use for instances
+
+  internal_security_group:
+    type: string
+    label: Internal Security Group
+    description: Security Group to place jumphost and cluster instances in
+
+  external_security_group:
+    type: string
+    label: External Security Group
+    description: Security Group to place jumphost in
 
   private_network:
     type: string
@@ -101,6 +111,9 @@ resources:
     properties:
       network: { get_param: private_network }
       replacement_policy: AUTO
+      security_groups:
+        - { get_param: internal_security_group }
+        - { get_param: external_security_group }
 
   floating_ip:
     type: OS::Neutron::FloatingIP
