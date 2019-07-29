@@ -55,7 +55,7 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
 
 # kolla-ansible: bootstrap servers
 echo "-------------------------------------------------------------------------"
-echo "Info: Bootstrap servers"
+echo "Info: Kolla-ansible bootstrap servers"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 kolla-ansible \
@@ -65,7 +65,41 @@ kolla-ansible \
   -e @${ENGINE_CACHE}/config/kolla-ansible-extra-vars.yml \
   bootstrap-servers
 
-# TODO: Add pre-checks, deploy and post-deploy for kolla-ansible
+# kolla-ansible: prechecks
+echo "-------------------------------------------------------------------------"
+echo "Info: Kolla-ansible prechecks"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+kolla-ansible \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  --configdir ${ENGINE_CACHE}/config \
+  --passwords ${ENGINE_CACHE}/config/passwords.yml \
+  -e @${ENGINE_CACHE}/config/kolla-ansible-extra-vars.yml \
+  prechecks
+
+# kolla-ansible: deploy
+echo "-------------------------------------------------------------------------"
+echo "Info: Kolla-ansible deploy"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+kolla-ansible \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  --configdir ${ENGINE_CACHE}/config \
+  --passwords ${ENGINE_CACHE}/config/passwords.yml \
+  -e @${ENGINE_CACHE}/config/kolla-ansible-extra-vars.yml \
+  deploy
+
+# kolla-ansible: post-deploy
+echo "-------------------------------------------------------------------------"
+echo "Info: Kolla-ansible post-deploy"
+echo "-------------------------------------------------------------------------"
+cd ${ENGINE_PATH}
+kolla-ansible \
+  -i ${ENGINE_CACHE}/config/inventory.ini \
+  --configdir ${ENGINE_CACHE}/config \
+  --passwords ${ENGINE_CACHE}/config/passwords.yml \
+  -e @${ENGINE_CACHE}/config/kolla-ansible-extra-vars.yml \
+  post-deploy
 
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"

@@ -49,4 +49,18 @@
         tasks_from: post-deployment
       when: hostvars['localhost'].post_deployment_yml.stat.exists == True
 
+# run common post-deployment tasks
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  become: yes
+  vars_files:
+    - "{{ engine_path }}/engine/var/versions.yml"
+    - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ pdf_file }}"
+    - "{{ idf_file }}"
+
+  roles:
+    - role: post-deployment
+
 # vim: set ts=2 sw=2 expandtab:
