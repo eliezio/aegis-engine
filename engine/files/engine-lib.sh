@@ -161,7 +161,7 @@ function bootstrap_environment() {
 #-------------------------------------------------------------------------------
 function cleanup() {
     # remove engine venv, cache and .ansible
-    /bin/rm -rf $ENGINE_VENV $ENGINE_CACHE $HOME/.ansible
+    sudo /bin/rm -rf $ENGINE_VENV $ENGINE_CACHE $HOME/.ansible
 
     # stop ironic-conductor service before dropping ironic database
     sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
