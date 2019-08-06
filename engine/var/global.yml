@@ -19,6 +19,7 @@
 local_user: "{{ lookup('env', 'USER') }}"
 engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
 engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
+engine_venv: "{{ lookup('env', 'ENGINE_VENV') }}"
 config_path: "{{ engine_cache }}/config"
 provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
 installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"

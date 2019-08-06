@@ -152,6 +152,10 @@ function bootstrap_environment() {
     if [[ -z $(echo $PATH | grep "$HOME/.local/bin")  ]]; then
         export PATH="$HOME/.local/bin:$PATH"
     fi
+
+    # Create engine workspace directory
+    sudo mkdir -p ${ENGINE_WORKSPACE}
+    sudo chown ${USER}:${USER} ${ENGINE_WORKSPACE}
 }
 
 #-------------------------------------------------------------------------------

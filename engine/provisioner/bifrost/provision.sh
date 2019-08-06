@@ -37,12 +37,22 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   ${BIFROST_ROOT_DIR}/playbooks/main.yml
 echo "-------------------------------------------------------------------------"
 
+# Bifrost looks at environment variable VENV to see if it needs to use
+# virtual environment.
+# See: https://docs.openstack.org/bifrost/latest/install/virtualenv.html
+export VENV=${ENGINE_VENV}
+# In bifrost inventory/target and inventory/localhost are defined as:
+# 127.0.0.1 ansible_connection=local
+# Hence ansible_python_interpreter needs to be set for localhost
+# tasks to force ansible to use python from virtual environment.
+
 # install bifrost and enroll & deploy nodes
 echo "Info: Install bifrost"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/target \
+  -e ansible_python_interpreter=${ENGINE_VENV}/bin/python \
   bifrost-install.yml
 echo "-------------------------------------------------------------------------"
 
@@ -51,6 +61,7 @@ echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/bifrost_inventory.py \
+  -e ansible_python_interpreter=${ENGINE_VENV}/bin/python \
   bifrost-enroll-deploy.yml
 echo "-------------------------------------------------------------------------"
 

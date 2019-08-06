@@ -93,11 +93,11 @@
 - name: Plug vm '{{ hostname }}' into vbmc on port '{{ virtual_ipmi_port }}'
   command: vbmc add {{ hostname }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}
   environment:
-    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+    PATH: "{{ engine_venv }}/bin"
 
 - name: Start vbmc for '{{ hostname }}'
   command: vbmc start {{ hostname }}
   environment:
-    PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+    PATH: "{{ engine_venv }}/bin"
 
 # vim: set ts=2 sw=2 expandtab:

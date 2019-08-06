@@ -37,7 +37,7 @@
   pip:
     name: virtualbmc
     version: "{{ virtualbmc_version }}"
-    virtualenv: "{{ lookup('env', 'ENGINE_VENV') }}"
+    virtualenv: "{{ engine_venv }}"
   become: no
 
 - include_tasks: create-libvirt-vms.yml

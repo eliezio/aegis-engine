@@ -27,8 +27,11 @@
 #-------------------------------------------------------------------------------
 # Set paths of key stuff
 #-------------------------------------------------------------------------------
+# location of nordix workspace
+export ENGINE_WORKSPACE=/opt/engine
+
 # location of ENGINE_VENV
-export ENGINE_VENV=${ENGINE_PATH}/.venv/
+export ENGINE_VENV=${ENGINE_WORKSPACE}/.venv/
 
 # location of the cache the repositories will be cloned
 export ENGINE_CACHE=${ENGINE_PATH}/.cache

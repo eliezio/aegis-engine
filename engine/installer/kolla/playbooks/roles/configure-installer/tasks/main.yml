@@ -22,6 +22,7 @@
     name: kolla-ansible
     version: "{{ kolla_ansible_version }}"
     state: present
+  become: yes
 
 - name: Install openstack clients
   pip:
@@ -31,15 +32,16 @@
     - python-openstackclient
     - python-glanceclient
     - python-neutronclient
+  become: yes
 
 - name: Copy globals.yml
   copy:
-    src: "{{ engine_path }}/.venv/share/kolla-ansible/etc_examples/kolla/globals.yml"
+    src: "{{ engine_venv }}/share/kolla-ansible/etc_examples/kolla/globals.yml"
     dest: "{{ config_path }}/globals.yml"
 
 - name: Copy passwords.yml
   copy:
-    src: "{{ engine_path }}/.venv/share/kolla-ansible/etc_examples/kolla/passwords.yml"
+    src: "{{ engine_venv }}/share/kolla-ansible/etc_examples/kolla/passwords.yml"
     dest: "{{ config_path }}/passwords.yml"
 
 - name: Populate extra variables

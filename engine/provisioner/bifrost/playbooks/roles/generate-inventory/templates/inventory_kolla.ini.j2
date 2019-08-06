@@ -8,7 +8,7 @@ ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 {% endfor %}
 
 [localhost]
-127.0.0.1 ansible_connection=local
+127.0.0.1 ansible_connection=local ansible_python_interpreter={{ engine_venv }}/bin/python
 
 # These initial groups are the only groups required to be modified. The
 # additional groups are for more control of the environment.

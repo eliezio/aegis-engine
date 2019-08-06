@@ -52,7 +52,7 @@
     - name: Get list of nodes from vbmc
       command: vbmc list
       environment:
-        PATH: "{{ lookup('env', 'ENGINE_VENV') }}/bin"
+        PATH: "{{ engine_venv }}/bin"
       register: vbmc_vms
 
     - name: List vbmc nodes
