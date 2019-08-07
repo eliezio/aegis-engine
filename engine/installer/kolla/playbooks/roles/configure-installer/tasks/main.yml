@@ -21,18 +21,18 @@
   pip:
     name: kolla-ansible
     version: "{{ kolla_ansible_version }}"
-    state: present
+    virtualenv: "{{ engine_venv }}"
   become: yes
 
 - name: Install openstack clients
   pip:
     name: "{{ item }}"
-    state: present
+    virtualenv: "{{ engine_venv }}"
+  become: yes
   with_items:
     - python-openstackclient
     - python-glanceclient
     - python-neutronclient
-  become: yes
 
 - name: Copy globals.yml
   copy:
