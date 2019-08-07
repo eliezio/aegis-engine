@@ -228,7 +228,9 @@ function install_ansible() {
         net-tools
         python-devel
         python
-        python-pyyaml
+        pip
+        python-pymysql
+        python-zmq
         venv
         wget
         curl
@@ -248,11 +250,13 @@ function install_ansible() {
             [lsb-release]=lsb-release
             [make]=make
             [net-tools]=net-tools
-            [pip]=python-pip
-            [python]=python-minimal
-            [python-devel]=libpython-dev
-            [python-pyyaml]=python-yaml
-            [venv]=python-virtualenv
+            [python-devel]=libpython3-dev
+            [python]=python3-minimal
+            [pip]=python3-pip
+            [python-pyyaml]=python3-yaml
+            [python-pymysql]=python3-pymysql
+            [python-zmq]=python3-zmq
+            [venv]=virtualenv
             [wget]=wget
             [curl]=curl
         )
@@ -272,15 +276,8 @@ function install_ansible() {
 
     ${INSTALLER_CMD} ${install_map[@]}
 
-    # Note(cinerama): If pip is linked to pip3, the rest of the install
-    # won't work. Remove the alternatives. This is due to ansible's
-    # python 2.x requirement.
-    if [[ $(readlink -f /etc/alternatives/pip) =~ "pip3" ]]; then
-        sudo -H update-alternatives --remove pip $(readlink -f /etc/alternatives/pip)
-    fi
-
     # We need to prepare our virtualenv now
-    virtualenv --quiet --no-site-packages ${ENGINE_VENV}
+    virtualenv -p python3 --quiet --no-site-packages ${ENGINE_VENV}
     set +u
     source ${ENGINE_VENV}/bin/activate
     set -u

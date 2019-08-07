@@ -21,8 +21,11 @@
 # However as described in: https://github.com/ansible/ansible/issues/14468
 # it is not possible to install python-apt into the venv using standard means.
 # Work around is to download python-apt and copy it to the venv manually.
-- name: "Install python-apt for venv"
-  script: "install_apt_venv.sh {{ engine_venv }} {{ local_user }}"
+- block:
+  - name: "Install python-apt for venv"
+    script: "install_apt_venv.sh {{ engine_venv }} {{ local_user }}"
+  - name: "Install python3-apt for venv"
+    script: "install_apt3_venv.sh {{ engine_venv }} {{ local_user }}"
   when: ansible_os_family == "Debian"
 
 - name: "Load distribution defaults"

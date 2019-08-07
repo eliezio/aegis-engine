@@ -47,14 +47,30 @@
     <controller type='pci' index='0' model='pci-root'>
       <alias name='pci.0'/>
     </controller>
-{%- for net_key, net_name in networks.network_mapping.iteritems() -%}
     <interface type='network'>
-      <source network='{{ net_name }}' bridge='br_{{ net_name }}'/>
-      <mac address='{{ node.interfaces[idf.net_config[net_name].interface].mac_address }}'/>
+      <source network='admin' bridge='br_admin'/>
+      <mac address='{{ node.interfaces[idf.net_config['admin'].interface].mac_address }}'/>
       <model type='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0{{idf.net_config[net_name].interface + 3 }}' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0{{idf.net_config['admin'].interface + 3 }}' function='0x0'/>
     </interface>
-{%- endfor -%}
+    <interface type='network'>
+      <source network='public' bridge='br_public'/>
+      <mac address='{{ node.interfaces[idf.net_config['public'].interface].mac_address }}'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0{{idf.net_config['public'].interface + 3 }}' function='0x0'/>
+    </interface>
+    <interface type='network'>
+      <source network='mgmt' bridge='br_mgmt'/>
+      <mac address='{{ node.interfaces[idf.net_config['mgmt'].interface].mac_address }}'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0{{idf.net_config['mgmt'].interface + 3 }}' function='0x0'/>
+    </interface>
+    <interface type='network'>
+      <source network='neutron' bridge='br_neutron'/>
+      <mac address='{{ node.interfaces[idf.net_config['neutron'].interface].mac_address }}'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0{{idf.net_config['neutron'].interface + 3 }}' function='0x0'/>
+    </interface>
     <serial type='file'>
       <source path='{{ vm_console_log_path }}/{{ hostname }}_console.log'/>
       <target port='1'/>

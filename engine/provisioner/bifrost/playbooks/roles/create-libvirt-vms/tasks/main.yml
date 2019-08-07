@@ -40,6 +40,16 @@
     virtualenv: "{{ engine_venv }}"
   become: no
 
+- name: Create virtualbmc folder
+  file:
+    path: "{{ ansible_env.HOME }}/.vbmc/"
+    state: directory
+
+- name: Create vbmc configuration
+  template:
+    src:  virtualbmc.conf.j2
+    dest: "{{ ansible_env.HOME }}/.vbmc/virtualbmc.conf"
+
 - include_tasks: create-libvirt-vms.yml
   with_dict: "{{ vms }}"
   loop_control:

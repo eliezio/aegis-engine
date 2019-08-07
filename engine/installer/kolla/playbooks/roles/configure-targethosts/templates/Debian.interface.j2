@@ -1,6 +1,6 @@
 {%- set macaddress = item.key -%}
 {%- set device = item.value -%}
-{%- for selected_net_name, selected_net in idf.net_config.iteritems() if node.interfaces[selected_net.interface].mac_address == macaddress -%}
+{%- for selected_net_name, selected_net in idf.net_config.items() if node.interfaces[selected_net.interface].mac_address == macaddress -%}
 {%- set selected_inf = node.interfaces[selected_net.interface] -%}
 
 auto {{ device }}

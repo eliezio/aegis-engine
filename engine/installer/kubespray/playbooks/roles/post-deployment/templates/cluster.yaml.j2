@@ -228,7 +228,7 @@ spec:
     useAllNodes: false
     useAllDevices: false
     nodes:
-{% for nodename, hostname in idf[installer_type].hostnames.iteritems() %}
+{% for nodename, hostname in idf[installer_type].hostnames.items() %}
 {% set node = nodes | selectattr('name', 'equalto', nodename) | first %}
     - name: "{{ hostname }}"
 {% if node.node.type == 'baremetal' %}
