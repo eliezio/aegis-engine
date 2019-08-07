@@ -4,7 +4,8 @@ ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 [baremetal]
 {% for node in nodes %}
 {% set ansible_host = node.interfaces[idf.net_config[engine.pxe_network].interface].address %}
-{{ idf[installer_type].hostnames[node.name] }} ansible_host={{ ansible_host }} ansible_user=root
+{% set ansible_hostname = idf[installer_type].hostnames[node.name] %}
+{{ ansible_hostname }} ansible_host={{ ansible_host }} ansible_user=root network_interface={{hostvars[ansible_hostname].mgmt_ifname}} neutron_external_interface={{hostvars[ansible_hostname].neutron_ifname}}
 {% endfor %}
 
 [localhost]
