@@ -17,10 +17,29 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install kolla-ansible
-  pip:
-    name: kolla-ansible
+- name: Set kolla-ansible path
+  set_fact:
+    kolla_ansible_path: "{{ engine_cache }}/repos/kolla-ansible"
+
+- name: Remove existing files and directories
+  file:
+    path: "{{ kolla_ansible_path }}"
+    state: absent
+
+- name: Clone kolla-ansible repository and checkout '{{ kolla_ansible_version }}'
+  git:
+    repo: "{{ kolla_ansible_git_url }}"
+    dest: "{{ kolla_ansible_path }}"
     version: "{{ kolla_ansible_version }}"
+    force: yes
+  environment:
+    http_proxy: "{{ lookup('env','http_proxy') }}"
+    https_proxy: "{{ lookup('env','https_proxy') }}"
+    no_proxy: "{{ lookup('env','no_proxy') }}"
+
+- name: Install kolla-ansible requirements
+  pip:
+    requirements: "{{ kolla_ansible_path }}/requirements.txt"
     virtualenv: "{{ engine_venv }}"
   become: yes
 
@@ -36,12 +55,12 @@
 
 - name: Copy globals.yml
   copy:
-    src: "{{ engine_venv }}/share/kolla-ansible/etc_examples/kolla/globals.yml"
+    src: "{{ kolla_ansible_path }}/etc/kolla/globals.yml"
     dest: "{{ config_path }}/globals.yml"
 
 - name: Copy passwords.yml
   copy:
-    src: "{{ engine_venv }}/share/kolla-ansible/etc_examples/kolla/passwords.yml"
+    src: "{{ kolla_ansible_path }}/etc/kolla/passwords.yml"
     dest: "{{ config_path }}/passwords.yml"
 
 - name: Populate extra variables
@@ -50,6 +69,6 @@
     dest: "{{ config_path }}/kolla-ansible-extra-vars.yml"
 
 - name: Generate kolla passwords
-  command: kolla-genpwd -p "{{ config_path }}/passwords.yml"
+  command: "{{ kolla_ansible_path }}/tools/generate_passwords.py -p {{ config_path }}/passwords.yml"
 
 # vim: set ts=2 sw=2 expandtab:

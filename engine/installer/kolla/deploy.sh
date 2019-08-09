@@ -57,8 +57,8 @@ ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
 echo "-------------------------------------------------------------------------"
 echo "Info: Kolla-ansible bootstrap servers"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-kolla-ansible \
+cd ${ENGINE_CACHE}/repos/kolla-ansible/tools
+./kolla-ansible \
   -i ${ENGINE_CACHE}/config/inventory.ini \
   --configdir ${ENGINE_CACHE}/config \
   --passwords ${ENGINE_CACHE}/config/passwords.yml \
@@ -69,8 +69,8 @@ kolla-ansible \
 echo "-------------------------------------------------------------------------"
 echo "Info: Kolla-ansible prechecks"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-kolla-ansible \
+cd ${ENGINE_CACHE}/repos/kolla-ansible/tools
+./kolla-ansible \
   -i ${ENGINE_CACHE}/config/inventory.ini \
   --configdir ${ENGINE_CACHE}/config \
   --passwords ${ENGINE_CACHE}/config/passwords.yml \
@@ -81,8 +81,8 @@ kolla-ansible \
 echo "-------------------------------------------------------------------------"
 echo "Info: Kolla-ansible deploy"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-kolla-ansible \
+cd ${ENGINE_CACHE}/repos/kolla-ansible/tools
+./kolla-ansible \
   -i ${ENGINE_CACHE}/config/inventory.ini \
   --configdir ${ENGINE_CACHE}/config \
   --passwords ${ENGINE_CACHE}/config/passwords.yml \
@@ -93,8 +93,8 @@ kolla-ansible \
 echo "-------------------------------------------------------------------------"
 echo "Info: Kolla-ansible post-deploy"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-kolla-ansible \
+cd ${ENGINE_CACHE}/repos/kolla-ansible/tools
+./kolla-ansible \
   -i ${ENGINE_CACHE}/config/inventory.ini \
   --configdir ${ENGINE_CACHE}/config \
   --passwords ${ENGINE_CACHE}/config/passwords.yml \
