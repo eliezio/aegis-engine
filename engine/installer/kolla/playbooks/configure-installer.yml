@@ -23,6 +23,8 @@
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
     - "{{ engine_path }}/engine/var/global.yml"
+    - "{{ pdf_file }}"
+    - "{{ idf_file }}"
 
   roles:
     - role: configure-installer

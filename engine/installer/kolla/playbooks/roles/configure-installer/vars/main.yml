@@ -18,10 +18,4 @@
 # ============LICENSE_END=========================================================
 kolla_ansible_git_url: https://github.com/openstack/kolla-ansible
 
-# temporarily hardcoding some stuff
-os_distro: "ubuntu"
-os_kolla_install_type: "source"
-os_kolla_internal_vip_address: "10.3.0.3"
-os_enable_haproxy: "no"
-
 # vim: set ts=2 sw=2 expandtab:

@@ -63,6 +63,24 @@
     src: "{{ kolla_ansible_path }}/etc/kolla/passwords.yml"
     dest: "{{ config_path }}/passwords.yml"
 
+- name: Get node name from IDF for group controller
+  set_fact:
+    node_name: "{{ item.key }}"
+  with_dict: "{{ idf.kolla.nodes_roles }}"
+  when: "'controller' in item.value"
+
+- name: Get node "{{ node_name }}" from PDF
+  set_fact:
+    node: "{{ nodes | selectattr('name', 'equalto', node_name) | first }}"
+
+- name: Fetch mgmt interface address
+  set_fact:
+    os_kolla_internal_vip_address: "{{ node.interfaces[idf.net_config.mgmt.interface].address }}"
+
+- name: Assign distro specific variables
+  include_vars:
+    file: "{{ distro }}.yml"
+
 - name: Populate extra variables
   template:
     src: kolla-ansible-extra-vars.j2
