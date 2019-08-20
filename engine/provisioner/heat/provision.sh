@@ -36,7 +36,6 @@ echo "Info: Install, configure heat and create stack"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_PATH}
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i localhost, \
   ${PROVISIONER_ROOT_DIR}/playbooks/main.yml
 
 cd ${ENGINE_PATH}
