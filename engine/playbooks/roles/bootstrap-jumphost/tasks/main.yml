@@ -1,0 +1,31 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+# TODO: Since localhost now uses venv interpreter to Ansible, we also need to have
+# python-apt in the venv.
+# However as described in: https://github.com/ansible/ansible/issues/14468
+# it is not possible to install python-apt into the venv using standard means.
+# Work around is to download python-apt and copy it to the venv manually.
+- block:
+  - name: "Install python-apt for venv"
+    script: "install_apt_venv.sh {{ engine_venv }} {{ local_user }}"
+  - name: "Install python3-apt for venv"
+    script: "install_apt3_venv.sh {{ engine_venv }} {{ local_user }}"
+  when: ansible_os_family == "Debian"
+
+# vim: set ts=2 sw=2 expandtab:
