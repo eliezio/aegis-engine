@@ -115,7 +115,7 @@ scenario:
           - ubuntu1804
   onap-oom-nofeature:
     scm: git
-    src: ssh://localhost///local/repos/nordix/swconfig
+    src: https://gerrit.nordix.org/infra/swconfig.git
     version: configure-kubespray-onap
     provisioners:
       - heat
