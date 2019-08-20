@@ -116,7 +116,7 @@ scenario:
   onap-oom-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
-    version: configure-kubespray-onap
+    version: master
     provisioners:
       - heat
     installers:
