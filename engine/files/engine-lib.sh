@@ -262,6 +262,7 @@ function install_ansible() {
         )
         EXTRA_PKG_DEPS=( apt-utils )
         sudo apt-get update
+
         ;;
 
         *) echo "ERROR: Supported package manager not found.  Supported: apt, dnf, yum, zypper"; exit 1;;
@@ -291,6 +292,27 @@ function install_ansible() {
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
+
+    if [[ "$OS_FAMILY" == "Debian" ]]; then
+      # Get python3-apt and install into venv
+      venv_site_packages_dir="${ENGINE_VENV}/lib/python3*/site-packages"
+      cd /tmp
+      echo "Downloading python3-apt using apt"
+      apt download python3-apt
+
+      echo "Extracting python3-apt..."
+      dpkg -x python3-apt_*.deb python3-apt
+      chown -R $USER:$USER /tmp/python3-apt/usr/lib/python3*/dist-packages
+
+      echo "Moving python3-apt libraries into $venv_site_packages_dir"
+      mv /tmp/python3-apt/usr/lib/python3*/dist-packages/* $venv_site_packages_dir
+      cd $venv_site_packages_dir
+      mv apt_pkg.*.so apt_pkg.so
+      mv apt_inst.*.so apt_inst.so
+
+      echo "Removing downloaded python3-apt in /tmp"
+      rm -rf /tmp/python3-apt*
+    fi
 }
 
 #-------------------------------------------------------------------------------
