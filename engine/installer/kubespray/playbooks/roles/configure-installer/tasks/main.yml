@@ -28,10 +28,7 @@
     dest: "{{ engine_cache }}/repos/kubespray"
     version: "{{ kubespray_version }}"
     force: yes
-  environment:
-    http_proxy: "{{ lookup('env','http_proxy') }}"
-    https_proxy: "{{ lookup('env','https_proxy') }}"
-    no_proxy: "{{ lookup('env','no_proxy') }}"
+  environment: "{{ idf.proxy_settings | default({}) }}"
 
 # TODO: some stuff below could and perhaps should be pushed into the scenario
 # it is put here to make basic installation work without complexities
@@ -48,6 +45,19 @@
     src: "{{ config_path }}/inventory.ini"
     dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/inventory.ini"
     mode: 0644
+
+# update proxy if settings are provided
+- name: Update proxy settings in all.yml
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/all/all.yml"
+    regexp: "^[#\\s]*{{ item.name }}"
+    line: "{{ item.name }}: {{ item.value }}"
+  with_items:
+    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}' }
+    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}' }
+    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}' }
+  when:
+    idf.proxy_settings is defined
 
 # update ControlPersist to 60m to inline with max time
 - name: Update ControlPersist in ansible config

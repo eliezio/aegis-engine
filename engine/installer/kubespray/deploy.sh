@@ -58,9 +58,6 @@ echo "Info: Install scenario ${DEPLOY_SCENARIO}"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -e "http_proxy=${http_proxy:-}" \
-  -e "https_proxy=${https_proxy:-}" \
-  -e "additional_no_proxy=${no_proxy:-}" \
   -i inventory/engine/inventory.ini \
   cluster.yml
 

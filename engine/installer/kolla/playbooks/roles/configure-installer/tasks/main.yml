@@ -32,10 +32,7 @@
     dest: "{{ kolla_ansible_path }}"
     version: "{{ kolla_ansible_version }}"
     force: yes
-  environment:
-    http_proxy: "{{ lookup('env','http_proxy') }}"
-    https_proxy: "{{ lookup('env','https_proxy') }}"
-    no_proxy: "{{ lookup('env','no_proxy') }}"
+  environment: "{{ idf.proxy_settings | default({}) }}"
 
 - name: Install kolla-ansible requirements
   pip:
