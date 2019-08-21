@@ -17,12 +17,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install necessary utilities for CEPH
-  apt:
-    name:
-      - xfsprogs
-      - gdisk
-    state: present
+#- name: Install prerequisites
+#  include_tasks: "install-prerequisites.yml"
+- name: Install packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+  with_items:
+    - "xfsprogs"
+    - "gdisk"
 - name: Remove existing rook data directories
   file:
     path: "{{ rook_data_dir_path }}"
