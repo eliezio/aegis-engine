@@ -69,6 +69,8 @@ echo "Info: Generate Ansible inventory"
 echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/bifrost/playbooks
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+  -i inventory/bifrost_inventory.py \
+  --ssh-extra-args ' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'\
   ${PROVISIONER_ROOT_DIR}/playbooks/generate-inventory.yml
 
 echo "-------------------------------------------------------------------------"
