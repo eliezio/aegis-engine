@@ -27,7 +27,7 @@
 - block:
   - name: Create swap file
     command: |
-      fallocate -l 2048M /swapfile
+      fallocate -l 4096M /swapfile
 
   - name: Set swap file permissions
     file:

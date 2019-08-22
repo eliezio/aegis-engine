@@ -1,0 +1,77 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+- name: Run pvscan
+  command: "pvscan"
+  changed_when: false
+
+- name: Remove cinder-volumes volume group if it exists
+  lvg:
+    vg: cinder-volumes
+    state: absent
+  ignore_errors: yes
+
+- name: Check for cinder image
+  stat:
+    path: "{{ cinder_image_path }}"
+  register: cinder_image
+  ignore_errors: yes
+
+- block:
+  - name: Get loopback device
+    command: "losetup -l | awk '/cinder.img/ {print $1}'"
+    register: cinder_device
+    ignore_errors: yes
+
+  - name: Delete PV on loopback device
+    command: "pvremove {{ cinder_device.stdout }}"
+    ignore_errors: yes
+
+  - name: Delete loopback device
+    command: "losetup -d {{ cinder_device.stdout }}"
+    ignore_errors: yes
+
+  - name: Remove cinder image
+    file:
+      path: "{{ cinder_image_path }}"
+      state: absent
+    ignore_errors: yes
+  when: cinder_image.stat.exists == True
+
+- name: Get free loopback device
+  command: "losetup -f"
+  register: free_device
+
+- set_fact:
+    loopback_device_name: "{{ free_device.stdout }}"
+
+- name: Create cinder image
+  command: "fallocate -l {{ cinder_image_size }} {{ cinder_image_path }}"
+
+- name: Setup loopback device
+  command: "losetup {{ loopback_device_name }} {{ cinder_image_path }}"
+
+- name: Create PV on the loopback device
+  command: "pvcreate {{ loopback_device_name }}"
+
+- name: Add cinder-volumes volume group
+  lvg:
+    vg: cinder-volumes
+    pvs: "{{ loopback_device_name }}"
+
+# vim: set ts=2 sw=2 expandtab:

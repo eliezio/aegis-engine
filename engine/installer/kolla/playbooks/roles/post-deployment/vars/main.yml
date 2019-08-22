@@ -16,20 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-
-- name: Install packages
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-  with_items:
-    - "apt-transport-https"
-    - "ca-certificates"
-    - "curl"
-    - "gnupg-agent"
-    - "software-properties-common"
-    - "chrony"
-    - "dbus"
-    - "lvm2"
+external_network: "ext-net"
+external_subnet: "ext-subnet"
 
 # vim: set ts=2 sw=2 expandtab:

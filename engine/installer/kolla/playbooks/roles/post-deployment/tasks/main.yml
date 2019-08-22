@@ -16,12 +16,28 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-
 - name: Copy openstack admin-openrc.sh to /home/{{ ansible_env.SUDO_USER }}
   copy:
     src: "{{ engine_cache }}/config/admin-openrc.sh"
-    dest: "/home/{{ ansible_env.SUDO_USER }}/admin-openrc.sh"
-    owner: "{{ ansible_env.SUDO_USER }}"
+    dest: "{{ ansible_env.HOME }}/admin-openrc.sh"
     mode: 0644
+
+- name: Create external network {{ external_network }}
+  os_network:
+    state: present
+    name: "{{ external_network }}"
+    external: true
+    provider_network_type: "flat"
+    provider_physical_network: "physnet1"
+
+- name: Create external subnet {{ external_subnet }}
+  os_subnet:
+    state: present
+    enable_dhcp: no
+    network_name: "{{ external_network }}"
+    name: "{{ external_subnet }}"
+    cidr: "{{ idf.net_config.neutron.network}}/{{ idf.net_config.neutron.mask }}"
+    gateway_ip: "{{ idf.net_config.neutron.network | regex_replace('.0$', '.1') }}"
+
 
 # vim: set ts=2 sw=2 expandtab:

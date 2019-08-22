@@ -17,19 +17,5 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install packages
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-  with_items:
-    - "apt-transport-https"
-    - "ca-certificates"
-    - "curl"
-    - "gnupg-agent"
-    - "software-properties-common"
-    - "chrony"
-    - "dbus"
-    - "lvm2"
-
-# vim: set ts=2 sw=2 expandtab:
+cinder_image_size: "5G"
+cinder_image_path: "/var/lib/cinder.img"

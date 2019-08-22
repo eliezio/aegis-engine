@@ -53,7 +53,7 @@
 - hosts: localhost
   connection: local
   gather_facts: true
-  become: yes
+  become: no
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
     - "{{ engine_path }}/engine/var/global.yml"

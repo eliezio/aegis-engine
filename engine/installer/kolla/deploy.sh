@@ -101,6 +101,9 @@ cd ${ENGINE_CACHE}/repos/kolla-ansible/tools
   -e @${ENGINE_CACHE}/config/kolla-ansible-extra-vars.yml \
   post-deploy
 
+# source admin-openrc.sh for running post-deployment tasks
+source ${ENGINE_CACHE}/config/admin-openrc.sh
+
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"
 echo "Info: Execute scenario and common post deployment tasks"

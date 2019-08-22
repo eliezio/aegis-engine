@@ -21,5 +21,6 @@
 - include: install-packages.yml
 - include: sync-time.yml
 - include: create-swap.yml
+- include: create-loopback-cinder.yml
 
 # vim: set ts=2 sw=2 expandtab:

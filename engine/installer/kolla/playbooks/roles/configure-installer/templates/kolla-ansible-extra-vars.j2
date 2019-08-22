@@ -20,4 +20,15 @@ kolla_base_distro: "{{ os_distro }}"
 kolla_install_type: "{{ os_kolla_install_type }}"
 openstack_release: "{{ openstack_version }}"
 kolla_internal_vip_address: "{{ os_kolla_internal_vip_address }}"
+
+# TODO: The below options should be moved to scenario specifications
+# in infra/swconfig repository
+# ha specific options
 enable_haproxy: "no"
+
+# cinder specific options
+enable_cinder: "yes"
+enable_cinder_backend_lvm: "yes"
+
+# TODO: functest fails at singlevm1 when nova_compute_virt_type is kvm
+nova_compute_virt_type: "qemu"
