@@ -113,7 +113,7 @@ scenario:
         role: scenarios/os-nosdn-nofeature/kolla/role/os-nosdn-nofeature
         distros:
           - ubuntu1804
-  onap-oom-nofeature:
+  onap-nofeature-noha:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
@@ -121,7 +121,7 @@ scenario:
       - heat
     installers:
       kubespray:
-        role: scenarios/onap-oom-nofeature/kubespray/role/onap-oom-nofeature
+        role: scenarios/onap-nofeature-noha/kubespray/role/onap-nofeature-noha
         distros:
           - ubuntu1804
 
