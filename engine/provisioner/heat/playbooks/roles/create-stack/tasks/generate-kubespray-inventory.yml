@@ -35,9 +35,21 @@
     master_ip: "{{ stack_output_master_ip.stdout }}"
     worker_ip: "{{ stack_output_worker_ip.stdout }}"
 
+- name: Delete outdated kubespray inventory
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ config_path }}/inventory.ini"
+    - "/tmp/inventory.ini"
+  ignore_errors: yes
+
 - name: Generate kubespray inventory
   template:
     src: inventory_kubespray.ini.j2
-    dest: "{{ config_path }}/inventory.ini"
+    dest: "{{ item }}"
+  with_items:
+    - "{{ config_path }}/inventory.ini"
+    - "/tmp/inventory.ini"
 
 # vim: set ts=2 sw=2 expandtab:
