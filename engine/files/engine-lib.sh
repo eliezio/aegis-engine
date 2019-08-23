@@ -197,7 +197,7 @@ function cleanup() {
     sudo systemctl restart ironic-inspector > /dev/null 2>&1 || true
 
     # clean and remove rabbitmq service
-    sudo apt-get purge --auto-remove -y rabbitmq-server
+    sudo apt-get purge --auto-remove -y -qq rabbitmq-server > /dev/null
 }
 
 #-------------------------------------------------------------------------------
@@ -275,7 +275,7 @@ function install_ansible() {
 
     install_map+=(${EXTRA_PKG_DEPS[@]} )
 
-    ${INSTALLER_CMD} ${install_map[@]}
+    ${INSTALLER_CMD} ${install_map[@]} > /dev/null
 
     # We need to prepare our virtualenv now
     virtualenv -p python3 --quiet --no-site-packages ${ENGINE_VENV}
