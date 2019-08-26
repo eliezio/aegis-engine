@@ -196,6 +196,10 @@ function cleanup() {
     sudo systemctl restart ironic-conductor > /dev/null 2>&1 || true
     sudo systemctl restart ironic-inspector > /dev/null 2>&1 || true
 
+    # in some cases, apt-get purge complains with "E: Unable to locate package rabbitmq-server"
+    # and exits 100, causing this script and deploy.sh to fail.
+    # run apt-get update to get rid of this
+    sudo apt-get update -qq
     # clean and remove rabbitmq service
     sudo apt-get purge --auto-remove -y -qq rabbitmq-server > /dev/null
 }
