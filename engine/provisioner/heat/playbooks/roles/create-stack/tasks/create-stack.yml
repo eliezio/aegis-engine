@@ -33,6 +33,11 @@
     state: absent
     wait: yes
   ignore_errors: no
+  register: stack_delete_output
+
+- name: Log stack delete output to console
+  debug:
+    msg: "{{ stack_delete_output }}"
 
 - name: Create keypair '{{ keypair_name }}'
   os_keypair:
