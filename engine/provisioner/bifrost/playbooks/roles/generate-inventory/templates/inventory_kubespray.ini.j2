@@ -11,6 +11,9 @@ ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/
 [localhost]
 127.0.0.1 ansible_connection=local become=true ansible_python_interpreter={{ engine_venv }}/bin/python
 
+[jumphost]
+localhost
+
 [kube-master]
 {% for node in nodes %}
 {% if 'kube-master' in idf[installer_type].nodes_roles[node.name] %}
