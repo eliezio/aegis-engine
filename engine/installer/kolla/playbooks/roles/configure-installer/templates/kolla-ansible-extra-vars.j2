@@ -31,4 +31,4 @@ enable_cinder: "yes"
 enable_cinder_backend_lvm: "yes"
 
 # Nova compute virt_type is set in inventory
-nova_compute_virt_type: "{{ (lookup('env', 'BAREMETAL') == true) | ternary('kvm','qemu') }}"
+nova_compute_virt_type: "{{ (lookup('env', 'BAREMETAL') == 'true') | ternary('kvm','qemu') }}"
