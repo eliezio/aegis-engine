@@ -178,6 +178,8 @@ resources:
           public_network: { get_param: public_network }
           internal_security_group: { get_resource: internal_security_group }
           external_security_group: { get_resource: external_security_group }
+    depends_on:
+      - router_interface
 
   # create master nodes
   master_nodes:
