@@ -86,7 +86,7 @@ source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
 #-------------------------------------------------------------------------------
 # Install the stack using the selected installer
 #-------------------------------------------------------------------------------
-source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/deploy.sh
+source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh
 
 #-------------------------------------------------------------------------------
 # Log total time it took to finish to console
