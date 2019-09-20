@@ -2,17 +2,18 @@
 {%- set device = item.value -%}
 {%- for selected_net_name, selected_net in idf.net_config.items() if node.interfaces[selected_net.interface].mac_address == macaddress -%}
 {%- set selected_inf = node.interfaces[selected_net.interface] -%}
+{%- set ifname = device if selected_inf.vlan == 'native' else device + '.' + selected_inf.vlan -%}
 
-auto {{ device }}
+auto {{ ifname }}
 {% if selected_inf.address == "dhcp" %}
-iface {{ device }} inet dhcp
+iface {{ ifname }} inet dhcp
 {% if selected_net.gateway is defined %}
 up route add default gateway {{ selected_net.gateway | ipaddr('address') }}
 {% endif %}
 {% elif selected_inf.address == "manual" %}
-iface {{ device }} inet manual
+iface {{ ifname }} inet manual
 {% else %}
-iface {{ device }} inet static
+iface {{ ifname }} inet static
 address {{ selected_inf.address | ipaddr('address') }}
 netmask {{ (selected_net.network + "/" + (selected_net.mask | string)) | ipaddr('netmask') }}
 {% if selected_net.gateway is defined %}

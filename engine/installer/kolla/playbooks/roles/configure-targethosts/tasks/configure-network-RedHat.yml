@@ -32,14 +32,13 @@
 - name: Compute mapping dict from mac address to device name
   set_fact:
     device_mac_dict: "{{ (device_mac_dict | default({})) | combine({item.macaddress: item.device}) }}"
-  with_items:
-    - "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
+  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
+  when: "{{ '.' not in item.device }}"
 
-- name: Compute mapping dict from mac address to interface name (device name with/without VLAN info)
+- name: Filter to include only configured ethernet interfaces
   set_fact:
-    if_mac_dict: "{{ ( if_mac_dict | default({}) ) | combine({item.mac_address: (item.vlan == 'native') | ternary(device_mac_dict[item.mac_address], device_mac_dict[item.mac_address] + '.' + item.vlan) }) }}"
-  with_items:
-    - "{{ node.interfaces }}"
+    if_mac_dict: "{{ ( if_mac_dict | default({}) ) | combine({item.mac_address: device_mac_dict[item.mac_address]}) }}"
+  loop: "{{ node.interfaces }}"
 
 - name: Configure networking for host
   template:

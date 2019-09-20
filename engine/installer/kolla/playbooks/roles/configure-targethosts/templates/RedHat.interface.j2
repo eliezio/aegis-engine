@@ -2,8 +2,9 @@
 {%- set device = item.value -%}
 {%- for selected_net_name, selected_net in idf.net_config.items() if node.interfaces[selected_net.interface].mac_address == macaddress -%}
 {%- set selected_inf = node.interfaces[selected_net.interface] -%}
+{%- set ifname = device if selected_inf.vlan == 'native' else device + '.' + selected_inf.vlan -%}
 TYPE=Ethernet
-DEVICE={{ device }}
+DEVICE={{ ifname }}
 ONBOOT=yes
 HWADDR={{ macaddress }}
 {% if selected_inf.address == "dhcp" %}

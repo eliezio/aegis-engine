@@ -33,7 +33,9 @@
   loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
   loop_control:
     loop_var: interface
-  when: interface.macaddress == node.interfaces[idf.net_config.mgmt.interface].mac_address
+  when:
+    - interface.macaddress == node.interfaces[idf.net_config.mgmt.interface].mac_address
+    - "{{ '.' not in interface.device }}"
 
 - name: Fetch neutron network interface name
   set_fact:
@@ -41,4 +43,6 @@
   loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
   loop_control:
     loop_var: interface
-  when: interface.macaddress == node.interfaces[idf.net_config.neutron.interface].mac_address
+  when:
+    - interface.macaddress == node.interfaces[idf.net_config.neutron.interface].mac_address
+    - "{{ '.' not in interface.device }}"
