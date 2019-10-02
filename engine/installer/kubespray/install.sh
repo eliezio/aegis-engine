@@ -59,6 +59,7 @@ echo "-------------------------------------------------------------------------"
 cd ${ENGINE_CACHE}/repos/kubespray
 ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
   -i inventory/engine/inventory.ini \
+  -e @${ENGINE_CACHE}/config/kubespray-extra-vars.yml \
   cluster.yml
 
 # run post-deployment tasks

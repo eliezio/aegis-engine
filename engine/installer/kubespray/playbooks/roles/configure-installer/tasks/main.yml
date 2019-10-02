@@ -101,4 +101,9 @@
     regexp: "^docker_iptables_enabled:.*"
     line: "docker_iptables_enabled: true"
 
+- name: Populate extra variables
+  template:
+    src: kubespray-extra-vars.yml.j2
+    dest: "{{ config_path }}/kubespray-extra-vars.yml"
+
 # vim: set ts=2 sw=2 expandtab:
