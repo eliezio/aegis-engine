@@ -1,160 +1,26 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: "{{ rook_cluster_namespace }}"
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: rook-ceph-osd
-  namespace: "{{ rook_cluster_namespace }}"
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: rook-ceph-mgr
-  namespace: "{{ rook_cluster_namespace }}"
----
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-osd
-  namespace: "{{ rook_cluster_namespace }}"
-rules:
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: [ "get", "list", "watch", "create", "update", "delete" ]
----
-# Aspects of ceph-mgr that require access to the system namespace
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-mgr-system
-  namespace: "{{ rook_cluster_namespace }}"
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
----
-# Aspects of ceph-mgr that operate within the cluster's namespace
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-mgr
-  namespace: "{{ rook_cluster_namespace }}"
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - services
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - batch
-  resources:
-  - jobs
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - delete
-- apiGroups:
-  - ceph.rook.io
-  resources:
-  - "*"
-  verbs:
-  - "*"
----
-# Allow the operator to create resources in this cluster's namespace
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-cluster-mgmt
-  namespace: "{{ rook_cluster_namespace }}"
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: rook-ceph-cluster-mgmt
-subjects:
-- kind: ServiceAccount
-  name: rook-ceph-system
-  namespace: "{{ rook_operator_namespace }}"
----
-# Allow the osd pods in this namespace to work with configmaps
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-osd
-  namespace: "{{ rook_cluster_namespace }}"
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: rook-ceph-osd
-subjects:
-- kind: ServiceAccount
-  name: rook-ceph-osd
-  namespace: "{{ rook_cluster_namespace }}"
----
-# Allow the ceph mgr to access the cluster-specific resources necessary for the mgr modules
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-mgr
-  namespace: "{{ rook_cluster_namespace }}"
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: rook-ceph-mgr
-subjects:
-- kind: ServiceAccount
-  name: rook-ceph-mgr
-  namespace: "{{ rook_cluster_namespace }}"
----
-# Allow the ceph mgr to access the rook system resources necessary for the mgr modules
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-mgr-system
-  namespace: "{{ rook_operator_namespace }}"
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: rook-ceph-mgr-system
-subjects:
-- kind: ServiceAccount
-  name: rook-ceph-mgr
-  namespace: "{{ rook_cluster_namespace }}"
----
-# Allow the ceph mgr to access cluster-wide resources necessary for the mgr modules
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: rook-ceph-mgr-cluster
-  namespace: "{{ rook_cluster_namespace }}"
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: rook-ceph-mgr-cluster
-subjects:
-- kind: ServiceAccount
-  name: rook-ceph-mgr
-  namespace: "{{ rook_cluster_namespace }}"
----
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
 apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: rook-ceph
-  namespace: "{{ rook_cluster_namespace }}"
+  namespace: "{{ rook_namespace }}"
 spec:
   cephVersion:
     # The container image used to launch the Ceph daemon pods (mon, mgr, osd, mds, rgw).
@@ -170,10 +36,21 @@ spec:
   # Important: if you reinstall the cluster, make sure you delete this directory from each host or else the mons will fail to start on the new cluster.
   # In Minikube, the '/data' directory is configured to persist across reboots. Use "/data/rook" in Minikube environment.
   dataDirHostPath: "{{ rook_data_dir_path }}"
+  # Whether or not upgrade should continue even if a check fails
+  # This means Ceph's status could be degraded and we don't recommend upgrading but you might decide otherwise
+  # Use at your OWN risk
+  # To understand Rook's upgrade process of Ceph, read https://rook.io/docs/rook/master/ceph-upgrade.html#ceph-version-upgrades
+  skipUpgradeChecks: false
   # set the amount of mons to be started
   mon:
     count: 3
     allowMultiplePerNode: true
+  mgr:
+    modules:
+    # Several modules should not need to be included in this list. The "dashboard" and "monitoring" modules
+    # are already enabled by other settings in the cluster CR and the "rook" module is always enabled.
+    # - name: pg_autoscaler
+    #   enabled: true
   # enable the ceph dashboard for viewing cluster status
   dashboard:
     enabled: true
@@ -182,7 +59,16 @@ spec:
     # serve the dashboard at the given port.
     # port: 8443
     # serve the dashboard using SSL
-    # ssl: true
+    ssl: true
+  monitoring:
+    # requires Prometheus to be pre-installed
+    enabled: false
+    # namespace to deploy prometheusRule in. If empty, namespace of the cluster will be used.
+    # Recommended:
+    # If you have a single rook-ceph cluster, set the rulesNamespace to the same namespace as the cluster or keep it empty.
+    # If you have multiple rook-ceph clusters in the same k8s cluster, choose the same namespace (ideally, namespace with prometheus
+    # deployed) to set rulesNamespace for all the clusters. Otherwise, you will get duplicate alerts with multiple alert definitions.
+    rulesNamespace: {{ rook_namespace }}
   network:
     # toggle to use hostNetwork
     hostNetwork: {{ rook_use_host_network }}
@@ -210,8 +96,18 @@ spec:
 #        operator: Exists
 # The above placement information can also be specified for mon, osd, and mgr components
 #    mon:
+# Monitor deployments may contain an anti-affinity rule for avoiding monitor
+# collocation on the same node. This is a required rule when host network is used
+# or when AllowMultiplePerNode is false. Otherwise this anti-affinity rule is a
+# preferred rule with weight: 50.
 #    osd:
 #    mgr:
+  annotations:
+#    all:
+#    mon:
+#    osd:
+# If no mgr annotations are set, prometheus scrape annotations will be set by default.
+#   mgr:
   resources:
 # The requests and limits set here, allow the mgr pod to use half of one CPU core and 1 gigabyte of memory
 #    mgr:
@@ -272,3 +168,17 @@ spec:
 #        storeType: filestore
 #    - name: "172.17.4.301"
 #      deviceFilter: ^vdb
+  # The section for configuring management of daemon disruptions during upgrade or fencing.
+  disruptionManagement:
+    # If true, the operator will create and manage PodDisruptionBudgets for OSD, Mon, RGW, and MDS daemons. OSD PDBs are managed dynamically
+    # via the strategy outlined in the [design](https://github.com/rook/rook/blob/master/design/ceph-managed-disruptionbudgets.md). The operator will
+    # block eviction of OSDs by default and unblock them safely when drains are detected.
+    managePodBudgets: false
+    # A duration in minutes that determines how long an entire failureDomain like `region/zone/host` will be held in `noout` (in addition to the
+    # default DOWN/OUT interval) when it is draining. This is only relevant when  `managePodBudgets` is `true`. The default value is `30` minutes.
+    osdMaintenanceTimeout: 30
+    # If true, the operator will create and manage MachineDisruptionBudgets to ensure OSDs are only fenced when the cluster is healthy.
+    # Only available on OpenShift.
+    manageMachineDisruptionBudgets: false
+    # Namespace in which to watch for the MachineDisruptionBudgets.
+    machineDisruptionBudgetNamespace: openshift-machine-api

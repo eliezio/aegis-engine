@@ -43,25 +43,20 @@
 
 - name: Delete existing rook operator if any
   k8s:
+    definition: "{{ lookup('template', config_file) }}"
     state: absent
-    definition: "{{ lookup('template', 'operator.yaml.j2') }}"
+  with_items:
+    - operator.yaml.j2
+    - common.yaml.j2
+  loop_control:
+    loop_var: config_file
   ignore_errors: yes
   tags: reset
 
-- name: Wait until rook cluster namespace is deleted
+- name: Wait until rook namespace is deleted
   k8s_facts:
     kind: Namespace
-    name: "{{ rook_cluster_namespace }}"
-  register: result
-  until: not result.resources
-  retries: 10
-  delay: 5
-  tags: reset
-
-- name: Wait until rook operator namespace is deleted
-  k8s_facts:
-    kind: Namespace
-    name: "{{ rook_operator_namespace }}"
+    name: "{{ rook_namespace }}"
   register: result
   until: not result.resources
   retries: 10
@@ -71,18 +66,25 @@
 - name: Create rook operator
   k8s:
     state: present
-    definition: "{{ lookup('template', 'operator.yaml.j2') }}"
+    definition: "{{ lookup('template', config_file) }}"
+  with_items:
+    - common.yaml.j2
+    - operator.yaml.j2
+  loop_control:
+    loop_var: config_file
 
-- name: Wait until rook-ceph-agent daemonset is available
+- name: Wait until OPERATOR pod is available
   k8s_facts:
-    kind: DaemonSet
-    namespace: "{{ rook_operator_namespace }}"
-    name: rook-ceph-agent
+    kind: Pod
+    namespace: "{{ rook_namespace }}"
+    label_selectors:
+      - app = rook-ceph-operator
     field_selectors:
-      - status.numberAvailable is defined
-      - status.numberAvailable = status.currentNumberScheduled
-  register: rook_operator_status
-  until: rook_operator_status.resources
+      - status.phase=Running
+  register: rook_mgr_status
+  until:
+    - rook_mgr_status.resources is defined
+    - rook_mgr_status.resources
   retries: 10
   delay: 5
 
@@ -100,7 +102,7 @@
   k8s_facts:
     kind: CephCluster
     name: rook-ceph
-    namespace: "{{ rook_cluster_namespace }}"
+    namespace: "{{ rook_namespace }}"
     field_selectors:
       - status.state = "Created"
   register: rook_cluster_status
@@ -112,7 +114,7 @@
 - name: Wait until MGR pods are available
   k8s_facts:
     kind: Pod
-    namespace: "{{ rook_cluster_namespace }}"
+    namespace: "{{ rook_namespace }}"
     label_selectors:
       - app = rook-ceph-mgr
     field_selectors:
@@ -127,7 +129,7 @@
 - name: Wait until OSD pods are available
   k8s_facts:
     kind: Pod
-    namespace: "{{ rook_cluster_namespace }}"
+    namespace: "{{ rook_namespace }}"
     label_selectors:
       - app = rook-ceph-osd
     field_selectors:

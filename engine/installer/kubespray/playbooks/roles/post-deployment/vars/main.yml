@@ -21,8 +21,7 @@ helm_client_download_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd
 rook_data_dir_path: "/var/lib/rook"
 rook_storage_dir_path: "/rook/storage-dir"
 
-rook_operator_namespace: "rook-ceph-system"
-rook_cluster_namespace: "rook-ceph"
+rook_namespace: "rook-ceph"
 
 rook_use_host_network: "false"
 rook_node_device_filter: "vdb"
