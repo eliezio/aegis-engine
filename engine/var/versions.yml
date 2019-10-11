@@ -65,4 +65,4 @@ openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('rocky', tru
 #-------------------------------------------------------------------------------
 rook_version: "{{ lookup('env', 'ROOK_VERSION') | default('v1.1.2', true) }}"
 ceph_version: "{{ lookup('env', 'CEPH_VERSION') | default('v14.2.4-20190917', true) }}"
-helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.12.3', true) }}"
+helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.14.3', true) }}"
