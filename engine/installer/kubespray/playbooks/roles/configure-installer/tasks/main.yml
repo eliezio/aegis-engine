@@ -101,6 +101,19 @@
     regexp: "^docker_iptables_enabled:.*"
     line: "docker_iptables_enabled: true"
 
+- name: Check if KUBE_FEATURE_GATES is set
+  set_fact:
+    kube_feature_gates: []
+    feature_gate_list: "{{ lookup('env', 'KUBE_FEATURE_GATES') }}"
+
+- name: Setup feature gates list
+  set_fact:
+    kube_feature_gates: "{{ kube_feature_gates + [feature] }}"
+  with_items: "{{ feature_gate_list.split(',') }}"
+  loop_control:
+    loop_var: feature
+  when: feature_gate_list | length > 0
+
 - name: Populate extra variables
   template:
     src: kubespray-extra-vars.yml.j2

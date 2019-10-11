@@ -16,5 +16,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-kube_feature_gates: |-
-  {{ lookup('env', 'KUBE_FEATURE_GATES') | default([]) }}
+kube_feature_gates: {{ kube_feature_gates }}
+
+# vim: set ts=2 sw=2 expandtab:
