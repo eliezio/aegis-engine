@@ -22,22 +22,22 @@
 # does not result in too much usage on the cloud
 parameters:
   # parameters for jumphost
-  jumphost_image: Ubuntu 18.04 Bionic Beaver
-  jumphost_flavor: 1C-2GB-50GB
+  jumphost_image: 'Ubuntu 18.04 Bionic Beaver'
+  jumphost_flavor: 2C-4GB
 
   # parameters for master nodes
   no_of_master_nodes: 1
-  master_image: Ubuntu 18.04 Bionic Beaver
-  master_flavor: 1C-2GB-50GB
+  master_image: 'Ubuntu 18.04 Bionic Beaver'
+  master_flavor: 2C-4GB
 
   # parameters for worker nodes
   no_of_worker_nodes: 1
-  worker_image: Ubuntu 18.04 Bionic Beaver
-  worker_flavor: 1C-2GB-50GB
+  worker_image: 'Ubuntu 18.04 Bionic Beaver'
+  worker_flavor: 2C-4GB
 
   # common parameters
+  volume_size: 150
   public_network: ext-net
-
   dns_nameservers: ['8.8.8.8', '8.8.4.4', '1.1.1.1']
 
 # vim: set ts=2 sw=2 expandtab:

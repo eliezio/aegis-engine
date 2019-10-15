@@ -65,6 +65,11 @@ parameters:
     description: Flavor to use for worker instances
 
   # common parameters
+  volume_size:
+    type: string
+    label: Volume size
+    description: Size of the volume
+
   keypair:
     type: string
     label: Key name
@@ -173,6 +178,7 @@ resources:
             list_join: ['.', ['jumphost', { get_param: 'OS::stack_name' } ]]
           image: { get_param: jumphost_image }
           flavor: { get_param: jumphost_flavor }
+          volume_size: { get_param: volume_size }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
           public_network: { get_param: public_network }
@@ -193,6 +199,7 @@ resources:
             list_join: ['.', ['master%index%', { get_param: 'OS::stack_name' } ]]
           image: { get_param: master_image }
           flavor: { get_param: master_flavor }
+          volume_size: { get_param: volume_size }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
           internal_security_group: { get_resource: internal_security_group }
@@ -208,6 +215,8 @@ resources:
           instance_name:
             list_join: ['.', ['worker%index%', { get_param: 'OS::stack_name' } ]]
           image: { get_param: worker_image }
+          flavor: { get_param: worker_flavor }
+          volume_size: { get_param: volume_size }
           flavor: { get_param: worker_flavor }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }

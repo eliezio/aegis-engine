@@ -32,6 +32,11 @@ parameters:
     label: Image name or ID
     description: Image to use for instances
 
+  volume_size:
+    type: string
+    label: Volume size
+    description: Size of the volume
+
   flavor:
     type: string
     label: Flavor
@@ -126,6 +131,14 @@ resources:
       floatingip_id: { get_resource: floating_ip }
       port_id: { get_resource: port }
 
+  bootable_volume:
+    type: OS::Cinder::Volume
+    properties:
+      name:
+        list_join: ['.', ['volume', { get_param: instance_name } ]]
+      size: { get_param: volume_size }
+      image: { get_param: image }
+
   instance:
     type: OS::Nova::Server
     properties:
@@ -135,6 +148,10 @@ resources:
       key_name: { get_param: keypair }
       networks:
         - port: { get_resource: port }
+      block_device_mapping:
+        - device_name: vda
+          volume_id: { get_resource: bootable_volume }
+          delete_on_termination: true
       user_data_format: SOFTWARE_CONFIG
       user_data: { get_resource: boot_config }
 
