@@ -20,14 +20,26 @@
 - name: Get IP of jumphost
   shell: "openstack stack output show {{ stack_name }} jumphost_ip -c output_value -f json"
   register: stack_output_jumphost_ip
+  changed_when: false
+  until: "'output_value' in stack_output_jumphost_ip.stdout"
+  retries: 10
+  delay: 3
 
 - name: Get IPs of master nodes
   shell: "openstack stack output show {{ stack_name }} master_ip -c output_value -f json"
   register: stack_output_master_ip
+  changed_when: false
+  until: "'output_value' in stack_output_master_ip.stdout"
+  retries: 10
+  delay: 3
 
 - name: Get IPs of worker nodes
   shell: "openstack stack output show {{ stack_name }} worker_ip -c output_value -f json"
   register: stack_output_worker_ip
+  changed_when: false
+  until: "'output_value' in stack_output_worker_ip.stdout"
+  retries: 10
+  delay: 3
 
 - name: Register IPs of master and worker nodes
   set_fact:
