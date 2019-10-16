@@ -25,7 +25,7 @@
 #-------------------------------------------------------------------------------
 function usage() {
     echo "
-Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-v] [-c] [-h]
+Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l \"<provision>,<installer>\"] [-v] [-c] [-h]
 
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -r: Provisioner type to use for provisioning nodes. (Default bifrost)
@@ -36,6 +36,7 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -u: If provisioner is Heat, path to OpenStack openrc file. (No default)
     -e: URI to OpenStack Heat Environment File specific to cloud and scenario. (Default https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml)
     -o: Operating System to provision nodes with. (Default ubuntu1804)
+    -l: List of stages to run in a comma separated fashion. (Default execute all)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
@@ -65,12 +66,15 @@ function parse_cmdline_opts() {
     PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
     HEAT_ENV_FILE=${HEAT_ENV_FILE:-"https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml"}
+    DO_PROVISION=${DO_PROVISION:-1}
+    DO_INSTALLER=${DO_INSTALLER:-1}
+    DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
 
     # get values passed as command line arguments, overriding the defaults or
     # the ones set by using env variables
-    while getopts ":hd:r:s:b:o:p:i:e:u:cv" o; do
+    while getopts ":hd:r:s:b:o:p:i:e:u:l:cv" o; do
         case "${o}" in
             h) usage ;;
             d) INSTALLER_TYPE="${OPTARG}" ;;
@@ -84,6 +88,7 @@ function parse_cmdline_opts() {
             u) OPENRC="${OPTARG}" ;;
             c) CLEANUP="true" ;;
             v) VERBOSITY="true" ;;
+            l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
             *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
         esac
     done
@@ -100,6 +105,11 @@ function parse_cmdline_opts() {
       exit 1
     fi
 
+    # check the stages enabled in DEPLOY_STAGE_LIST
+    if [[ ! -z "$DEPLOY_STAGE_LIST" ]]; then
+      DO_PROVISION=$(echo "$DEPLOY_STAGE_LIST" | grep -c provision || true)
+      DO_INSTALLER=$(echo "$DEPLOY_STAGE_LIST" | grep -c installer || true)
+    fi
 
     # Do all the exports
     export INSTALLER_TYPE=${INSTALLER_TYPE}
@@ -110,9 +120,10 @@ function parse_cmdline_opts() {
     export PDF=${PDF}
     export IDF=${IDF}
     export HEAT_ENV_FILE=${HEAT_ENV_FILE}
+    export DO_PROVISION=${DO_PROVISION}
+    export DO_INSTALLER=${DO_INSTALLER}
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
-
     log_summary
 }
 
@@ -309,7 +320,7 @@ function install_ansible() {
       chown -R $USER:$USER /tmp/python3-apt/usr/lib/python3*/dist-packages
 
       echo "Moving python3-apt libraries into $venv_site_packages_dir"
-      mv /tmp/python3-apt/usr/lib/python3*/dist-packages/* $venv_site_packages_dir
+      cp -r /tmp/python3-apt/usr/lib/python3*/dist-packages/* $venv_site_packages_dir
       cd $venv_site_packages_dir
       mv apt_pkg.*.so apt_pkg.so
       mv apt_inst.*.so apt_inst.so

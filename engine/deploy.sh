@@ -81,12 +81,22 @@ source $(find ${SCENARIO_OVERRIDES} 2>/dev/null) &>/dev/null &&
 #-------------------------------------------------------------------------------
 # Provision nodes using the selected provisioning tool
 #-------------------------------------------------------------------------------
-source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
+echo ${DO_PROVISION}
+if [[ "${DO_PROVISION}" -eq 1 ]]; then
+  source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
+else
+  echo "Provisioning flag not specified"
+  exit 1
+fi
 
 #-------------------------------------------------------------------------------
 # Install the stack using the selected installer
 #-------------------------------------------------------------------------------
-source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh
+if [[ "${DO_INSTALLER}" -eq 1 ]]; then
+  source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh
+else
+  echo "No installer selected"
+fi
 
 #-------------------------------------------------------------------------------
 # Log total time it took to finish to console
