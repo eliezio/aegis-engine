@@ -41,6 +41,7 @@ scenario:
     version: master
     provisioners:
       - bifrost
+      - heat
     installers:
       kubespray:
         role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
@@ -53,6 +54,7 @@ scenario:
     version: master
     provisioners:
       - bifrost
+      - heat
     installers:
       kubespray:
         role: scenarios/k8-flannel-nofeature/kubespray/role/k8-flannel-nofeature
@@ -64,6 +66,7 @@ scenario:
     version: master
     provisioners:
       - bifrost
+      - heat
     installers:
       kubespray:
         role: scenarios/k8-canal-nofeature/kubespray/role/k8-canal-nofeature
@@ -75,6 +78,7 @@ scenario:
     version: master
     provisioners:
       - bifrost
+      - heat
     installers:
       kubespray:
         role: scenarios/k8-cilium-nofeature/kubespray/role/k8-cilium-nofeature
@@ -86,6 +90,7 @@ scenario:
     version: master
     provisioners:
       - bifrost
+      - heat
     installers:
       kubespray:
         role: scenarios/k8-weave-nofeature/kubespray/role/k8-weave-nofeature
@@ -97,6 +102,7 @@ scenario:
     version: master
     provisioners:
       - bifrost
+      - heat
     installers:
       kubespray:
         role: scenarios/k8-multus-nofeature/kubespray/role/k8-multus-nofeature
