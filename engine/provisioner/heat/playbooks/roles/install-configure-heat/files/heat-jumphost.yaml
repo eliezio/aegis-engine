@@ -96,10 +96,23 @@ resources:
             #!/bin/bash -ex
 
             echo "Running boot script"
-
-            # we need python for ansible
-            sudo apt update
-            sudo apt install -y python python-dev
+            source /etc/os-release || source /usr/lib/os-release
+            case ${ID,,} in
+              ubuntu|debian)
+                echo "Debian distro"
+                # we need python for ansible
+                sudo apt update
+                sudo apt install -y python python-dev
+                ;;
+              rhel|fedora|centos)
+                echo "RHEL distro"
+                yum install -y python python-devel curl
+                ;;
+              *)
+                echo "ERROR: Supported package manager not found.  Supported: apt, dnf, yum, zypper"
+                exit 1
+                ;;
+            esac
 
             # notify completion
             wc_notify --data-binary '{"status": "SUCCESS"}'
