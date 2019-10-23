@@ -24,19 +24,21 @@ parameters:
   # parameters for jumphost
   jumphost_image: 'Ubuntu 18.04'
   jumphost_flavor: c2m4
+  jumphost_volume_size: 150
 
   # parameters for master nodes
   no_of_master_nodes: 1
   master_image: 'Ubuntu 18.04'
   master_flavor: c2m4
+  master_volume_size: 150
 
   # parameters for worker nodes
   no_of_worker_nodes: 1
   worker_image: 'Ubuntu 18.04'
   worker_flavor: c2m4
+  worker_volume_size: 150
 
   # common parameters
-  volume_size: 150
   public_network: internet
   dns_nameservers: ['8.8.8.8', '8.8.4.4', '1.1.1.1']
 
