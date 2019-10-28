@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -16,23 +17,28 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-node_custom_config: "{{ config_path }}"
-kolla_base_distro: "{{ os_distro }}"
-kolla_install_type: "{{ os_kolla_install_type }}"
-openstack_release: "{{ openstack_version }}"
-kolla_internal_vip_address: "{{ os_kolla_internal_vip_address }}"
+- block:
+  - name: Create NFS shared folder
+    file:
+      path: "{{ cinder_backup_path }}"
+      state: directory
+      owner: "nobody"
+      group: "nogroup"
+      mode: 0777
 
-# TODO: The below options should be moved to scenario specifications
-# in infra/swconfig repository
-# ha specific options
-enable_haproxy: "no"
+  - name: Setup NFS exports
+    lineinfile:
+      path: "{{ nfs_exports_file }}"
+      regexp: "^{{ cinder_backup_path }}[\\s]*"
+      line: "{{ cinder_backup_path }} {{ nfs_network }}(rw,no_root_squash)"
 
-# cinder specific options
-enable_cinder: "yes"
-enable_cinder_backend_lvm: "yes"
-enable_cinder_backup: "yes"
-cinder_backup_driver: "nfs"
-cinder_backup_share: "{{ os_kolla_internal_vip_address }}:{{ cinder_backup_path }}"
+  - name: Kick exportfs
+    command: "/usr/sbin/exportfs -ra"
 
-# Nova compute virt_type is set in inventory
-nova_compute_virt_type: "{{ (lookup('env', 'BAREMETAL') == 'true') | ternary('kvm','qemu') }}"
+  - name: "Restart nfs server service"
+    service:
+      name: "{{ nfs_service }}"
+      state: restarted
+  when: inventory_hostname == groups['control'][0]
+
+# vim: set ts=2 sw=2 expandtab:

@@ -1,5 +1,7 @@
 [all:vars]
 ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+cinder_image_path='/var/lib/cinder.img'
+cinder_backup_path='/mnt/cinder-backup'
 
 [baremetal]
 {% for node in nodes %}

@@ -16,23 +16,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-node_custom_config: "{{ config_path }}"
-kolla_base_distro: "{{ os_distro }}"
-kolla_install_type: "{{ os_kolla_install_type }}"
-openstack_release: "{{ openstack_version }}"
-kolla_internal_vip_address: "{{ os_kolla_internal_vip_address }}"
+# functest has security compliance turned on with the following options
+[security_compliance]
+lockout_failure_attempts = 2
+lockout_duration = 10
+unique_last_password_count = 2
 
-# TODO: The below options should be moved to scenario specifications
-# in infra/swconfig repository
-# ha specific options
-enable_haproxy: "no"
-
-# cinder specific options
-enable_cinder: "yes"
-enable_cinder_backend_lvm: "yes"
-enable_cinder_backup: "yes"
-cinder_backup_driver: "nfs"
-cinder_backup_share: "{{ os_kolla_internal_vip_address }}:{{ cinder_backup_path }}"
-
-# Nova compute virt_type is set in inventory
-nova_compute_virt_type: "{{ (lookup('env', 'BAREMETAL') == 'true') | ternary('kvm','qemu') }}"

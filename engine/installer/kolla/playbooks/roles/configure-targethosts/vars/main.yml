@@ -17,5 +17,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-cinder_image_size: "5G"
-cinder_image_path: "/var/lib/cinder.img"
+cinder_image_size: "10G"
+
+nfs_exports_file: "/etc/exports"
+nfs_network: "{{ idf.net_config.mgmt.network }}/{{ idf.net_config.mgmt.mask }}"
+nfs_service: "nfs-kernel-server"

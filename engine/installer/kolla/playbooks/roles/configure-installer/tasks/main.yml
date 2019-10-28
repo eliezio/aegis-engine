@@ -83,6 +83,11 @@
     src: kolla-ansible-extra-vars.j2
     dest: "{{ config_path }}/kolla-ansible-extra-vars.yml"
 
+- name: Place custom keystone configuration
+  template:
+    src: keystone.conf.j2
+    dest: "{{ config_path }}/keystone.conf"
+
 - name: Generate kolla passwords
   command: "{{ kolla_ansible_path }}/tools/generate_passwords.py -p {{ config_path }}/passwords.yml"
 
