@@ -17,26 +17,32 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- name: Install pip
+  action: >
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+  with_items:
+    - "python-pip"
+    - "python-setuptools"
+
 - name: Install openshift
   pip:
     name: openshift
-    virtualenv: "{{ engine_venv }}"
 
-- name: Ensure /home/{{ ansible_env.SUDO_USER }}/.kube folder exists and empty
+- name: Ensure /root/.kube folder exists and empty
   file:
-    path: "/home/{{ ansible_env.SUDO_USER }}/.kube"
+    path: "/root/.kube"
     state: "{{ item }}"
-    owner: "{{ ansible_env.SUDO_USER }}"
+    owner: "root"
     mode: 0755
   with_items:
     - absent
     - directory
 
-- name: Copy kubernetes admin.conf to /home/{{ ansible_env.SUDO_USER }}/.kube
+- name: Copy kubernetes admin.conf to /root/.kube
   copy:
     src: "{{ engine_cache }}/repos/kubespray/inventory/engine/artifacts/admin.conf"
-    dest: "/home/{{ ansible_env.SUDO_USER }}/.kube/config"
-    owner: "{{ ansible_env.SUDO_USER }}"
+    dest: "/root/.kube/config"
+    owner: "root"
     mode: 0644
 
 - name: Download kubectl and place it to /usr/local/bin

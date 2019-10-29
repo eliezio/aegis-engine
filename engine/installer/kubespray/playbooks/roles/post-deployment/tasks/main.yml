@@ -19,8 +19,8 @@
 
 # NOTE: Install OpenShift and configure kubectl & helm on localhost
 # we operate against Kubernetes cluster from localhost
-- include_tasks: configure-localhost.yml
-  when: "'localhost' in group_names"
+- include_tasks: configure-{{ jumphost }}.yml
+  when: jumphost in group_names
 
 # NOTE: Prepare for installing CEPH using Rook
 # Rook data directories/osds are on target nodes
@@ -32,6 +32,6 @@
 - include_tasks: install-rook.yml
   vars:
     ansible_become: no
-  when: "'localhost' in group_names"
+  when: jumphost in group_names
 
 # vim: set ts=2 sw=2 expandtab:

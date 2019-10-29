@@ -25,18 +25,21 @@
   with_items:
     - "xfsprogs"
     - "gdisk"
+
 - name: Remove existing rook data directories
   file:
     path: "{{ rook_data_dir_path }}"
     state: absent
   ignore_errors: yes
   tags: reset
+
 - name: Remove existing rook storage directories
   file:
     path: "{{ rook_storage_dir_path }}"
     state: absent
   ignore_errors: yes
   tags: reset
+
 - name: Remove existing rook ceph osds
   script: "roles/post-deployment/files/clean-ceph-osd.sh {{ rook_node_device_filter }}"
   ignore_errors: yes

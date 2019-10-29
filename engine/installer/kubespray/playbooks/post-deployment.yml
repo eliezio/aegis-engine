@@ -50,9 +50,8 @@
       when: hostvars['localhost'].post_deployment_yml.stat.exists == True
 
 # run common post-deployment tasks
-# NOTE: none of the common post-deployment tasks is currently applicable to the
-# clusters provisioned using heat so we execute the role only for the clusters
-# provisioned using bifrost.
+# NOTE: The common post-deployment tasks is currently applicable only to
+# simple k8s and openstack scenarios.
 # in future, when statement could be moved to tasks in role if the current
 # tasks become relevant or new tasks are added.
 - hosts: all
@@ -61,11 +60,9 @@
   vars_files:
     - "{{ engine_path }}/engine/var/versions.yml"
     - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
 
   roles:
     - role: post-deployment
-      when: provisioner_type == 'bifrost'
+      when: "'k8-' in deploy_scenario"
 
 # vim: set ts=2 sw=2 expandtab:
