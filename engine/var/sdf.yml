@@ -50,6 +50,7 @@ scenario:
           - centos7
         apps:
           - istio
+          - ceph
   k8-flannel-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -64,6 +65,7 @@ scenario:
           - ubuntu1804
         apps:
           - istio
+          - ceph
   k8-canal-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -78,6 +80,7 @@ scenario:
           - ubuntu1804
         apps:
           - istio
+          - ceph
   k8-cilium-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -92,6 +95,7 @@ scenario:
           - ubuntu1804
         apps:
           - istio
+          - ceph
   k8-weave-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -106,6 +110,7 @@ scenario:
           - ubuntu1804
         apps:
           - istio
+          - ceph
   k8-multus-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -120,6 +125,7 @@ scenario:
           - ubuntu1804
         apps:
           - istio
+          - ceph
   os-nosdn-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git

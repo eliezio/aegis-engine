@@ -22,16 +22,4 @@
 - include_tasks: configure-{{ jumphost }}.yml
   when: jumphost in group_names
 
-# NOTE: Prepare for installing CEPH using Rook
-# Rook data directories/osds are on target nodes
-- include_tasks: prepare-rook.yml
-  when: "'baremetal' in group_names"
-
-# NOTE: Install CEPH using Rook
-# installation is driven from localhost against Kubernetes cluster
-- include_tasks: install-rook.yml
-  vars:
-    ansible_become: no
-  when: jumphost in group_names
-
 # vim: set ts=2 sw=2 expandtab:

@@ -19,17 +19,3 @@ jumphost: "{{ 'jumphost' if provisioner_type == 'heat' else 'localhost' }}"
 
 kubectl_download_url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
 helm_client_download_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
-
-rook_data_dir_path: "/var/lib/rook"
-rook_storage_dir_path: "/rook/storage-dir"
-
-rook_namespace: "rook-ceph"
-
-rook_use_host_network: "false"
-rook_node_device_filter: "vdb"
-
-rook_block_pool_name: "block-pool"
-rook_block_pool_replicas: 1
-
-rook_block_storage_name: "block-storage"
-rook_block_storage_fs: "xfs"
