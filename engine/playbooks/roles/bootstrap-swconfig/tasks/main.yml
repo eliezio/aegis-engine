@@ -35,6 +35,19 @@
   include_vars:
     file: "{{ sdf_file }}"
 
+- name: Create an empty apps list
+  set_fact:
+    apps: []
+    app_list: "{{ lookup('env', 'APPS') }}"
+
+- name: Create apps list
+  set_fact:
+    apps: "{{ apps + [app] }}"
+  loop: "{{ app_list.split(',') }}"
+  loop_control:
+    loop_var: app
+  when: app_list | length > 0
+
 - name: Fail if the scenario '{{ deploy_scenario }}' is not supported by the installer '{{ installer_type }}'
   fail:
     msg: "'{{ deploy_scenario }}' is not supported by the installer '{{ installer_type }}'"
@@ -44,6 +57,14 @@
   fail:
     msg: "'{{ distro }}' is not supported by the installer '{{ installer_type }}'"
   when: distro not in scenario[deploy_scenario].installers[installer_type].distros
+
+- name: Fail if the reuested apps is not supported by the installer '{{ installer_type }}'
+  fail:
+    msg: "'{{ app }}' is not supported by the installer '{{ installer_type }}'"
+  when: app not in scenario[deploy_scenario].installers[installer_type].apps
+  loop: "{{ apps }}"
+  loop_control:
+    loop_var: app
 
 - name: Remove existing clone of the scenario repository
   file:
@@ -76,5 +97,19 @@
   fail:
     msg: "Role for the scenario '{{ deploy_scenario }}' doesn't exist in infra/swconfig repo!"
   when: not role_directory.stat.exists
+
+- name: Check if the playbook for the app exists
+  stat:
+    path: "{{ engine_cache }}/repos/swconfig/apps/{{ app }}/{{ installer_type }}/playbooks/install.yml"
+  loop: "{{ apps }}"
+  loop_control:
+    loop_var: app
+  register: app_install_file
+
+- name: Fail if the app install playbooks does not exist
+  fail:
+    msg: "Playbook for some of the apps do not exist in infra/swconfig repo!"
+  loop: "{{ app_install_file.results }}"
+  when: not item.stat.exists
 
 # vim: set ts=2 sw=2 expandtab:

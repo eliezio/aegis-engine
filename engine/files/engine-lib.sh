@@ -38,6 +38,7 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -o: Operating System to provision nodes with. (Default ubuntu1804)
     -l: List of stages to run in a comma separated fashion. (Default execute all)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
+    -a: List of apps to be installed on top of the cloud (Default: none)
     -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
     "
@@ -69,12 +70,13 @@ function parse_cmdline_opts() {
     DO_PROVISION=${DO_PROVISION:-1}
     DO_INSTALLER=${DO_INSTALLER:-1}
     DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}
+    APPS=${APPS:-""}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
 
     # get values passed as command line arguments, overriding the defaults or
     # the ones set by using env variables
-    while getopts ":hd:r:s:b:o:p:i:e:u:l:cv" o; do
+    while getopts ":hd:r:s:b:o:p:i:e:u:l:a:cv" o; do
         case "${o}" in
             h) usage ;;
             d) INSTALLER_TYPE="${OPTARG}" ;;
@@ -86,6 +88,7 @@ function parse_cmdline_opts() {
             i) IDF="${OPTARG}" ;;
             e) HEAT_ENV_FILE="${OPTARG}" ;;
             u) OPENRC="${OPTARG}" ;;
+	    a) APPS="${OPTARG}" ;;
             c) CLEANUP="true" ;;
             v) VERBOSITY="true" ;;
             l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
@@ -122,6 +125,7 @@ function parse_cmdline_opts() {
     export HEAT_ENV_FILE=${HEAT_ENV_FILE}
     export DO_PROVISION=${DO_PROVISION}
     export DO_INSTALLER=${DO_INSTALLER}
+    export APPS=${APPS}
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
     log_summary
@@ -359,6 +363,7 @@ function log_summary() {
       echo "IDF          : $IDF"
     fi
     echo "SDF          : $SDF"
+    echo "Applications : $APPS"
     echo "Cleanup      : $CLEANUP"
     echo "Verbosity    : $VERBOSITY"
     echo "#---------------------------------------------------#"

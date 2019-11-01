@@ -36,8 +36,12 @@ export ENGINE_VENV=${ENGINE_WORKSPACE}/.venv/
 # location of the cache the repositories will be cloned
 export ENGINE_CACHE=${ENGINE_PATH}/.cache
 
+# location of the apps in swconfig repo
+export APPS_PATH=${ENGINE_CACHE}/repos/swconfig/apps
+
 # location of the scenario overrides if there is one
 export SCENARIO_OVERRIDES=${ENGINE_CACHE}/repos/swconfig/scenarios/${DEPLOY_SCENARIO}/${INSTALLER_TYPE}/overrides
+
 #-------------------------------------------------------------------------------
 # Set versions of the engine, pip and ansible here as we use bash
 #-------------------------------------------------------------------------------
