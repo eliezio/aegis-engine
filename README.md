@@ -1,9 +1,29 @@
 # Cloud Infra Engine
 
 The Cloud Infra Engine is created based on OPNFV Cross Community CI (XCI)
-project in order to automate deployment of various cloud infra scenarios. [1]
+project in order to automate the deployment and testing of various cloud
+infra scenarios. [1]
 
-# Prerequisites
+The supported scenarios are based on
+
+* Kubernetes
+* OpenStack
+* ONAP
+
+technologies and they can be deployed and tested using different types of
+resources such as
+
+* baremetal nodes
+* instances created on an OpenStack Cloud
+* VMs created using libvirt
+
+The possibility of using one of the resources listed above highly depends
+on the scenario the users want to deploy, test, and use. More information
+is available in corresponding sections.
+
+# Kubernetes Scenarios
+
+## Prerequisites
 
 Cloud Infra Engine lets users to deploy the scenario of their choosing on to
 their workstations. Minimum requirements for the host where the Cloud Infra
@@ -31,7 +51,7 @@ need to be installed on the host before executing the engine
 
 The user that is executing the engine should also have passwordless sudo enabled.
 
-# Usage Instructions
+## Usage Instructions
 
 Cloud Infra Engine is version controlled on Nordix Gerrit so its repository needs
 to be cloned.
@@ -66,6 +86,26 @@ Please note, in the default / embeded pdf / idf files, we have specified two dis
 for each vms we are going to create. If you are going to provide pdf / idf files yourself
 with mulitple disks, please note the current deployment script will not work when
 the disks have the same size as we specify the bootable disk based on size.
+
+# OpenStack Scenarios
+
+## Prerequisites
+
+TBD
+
+## Usage Instructions
+
+TBD
+
+# ONAP Scenarios
+
+## Prerequisites
+
+TBD
+
+## Usage Instructions
+
+TBD
 
 # References
 
