@@ -70,7 +70,6 @@ function parse_cmdline_opts() {
     DO_PROVISION=${DO_PROVISION:-1}
     DO_INSTALLER=${DO_INSTALLER:-1}
     DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}
-    APPS=${APPS:-""}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
 
@@ -88,7 +87,7 @@ function parse_cmdline_opts() {
             i) IDF="${OPTARG}" ;;
             e) HEAT_ENV_FILE="${OPTARG}" ;;
             u) OPENRC="${OPTARG}" ;;
-	    a) APPS="${OPTARG}" ;;
+            a) APPS="${OPTARG}" ;;
             c) CLEANUP="true" ;;
             v) VERBOSITY="true" ;;
             l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
@@ -125,9 +124,14 @@ function parse_cmdline_opts() {
     export HEAT_ENV_FILE=${HEAT_ENV_FILE}
     export DO_PROVISION=${DO_PROVISION}
     export DO_INSTALLER=${DO_INSTALLER}
-    export APPS=${APPS}
     export CLEANUP=${CLEANUP}
     export VERBOSITY=${VERBOSITY}
+
+    # export APPS
+    if [[ ! -z "${APPS:-}" ]]; then
+      export APPS=${APPS}
+    fi
+
     log_summary
 }
 
@@ -363,7 +367,9 @@ function log_summary() {
       echo "IDF          : $IDF"
     fi
     echo "SDF          : $SDF"
-    echo "Applications : $APPS"
+    if [[ ! -z "${APPS:-}" ]]; then
+      echo "Applications : $APPS"
+    fi
     echo "Cleanup      : $CLEANUP"
     echo "Verbosity    : $VERBOSITY"
     echo "#---------------------------------------------------#"

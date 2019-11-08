@@ -98,7 +98,7 @@ if [[ "${DO_INSTALLER}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   # Install all the requested apps
   #-----------------------------------------------------------------------------
-  apps=($(echo ${APPS} | tr "," "\n"))
+  apps=($(echo ${APPS:-} | tr "," "\n"))
   for app in "${apps[@]}"
   do
     app_playbook="${APPS_PATH}/$app/${INSTALLER_TYPE}/playbooks/install.yml"
