@@ -81,7 +81,6 @@ source $(find ${SCENARIO_OVERRIDES} 2>/dev/null) &>/dev/null &&
 #-------------------------------------------------------------------------------
 # Provision nodes using the selected provisioning tool
 #-------------------------------------------------------------------------------
-echo ${DO_PROVISION}
 if [[ "${DO_PROVISION}" -eq 1 ]]; then
   source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
 else
@@ -98,15 +97,16 @@ if [[ "${DO_INSTALLER}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   # Install all the requested apps
   #-----------------------------------------------------------------------------
-  apps=($(echo ${APPS:-} | tr "," "\n"))
-  for app in "${apps[@]}"
-  do
-    app_playbook="${APPS_PATH}/$app/${INSTALLER_TYPE}/playbooks/install.yml"
-    ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-      -i ${ENGINE_CACHE}/config/inventory.ini \
-      $app_playbook
-  done
-
+  if [[ ! -z "${APPS:-}" ]]; then
+    apps=($(echo ${APPS} | tr "," "\n"))
+    for app in "${apps[@]}"
+    do
+      app_playbook="${APPS_PATH}/$app/${INSTALLER_TYPE}/playbooks/install.yml"
+      ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+        -i ${ENGINE_CACHE}/config/inventory.ini \
+        $app_playbook
+    done
+  fi
 else
   echo "No installer selected"
 fi
