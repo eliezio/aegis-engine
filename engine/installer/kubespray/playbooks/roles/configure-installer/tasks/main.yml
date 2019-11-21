@@ -73,6 +73,27 @@
     regexp: "^helm_enabled:.*"
     line: "helm_enabled: true"
 
+# enable metrics server for all the scenarios using kubespray
+- name: Enable metrics server
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/addons.yml"
+    regexp: "^metrics_server_enabled:.*"
+    line: "metrics_server_enabled: true"
+
+# enable metrics server metric resolution
+- name: Enable metrics server resolution
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/addons.yml"
+    regexp: "^#metrics_server_metric_resolution:.*"
+    line: "metrics_server_metric_resolution: 60s"
+
+# enable metrics server metric resolution
+- name: Enable metrics_server_kubelet_preferred_address_types
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/addons.yml"
+    regexp: "^#metrics_server_kubelet_preferred_address_types:.*"
+    line: "metrics_server_kubelet_preferred_address_types: 'InternalIP'"
+
 # enable creation of kubeconfig on localhost for all the scenarios using kubespray
 - name: Enable creation of kubeconfig on localhost
   lineinfile:
