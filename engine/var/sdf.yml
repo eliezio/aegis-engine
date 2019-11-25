@@ -148,5 +148,17 @@ scenario:
         role: scenarios/onap-nofeature-noha/kubespray/role/onap-nofeature-noha
         distros:
           - ubuntu1804
+  armada-nofeature-noha:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    provisioners:
+      - bifrost
+    installers:
+      kubespray:
+        role: scenarios/armada-nofeature-noha/kubespray/role/armada-nofeature-noha
+        distros:
+          - ubuntu1804
+
 
 # vim: set ts=2 sw=2 expandtab:
