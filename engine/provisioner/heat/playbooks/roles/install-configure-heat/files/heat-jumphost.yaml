@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-heat_template_version: 2017-02-24
+heat_template_version: pike
 
 description: Common template for jumphost instance
 
@@ -66,6 +66,11 @@ parameters:
     type: string
     label: Public Network
     description: Public network
+
+conditions:
+  skip_volume: {equals : [{get_param: volume_size}, "0"]}
+  create_volume:
+    not: skip_volume
 
 resources:
   wait_condition:
@@ -146,14 +151,16 @@ resources:
 
   bootable_volume:
     type: OS::Cinder::Volume
+    condition: create_volume
     properties:
       name:
         list_join: ['.', ['volume', { get_param: instance_name } ]]
       size: { get_param: volume_size }
       image: { get_param: image }
 
-  instance:
+  instance_with_volume:
     type: OS::Nova::Server
+    condition: create_volume
     properties:
       name: { get_param: instance_name }
       image: { get_param: image }
@@ -167,6 +174,20 @@ resources:
           delete_on_termination: true
       user_data_format: SOFTWARE_CONFIG
       user_data: { get_resource: boot_config }
+
+  instance_without_volume:
+    type: OS::Nova::Server
+    condition: skip_volume
+    properties:
+      name: { get_param: instance_name }
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: keypair }
+      networks:
+        - port: { get_resource: port }
+      user_data_format: SOFTWARE_CONFIG
+      user_data: { get_resource: boot_config }
+
 
 outputs:
   instance_ip:

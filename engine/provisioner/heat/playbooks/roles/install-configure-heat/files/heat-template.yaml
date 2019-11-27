@@ -16,7 +16,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-heat_template_version: 2017-02-24
+heat_template_version: pike
 
 description: Kubespray cluster template to deploy ONAP
 
@@ -36,6 +36,7 @@ parameters:
     type: string
     label: Volume size of the jumphost
     description: Size of the volume
+    default: 0
 
   # parameters for master instances
   no_of_master_nodes:
@@ -57,6 +58,7 @@ parameters:
     type: string
     label: Volume size of the master nodes
     description: Size of the volume
+    default: 0
 
   # parameters for worker instances
   no_of_worker_nodes:
@@ -78,6 +80,7 @@ parameters:
     type: string
     label: Volume size of the worker nodes
     description: Size of the volume
+    default: 0
 
   # common parameters
   keypair:
@@ -94,6 +97,15 @@ parameters:
     type: comma_delimited_list
     label: DNS nameservers
     description: DNS nameservers
+
+  use_tenant_network:
+    type: boolean
+    label: Use private tenant network or not
+    description: Use private tenant network or public flat
+    default: true
+
+conditions:
+  use_private_network: {equals: [{get_param: use_tenant_network}, true]}
 
 resources:
   # create external security group
@@ -212,7 +224,10 @@ resources:
           volume_size: { get_param: master_volume_size }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
+          public_network: { get_param: public_network }
           internal_security_group: { get_resource: internal_security_group }
+          external_security_group: { get_resource: external_security_group }
+          use_network: {if: ["use_private_network", "private", "public"] }
 
   # create worker nodes
   worker_nodes:
@@ -230,7 +245,11 @@ resources:
           flavor: { get_param: worker_flavor }
           keypair: { get_param: keypair }
           private_network: { get_resource: private_network }
+          public_network: { get_param: public_network }
           internal_security_group: { get_resource: internal_security_group }
+          external_security_group: { get_resource: external_security_group }
+          use_network: {if: ["use_private_network", "private", "public"] }
+
 
 outputs:
   jumphost_ip:
