@@ -48,8 +48,7 @@ scenario:
         distros:
           - ubuntu1804
           - centos7
-        apps:
-          - istio
+        curated_apps:
           - ceph
   k8-flannel-nofeature:
     scm: git
@@ -63,8 +62,7 @@ scenario:
         role: scenarios/k8-flannel-nofeature/kubespray/role/k8-flannel-nofeature
         distros:
           - ubuntu1804
-        apps:
-          - istio
+        curated_apps:
           - ceph
   k8-canal-nofeature:
     scm: git
@@ -78,8 +76,7 @@ scenario:
         role: scenarios/k8-canal-nofeature/kubespray/role/k8-canal-nofeature
         distros:
           - ubuntu1804
-        apps:
-          - istio
+        curated_apps:
           - ceph
   k8-cilium-nofeature:
     scm: git
@@ -93,8 +90,7 @@ scenario:
         role: scenarios/k8-cilium-nofeature/kubespray/role/k8-cilium-nofeature
         distros:
           - ubuntu1804
-        apps:
-          - istio
+        curated_apps:
           - ceph
   k8-weave-nofeature:
     scm: git
@@ -108,8 +104,7 @@ scenario:
         role: scenarios/k8-weave-nofeature/kubespray/role/k8-weave-nofeature
         distros:
           - ubuntu1804
-        apps:
-          - istio
+        curated_apps:
           - ceph
   k8-multus-nofeature:
     scm: git
@@ -123,8 +118,7 @@ scenario:
         role: scenarios/k8-multus-nofeature/kubespray/role/k8-multus-nofeature
         distros:
           - ubuntu1804
-        apps:
-          - istio
+        curated_apps:
           - ceph
   k8-calico-spinnaker:
     scm: git
@@ -137,7 +131,7 @@ scenario:
         role: scenarios/k8-calico-spinnaker/kubespray/role/k8-calico-spinnaker
         distros:
           - ubuntu1804
-        apps:
+        curated_apps:
           - ceph
   os-nosdn-nofeature:
     scm: git
@@ -172,6 +166,38 @@ scenario:
         role: scenarios/armada-nofeature-noha/kubespray/role/armada-nofeature-noha
         distros:
           - ubuntu1804
+  k8-calico-istio:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    provisioners:
+      - bifrost
+      - heat
+    installers:
+      kubespray:
+        role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
+        distros:
+          - ubuntu1804
+        curated_apps:
+          - ceph
+          - istio
 
+# the following section contains apps that are supported by engine.
+#
+# the format of the entry for an app is:
+# apps:
+#   <app name>:
+#     installers:
+#       - <installer name>:
+apps:
+  istio:
+    installers:
+      - kubespray
+  ceph:
+    installers:
+      - kubespray
+  openstack-armada:
+    installers:
+      - kubespray
 
 # vim: set ts=2 sw=2 expandtab:

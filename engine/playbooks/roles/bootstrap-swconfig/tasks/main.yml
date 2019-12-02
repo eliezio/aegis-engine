@@ -35,19 +35,6 @@
   include_vars:
     file: "{{ sdf_file }}"
 
-- name: Create an empty apps list
-  set_fact:
-    apps: []
-    app_list: "{{ lookup('env', 'APPS') }}"
-
-- name: Create apps list
-  set_fact:
-    apps: "{{ apps + [app] }}"
-  loop: "{{ app_list.split(',') }}"
-  loop_control:
-    loop_var: app
-  when: app_list | length > 0
-
 - name: Fail if the scenario '{{ deploy_scenario }}' is not supported by the installer '{{ installer_type }}'
   fail:
     msg: "'{{ deploy_scenario }}' is not supported by the installer '{{ installer_type }}'"
@@ -58,11 +45,11 @@
     msg: "'{{ distro }}' is not supported by the installer '{{ installer_type }}'"
   when: distro not in scenario[deploy_scenario].installers[installer_type].distros
 
-- name: Fail if the reuested apps is not supported by the installer '{{ installer_type }}'
+- name: Fail if the requested apps is not supported by the installer '{{ installer_type }}'
   fail:
     msg: "'{{ app }}' is not supported by the installer '{{ installer_type }}'"
-  when: app not in scenario[deploy_scenario].installers[installer_type].apps
-  loop: "{{ apps }}"
+  when: installer_type not in apps[app].installers
+  loop: "{{ scenario[deploy_scenario].installers[installer_type].curated_apps }}"
   loop_control:
     loop_var: app
 
@@ -98,10 +85,10 @@
     msg: "Role for the scenario '{{ deploy_scenario }}' doesn't exist in infra/swconfig repo!"
   when: not role_directory.stat.exists
 
-- name: Check if the playbook for the app exists
+- name: Check if playbook for all the curated apps exist
   stat:
-    path: "{{ engine_cache }}/repos/swconfig/apps/{{ app }}/{{ installer_type }}/playbooks/install.yml"
-  loop: "{{ apps }}"
+    path: "{{ apps_path }}/{{ app }}/{{ installer_type }}/playbooks/install.yml"
+  loop: "{{ scenario[deploy_scenario].installers[installer_type].curated_apps }}"
   loop_control:
     loop_var: app
   register: app_install_file

@@ -97,16 +97,11 @@ if [[ "${DO_INSTALLER}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   # Install all the requested apps
   #-----------------------------------------------------------------------------
-  if [[ ! -z "${APPS:-}" ]]; then
-    apps=($(echo ${APPS} | tr "," "\n"))
-    for app in "${apps[@]}"
-    do
-      app_playbook="${APPS_PATH}/$app/${INSTALLER_TYPE}/playbooks/install.yml"
-      ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-        -i ${ENGINE_CACHE}/config/inventory.ini \
-        $app_playbook
-    done
-  fi
+  cd ${APPS_PATH}
+  ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
+    -i ${ENGINE_CACHE}/config/inventory.ini \
+    -e installer_type=${INSTALLER_TYPE} \
+    install.yml
 else
   echo "No installer selected"
 fi
