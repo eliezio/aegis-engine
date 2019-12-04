@@ -174,7 +174,7 @@ function check_prerequisites() {
 #-------------------------------------------------------------------------------
 function bootstrap_environment() {
     # source engine-vars
-    source $ENGINE_PATH/engine/config/engine-vars
+    source $ENGINE_PATH/engine/config/engine-vars.sh
 
     # Make sure we pass ENGINE_PATH everywhere
     export ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"
