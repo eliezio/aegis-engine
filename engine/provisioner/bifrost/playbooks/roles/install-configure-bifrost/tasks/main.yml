@@ -79,6 +79,6 @@
   with_items:
     - { source: "{{ deployment_image }}", destination: "/httpboot/deployment_image.qcow2", download: "{{ use_prebuilt_deployment_image }}" }
     - { source: "{{ ipa_initramfs }}", destination: "/httpboot/ipa.initramfs", download: "true" }
-    - { source: "{{ ipa_vmlinuz }}", destination: "/httpboot/ipa.vmlinuz", download: "true" }
+    - { source: "{{ ipa_kernel }}", destination: "/httpboot/ipa.kernel", download: "true" }
 
 # vim: set ts=2 sw=2 expandtab:

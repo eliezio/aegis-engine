@@ -31,15 +31,16 @@
 #-------------------------------------------------------------------------------
 # component versions used for virtual deployment
 #-------------------------------------------------------------------------------
-virtualbmc_version: "{{ lookup('env', 'VIRTUALBMC_VERSION') | default('1.5', true) }}"
+# latest virtualbmc release as of 05.09.2019
+virtualbmc_version: "{{ lookup('env', 'VIRTUALBMC_VERSION') | default('1.6.0', true) }}"
 
 #-------------------------------------------------------------------------------
 # bifrost and ironic versions
 #-------------------------------------------------------------------------------
-# HEAD of bifrost "stable/train" as of 08.10.2019
-bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('74cef62eae5acdc6cab78142bcf988ed5426b3d0', true) }}"
-# HEAD of ironic "stable/train" as of 08.10.2019
-ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('656695c51f8380a7a64cc756d90ef884973d72a9', true) }}"
+# HEAD of bifrost "stable/train" as of 15.11.2019
+bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('1ec396d8e473587c4d653b6f518bcaa25c819b34', true) }}"
+# HEAD of ironic "stable/train" as of 26.11.2019
+ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('cfa58afd8f43add656c680c649006cefd3e6a296', true) }}"
 
 #-------------------------------------------------------------------------------
 # kubespray, kubernetes, and kubectl versions

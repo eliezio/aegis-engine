@@ -36,6 +36,6 @@ arm_url: "{{ lookup('env', 'ARM_URL') | default('https://artifactory.nordix.org/
 # prebuilt images
 deployment_image: "{{ arm_url }}/deployment_image/{{ distro }}/deployment_image.qcow2"
 ipa_initramfs: "{{ arm_url }}/ipa_image/{{ ipa_dib_os_element }}/ipa.initramfs"
-ipa_vmlinuz: "{{ arm_url }}/ipa_image/{{ ipa_dib_os_element }}/ipa.vmlinuz"
+ipa_kernel: "{{ arm_url }}/ipa_image/{{ ipa_dib_os_element }}/ipa.kernel"
 
 # vim: set ts=2 sw=2 expandtab:
