@@ -45,10 +45,10 @@ ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('cfa58afd8f43add65
 #-------------------------------------------------------------------------------
 # kubespray, kubernetes, and kubectl versions
 #-------------------------------------------------------------------------------
-# HEAD of kubespray as of 08.10.2019
-kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('2864e13ff9992cd6bd05df6c236020e2bbd66b34', true) }}"
+# HEAD of kubespray as of 27.11.2019
+kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('aec5080a4778b3517e58cfa5e945365178e3fd0a', true) }}"
 # Kubernetes version that is supported by the pinned kubespray version
-kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.16.0', true) }}"
+kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.16.3', true) }}"
 # version of the kubectl should generally match to the version of kubernetes itself
 # but it would be good to have possibility to override it in case if someone needs it for some reason
 kubectl_version: "{{ lookup('env', 'KUBECTL_VERSION') | default(kubernetes_version, true) }}"
