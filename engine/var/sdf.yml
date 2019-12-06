@@ -126,6 +126,19 @@ scenario:
         apps:
           - istio
           - ceph
+  k8-calico-spinnaker:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    provisioners:
+      - heat
+    installers:
+      kubespray:
+        role: scenarios/k8-calico-spinnaker/kubespray/role/k8-calico-spinnaker
+        distros:
+          - ubuntu1804
+        apps:
+          - ceph
   os-nosdn-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
