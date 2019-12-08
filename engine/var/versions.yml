@@ -64,7 +64,7 @@ openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('rocky', tru
 #-------------------------------------------------------------------------------
 # helm version
 #-------------------------------------------------------------------------------
-helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.14.3', true) }}"
+helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.16.1', true) }}"
 
 #-------------------------------------------------------------------------------
 # app versions
