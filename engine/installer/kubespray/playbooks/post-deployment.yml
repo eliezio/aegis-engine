@@ -63,6 +63,6 @@
 
   roles:
     - role: post-deployment
-      when: "'k8-' in deploy_scenario"
+      when: "'onap-' not in deploy_scenario"
 
 # vim: set ts=2 sw=2 expandtab:
