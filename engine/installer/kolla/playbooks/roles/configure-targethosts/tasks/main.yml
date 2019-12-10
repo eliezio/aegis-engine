@@ -21,6 +21,7 @@
 - include: install-packages.yml
 - include: sync-time.yml
 - include: create-swap.yml
+- include: prepare-nova-kvm.yml
 - include: prepare-cinder-{{ cinder_storage_driver }}.yml
 - include: prepare-cinder-backup-{{ cinder_storage_backup_driver }}.yml
 
