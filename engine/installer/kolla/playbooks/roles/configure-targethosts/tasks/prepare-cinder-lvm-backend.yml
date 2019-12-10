@@ -67,9 +67,17 @@
   args:
     creates: "{{ cinder_image_path }}"
 
-- name: Setup loopback device
-  command: "losetup {{ loopback_device_name }} {{ cinder_image_path }}"
-  changed_when: false
+- name: Create cinder loopback service
+  template:
+    src: "cinder-loopback.service.j2"
+    dest: "/etc/systemd/system/cinder-loopback.service"
+  become: true
+
+- name: Enable and start cinder loopback service
+  systemd:
+    name: cinder-loopback
+    enabled: true
+    state: started
 
 - name: Create PV on the loopback device
   command: "pvcreate {{ loopback_device_name }}"
