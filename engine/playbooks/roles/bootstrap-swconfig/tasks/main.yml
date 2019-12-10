@@ -35,6 +35,10 @@
   include_vars:
     file: "{{ sdf_file }}"
 
+- name: Get curated apps for '{{ deploy_scenario }}'
+  set_fact:
+    curated_apps: "{{ scenario[deploy_scenario].installers[installer_type].curated_apps | default ([], true) }}"
+
 - name: Fail if the scenario '{{ deploy_scenario }}' is not supported by the installer '{{ installer_type }}'
   fail:
     msg: "'{{ deploy_scenario }}' is not supported by the installer '{{ installer_type }}'"
@@ -49,7 +53,7 @@
   fail:
     msg: "'{{ app }}' is not supported by the installer '{{ installer_type }}'"
   when: installer_type not in apps[app].installers
-  loop: "{{ scenario[deploy_scenario].installers[installer_type].curated_apps }}"
+  loop: "{{ curated_apps }}"
   loop_control:
     loop_var: app
 
@@ -88,7 +92,7 @@
 - name: Check if playbook for all the curated apps exist
   stat:
     path: "{{ apps_path }}/{{ app }}/{{ installer_type }}/playbooks/install.yml"
-  loop: "{{ scenario[deploy_scenario].installers[installer_type].curated_apps }}"
+  loop: "{{ curated_apps }}"
   loop_control:
     loop_var: app
   register: app_install_file
