@@ -19,7 +19,7 @@
 
 - name: Set keypair name
   set_fact:
-    keypair_name: "keypair-{{ stack_name }}"
+    keypair_name: "keypair-{{ stack_name | regex_replace('\\.', '_') }}"
 
 - name: Delete keypair '{{ keypair_name }}'
   os_keypair:
