@@ -103,4 +103,13 @@
   loop: "{{ app_install_file.results }}"
   when: not item.stat.exists
 
+# TODO: This is probably not the right place to create the apps playbook
+# Will leave it here until we find a better home for this.
+# swconfig/apps should have its own install-apps.yml to install the
+# required apps. That will make swconfig independent of engine.
+- name: Render app installation playbook
+  template:
+    src: install-apps.yml.j2
+    dest: "{{ apps_path }}/install-apps.yml"
+
 # vim: set ts=2 sw=2 expandtab:

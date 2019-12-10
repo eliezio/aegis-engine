@@ -95,13 +95,12 @@ if [[ "${DO_INSTALLER}" -eq 1 ]]; then
   source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh
 
   #-----------------------------------------------------------------------------
-  # Install all the requested apps
+  # Install all the curated apps
   #-----------------------------------------------------------------------------
   cd ${APPS_PATH}
   ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
     -i ${ENGINE_CACHE}/config/inventory.ini \
-    -e installer_type=${INSTALLER_TYPE} \
-    install.yml
+    install-apps.yml
 else
   echo "No installer selected"
 fi
