@@ -16,21 +16,19 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-{% if curated_apps | length > 0 %}
 {% raw %}
-- hosts: all
+- hosts: localhost
   vars_files:
     - "{{ engine_path }}/engine/var/global.yml"
     - "{{ sdf_file }}"
+{% endraw %}
   tasks:
     - name: Fetch all applications that need to be installed
       debug:
-        msg: "Curated apps: {{ scenario[deploy_scenario].installers[installer_type].curated_apps }}"
-{% endraw %}
+        msg: "Curated apps: {{ curated_apps | join(', ') }}"
 {% for app in curated_apps %}
 
 - import_playbook: "{{ app }}/{{ installer_type }}/playbooks/install.yml"
 {% endfor %}
-{% endif %}
 
 # vim: set ts=2 sw=2 expandtab:
