@@ -26,6 +26,8 @@
 
 - name: Stop existing virtualbmc processes
   command: killall -w vbmc
+  args:
+    removes: "{{ ansible_env.HOME }}/.vbmc/master.pid"
   ignore_errors: yes
 
 - name: Remove outdated virtualbmc folder

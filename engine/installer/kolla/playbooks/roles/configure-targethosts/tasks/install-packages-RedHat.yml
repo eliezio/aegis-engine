@@ -17,7 +17,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 - name: Install packages
-  action: >
+  action: |
     {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
   with_items:
     - "yum-utils"

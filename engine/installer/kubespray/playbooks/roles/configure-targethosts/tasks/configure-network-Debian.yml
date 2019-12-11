@@ -52,8 +52,10 @@
 - name: Compute mapping dict from mac address to device name
   set_fact:
     device_mac_dict: "{{ (device_mac_dict | default({})) | combine({item.macaddress: item.device}) }}"
-  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
-  when: "{{ '.' not in item.device }}"
+  loop: |-
+      {{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') |
+      map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}
+  when: "'.' not in item.device"
 
 - name: Filter to include only configured ethernet interfaces
   set_fact:
@@ -70,7 +72,7 @@
   lineinfile:
     path: /etc/systemd/resolved.conf
     regexp: "^#?DNS=.*$"
-    line: "DNS={{ idf.net_config[engine.public_network | default('public')].dns | join(' ')}}"
+    line: "DNS={{ idf.net_config[engine.public_network | default('public')].dns | join(' ') }}"
   when: idf.net_config[engine.public_network | default('public')].dns is defined
 
 - name: Proxy configuration for apt
@@ -84,7 +86,7 @@
     file:
       path: /etc/apt/apt.conf
       state: touch
-    when: stat_result.stat.exists == False
+    when: not stat_result.stat.exists
 
   - name: Add proxy setting to /etc/apt/apt.conf
     lineinfile:
@@ -95,13 +97,13 @@
     with_items:
       - {name: 'Acquire::http::Proxy', value: '"{{ idf.proxy_settings.http_proxy }}";' }
       - {name: 'Acquire::https::Proxy', value: '"{{ idf.proxy_settings.https_proxy }}";' }
-  when:
-    idf.proxy_settings is defined
+  when: idf.proxy_settings is defined
 
 - name: Reboot the machine
   shell: "sleep 5 && reboot"
   async: 1
   poll: 0
+  changed_when: false
 
 - name: Wait for host to come back to life
   wait_for_connection:

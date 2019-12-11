@@ -26,8 +26,9 @@
 
 - block:
   - name: Create swap file
-    command: |
-      fallocate -l 4096M /swapfile
+    command: "fallocate -l 4096M /swapfile"
+    args:
+      creates: /swapfile
 
   - name: Set swap file permissions
     file:
@@ -38,10 +39,12 @@
       mode: "0600"
 
   - name: Initialize swap file
-    command: mkswap /swapfile
+    command: "mkswap /swapfile"
+    changed_when: false
 
   - name: Enable swap file
-    command: swapon /swapfile
+    command: "swapon /swapfile"
+    changed_when: false
 
   - name: Manage swap file in /etc/fstab
     mount:
@@ -52,6 +55,6 @@
       dump: "0"
       passno: "0"
       state: present
-  when: swap.stat.exists == False
+  when: not swap.stat.exists
 
 # vim: set ts=2 sw=2 expandtab:

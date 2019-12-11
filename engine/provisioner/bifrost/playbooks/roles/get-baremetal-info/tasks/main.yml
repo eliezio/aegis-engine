@@ -29,20 +29,28 @@
 
 - name: Fetch mgmt network interface name
   set_fact:
-    mgmt_ifname: "{{ (node.interfaces[idf.net_config.mgmt.interface].vlan == 'native') | ternary(interface.device, interface.device + '.' + node.interfaces[idf.net_config.mgmt.interface].vlan) }}"
-  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
+    mgmt_ifname: |-
+      {{ (node.interfaces[idf.net_config.mgmt.interface].vlan == 'native') |
+      ternary(interface.device, interface.device + '.' + node.interfaces[idf.net_config.mgmt.interface].vlan) }}
+  loop: |-
+      {{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') |
+      map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}
   loop_control:
     loop_var: interface
   when:
     - interface.macaddress == node.interfaces[idf.net_config.mgmt.interface].mac_address
-    - "{{ '.' not in interface.device }}"
+    - "'.' not in interface.device"
 
 - name: Fetch neutron network interface name
   set_fact:
-    neutron_ifname: "{{ (node.interfaces[idf.net_config.neutron.interface].vlan == 'native') | ternary(interface.device, interface.device + '.' + node.interfaces[idf.net_config.neutron.interface].vlan) }}"
-  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
+    neutron_ifname: |-
+      {{ (node.interfaces[idf.net_config.neutron.interface].vlan == 'native') |
+      ternary(interface.device, interface.device + '.' + node.interfaces[idf.net_config.neutron.interface].vlan) }}
+  loop: |-
+      {{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') |
+      map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}
   loop_control:
     loop_var: interface
   when:
     - interface.macaddress == node.interfaces[idf.net_config.neutron.interface].mac_address
-    - "{{ '.' not in interface.device }}"
+    - "'.' not in interface.device"

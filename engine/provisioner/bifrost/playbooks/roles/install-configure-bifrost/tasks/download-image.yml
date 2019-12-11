@@ -16,7 +16,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-- set_fact:
+- name: Set download source and destination for the deployment image
+  set_fact:
     source: "{{ item.source }}"
     destination: "{{ item.destination }}"
     download_image: "{{ item.download }}"

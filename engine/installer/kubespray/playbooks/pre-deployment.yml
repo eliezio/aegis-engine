@@ -47,6 +47,6 @@
       include_role:
         name: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
         tasks_from: pre-deployment
-      when: hostvars['localhost'].pre_deployment_yml.stat.exists == True
+      when: hostvars['localhost'].pre_deployment_yml.stat.exists
 
 # vim: set ts=2 sw=2 expandtab:

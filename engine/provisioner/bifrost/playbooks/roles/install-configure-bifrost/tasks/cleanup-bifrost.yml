@@ -20,6 +20,7 @@
   command: killall -w dnsmasq
   ignore_errors: yes
   become: yes
+  changed_when: false
 
 - name: Remove existing files and directories
   file:

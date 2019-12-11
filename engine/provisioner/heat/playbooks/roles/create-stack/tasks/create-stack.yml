@@ -63,8 +63,11 @@
     msg: "{{ stack_create_output }}"
 
 - name: Get stack list
-  shell: openstack stack list --property name={{ stack_name }}
+  command: "openstack stack list --property name={{ stack_name }}"
+  when: stack_create_output
   register: stack_list_output
+  environment:
+    PATH: "{{ engine_venv }}/bin"
 
 - name: Log stack list output to console
   debug:

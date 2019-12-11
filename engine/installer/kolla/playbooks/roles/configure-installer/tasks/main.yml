@@ -90,5 +90,6 @@
 
 - name: Generate kolla passwords
   command: "{{ kolla_ansible_path }}/tools/generate_passwords.py -p {{ config_path }}/passwords.yml"
+  changed_when: false
 
 # vim: set ts=2 sw=2 expandtab:

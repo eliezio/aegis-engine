@@ -20,13 +20,13 @@
   include_vars: '{{ ansible_os_family }}.yml'
 
 - name: Remove NTP if installed
-  action: >
+  action: |
     {{ ansible_pkg_mgr }} name={{ item }} state=absent update_cache=yes
   with_items:
     - "ntp"
 
 - name: Install Chrony
-  action: >
+  action: |
     {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
   with_items:
     - "chrony"
@@ -49,7 +49,11 @@
 
 
 - name: "NTP should be synchronized"
-  shell: timedatectl  | grep 'synchronized'
+  shell: |
+      set -o pipefail
+      timedatectl  | grep 'synchronized'
+  args:
+    executable: /bin/bash
   register: synchronized
   changed_when: false
   until: "'yes' in synchronized.stdout"

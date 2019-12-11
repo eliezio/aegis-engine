@@ -32,8 +32,10 @@
 - name: Compute mapping dict from mac address to device name
   set_fact:
     device_mac_dict: "{{ (device_mac_dict | default({})) | combine({item.macaddress: item.device}) }}"
-  loop: "{{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') | map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}"
-  when: "{{ '.' not in item.device }}"
+  loop: |-
+      {{ ansible_interfaces | map('regex_replace', '-', '_') | map('regex_replace', '^', 'ansible_') |
+      map('extract', hostvars[inventory_hostname]) |  selectattr('macaddress','defined') | list }}
+  when: "'.' not in item.device"
 
 - name: Filter to include only configured ethernet interfaces
   set_fact:
@@ -58,7 +60,7 @@
     file:
       path: /etc/yum.conf
       state: touch
-    when: stat_result.stat.exists == False
+    when: not stat_result.stat.exists
 
   - name: Add proxy setting to /etc/yum.conf
     lineinfile:

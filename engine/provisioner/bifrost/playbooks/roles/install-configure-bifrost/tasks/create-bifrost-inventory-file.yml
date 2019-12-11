@@ -31,7 +31,6 @@
   file:
     path: "{{ bifrost_inventory_source }}"
     owner: "{{ ansible_env.SUDO_USER }}"
-  when: >
-    ansible_env.SUDO_USER is defined
+  when: ansible_env.SUDO_USER is defined
 
 # vim: set ts=2 sw=2 expandtab:

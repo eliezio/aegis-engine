@@ -91,12 +91,16 @@
     virtual_ipmi_port: "{{ ( node.remote_management.port | default(623) | int ) }}"
 
 - name: Plug vm '{{ hostname }}' into vbmc on port '{{ virtual_ipmi_port }}'
-  command: "vbmc add {{ hostname }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }}"
+  command: "vbmc add {{ hostname }} --libvirt-uri {{ vm_libvirt_uri }} --port {{ virtual_ipmi_port }} --verbose"
+  register: vbmc_add
+  args:
+    creates: "{{ ansible_env.HOME }}/.vbmc/{{ hostname }}"
   environment:
     PATH: "{{ engine_venv }}/bin"
 
 - name: Start vbmc for '{{ hostname }}'
-  command: "vbmc start {{ hostname }}"
+  command: "vbmc start {{ hostname }} --verbose"
+  when: not vbmc_add.stdout
   environment:
     PATH: "{{ engine_venv }}/bin"
 

@@ -47,7 +47,7 @@
       include_role:
         name: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}"
         tasks_from: post-deployment
-      when: hostvars['localhost'].post_deployment_yml.stat.exists == True
+      when: hostvars['localhost'].post_deployment_yml.stat.exists
 
 # run common post-deployment tasks
 # NOTE: The common post-deployment tasks is currently applicable only to

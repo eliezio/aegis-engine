@@ -36,7 +36,7 @@
     enable_dhcp: no
     network_name: "{{ external_network }}"
     name: "{{ external_subnet }}"
-    cidr: "{{ idf.net_config.neutron.network}}/{{ idf.net_config.neutron.mask }}"
+    cidr: "{{ idf.net_config.neutron.network }}/{{ idf.net_config.neutron.mask }}"
     gateway_ip: "{{ idf.net_config.neutron.network | regex_replace('.0$', '.1') }}"
     allocation_pool_start: "{{ idf.net_config.neutron.network | regex_replace('.0$', '.51') }}"
     allocation_pool_end: "{{ idf.net_config.neutron.network | regex_replace('.0$', '.250') }}"

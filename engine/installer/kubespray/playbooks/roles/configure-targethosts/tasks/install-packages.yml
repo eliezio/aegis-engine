@@ -31,7 +31,7 @@
     file:
       path: "/etc/systemd/system/docker.service.d"
       state: directory
-    when: dir_stats.stat.exists == False
+    when: not dir_stats.stat.exists
 
   - name: Create proxy conf file under /etc/systemd/system/docker.service.d/
     file:

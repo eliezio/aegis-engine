@@ -114,7 +114,7 @@ resources:
     properties:
       name:
         list_join: ['.', ['external-sg', { get_param: 'OS::stack_name' } ]]
-      description: >
+      description: |
         Security Group to place jumphost in
       rules: [
         {
@@ -131,7 +131,7 @@ resources:
     properties:
       name:
         list_join: ['.', ['internal-sg', { get_param: 'OS::stack_name' } ]]
-      description: >
+      description: |
         Security Group to place jumphost and cluster instances in
       rules: [
         {

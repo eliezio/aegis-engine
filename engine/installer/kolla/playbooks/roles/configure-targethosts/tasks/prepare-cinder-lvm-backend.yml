@@ -51,23 +51,29 @@
       path: "{{ cinder_image_path }}"
       state: absent
     ignore_errors: yes
-  when: cinder_image.stat.exists == True
+  when: cinder_image.stat.exists
 
 - name: Get free loopback device
   command: "losetup -f"
   register: free_device
+  changed_when: false
 
-- set_fact:
+- name: Set loopback device name
+  set_fact:
     loopback_device_name: "{{ free_device.stdout }}"
 
 - name: Create cinder image
   command: "fallocate -l {{ cinder_image_size }} {{ cinder_image_path }}"
+  args:
+    creates: "{{ cinder_image_path }}"
 
 - name: Setup loopback device
   command: "losetup {{ loopback_device_name }} {{ cinder_image_path }}"
+  changed_when: false
 
 - name: Create PV on the loopback device
   command: "pvcreate {{ loopback_device_name }}"
+  changed_when: false
 
 - name: Add cinder-volumes volume group
   lvg:

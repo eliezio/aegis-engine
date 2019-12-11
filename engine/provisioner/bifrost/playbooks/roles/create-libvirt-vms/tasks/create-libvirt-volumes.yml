@@ -23,16 +23,20 @@
     vm_vol_path_prefix: "{{ ansible_libvirt_pools[libvirt_storage_pool].path }}/{{ hostname }}"
 
 - name: Delete volume '{{ vm_volume_name }}' for vm '{{ hostname }}'
-  command: >
+  command: |
     virsh --connect {{ vm_libvirt_uri }}
     vol-delete --pool {{ libvirt_storage_pool }} {{ vm_volume_name }}
+  args:
+    removes: "{{ vm_vol_path_prefix }}-{{ disk.name }}.qcow2"
   ignore_errors: yes
 
 - name: Create volume '{{ vm_volume_name }}' for vm '{{ hostname }}'
-  command: >
+  command: |
     virsh --connect {{ vm_libvirt_uri }}
-      vol-create-as {{ libvirt_storage_pool }} {{ vm_volume_name }}
+    vol-create-as {{ libvirt_storage_pool }} {{ vm_volume_name }}
       {{ disk.disk_capacity }} --format qcow2 {{ prealloc|default("") }}
+  args:
+    creates: "{{ vm_vol_path_prefix }}-{{ disk.name }}.qcow2"
 
 - name: Pre-touch volume '{{ vm_volume_name }}' for vm '{{ hostname }}'
   file:

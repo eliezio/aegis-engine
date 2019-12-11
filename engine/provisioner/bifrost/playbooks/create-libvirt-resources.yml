@@ -36,6 +36,7 @@
     - name: Get libvirt networks
       command: virsh net-list --all
       register: libvirt_networks
+      changed_when: false
 
     - name: List libvirt networks
       debug:
@@ -44,6 +45,7 @@
     - name: Get libvirt vms
       command: virsh list --all
       register: libvirt_vms
+      changed_when: false
 
     - name: List libvirt vms
       debug:
@@ -51,9 +53,10 @@
 
     - name: Get list of nodes from vbmc
       command: vbmc list
+      register: vbmc_vms
+      changed_when: false
       environment:
         PATH: "{{ engine_venv }}/bin"
-      register: vbmc_vms
 
     - name: List vbmc nodes
       debug:
