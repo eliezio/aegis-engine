@@ -22,7 +22,12 @@
 # it is tricky to make it work quickly so we skip it for those nodes
 - include: configure-network.yml
   when: provisioner_type == "bifrost"
+- include: configure-offline.yml
+  when: provisioner_type == "bifrost" and (offline_deployment|bool or offline_dependencies|bool)
 - include: install-packages.yml
+# TODO: NTP is not working in offline mode. We should look either into a proper
+# configuration or bringing up a local npt server in kickstart.
 - include: sync-time.yml
+  when: not offline_deployment|bool
 
 # vim: set ts=2 sw=2 expandtab:

@@ -45,7 +45,7 @@
 - name: Download helm client
   unarchive:
     src: "{{ helm_client_download_url }}"
-    remote_src: true
+    remote_src: "{{ not offline_deployment|bool }}"
     dest: /tmp
 
 - name: Place helm and tiller binaries to /usr/local/bin

@@ -29,6 +29,7 @@
     http_proxy: "{{ lookup('env','http_proxy') }}"
     https_proxy: "{{ lookup('env','https_proxy') }}"
     no_proxy: "{{ lookup('env','no_proxy') }}"
+  when: not offline_deployment|bool
 
 - name: Install bifrost requirements
   pip:
@@ -61,6 +62,9 @@
 
 - include_tasks: create-bifrost-playbooks.yml
 
+- include_tasks: configure-bifrost-offline.yml
+  when: offline_deployment|bool
+
 - name: Create folders to put ipa and deployment images
   file:
     path: "{{ item }}"
@@ -81,5 +85,6 @@
     - {source: "{{ deployment_image }}", destination: "/httpboot/deployment_image.qcow2", download: "{{ use_prebuilt_deployment_image }}"}
     - {source: "{{ ipa_initramfs }}", destination: "/httpboot/ipa.initramfs", download: "true"}
     - {source: "{{ ipa_kernel }}", destination: "/httpboot/ipa.kernel", download: "true"}
+  when: not offline_deployment|bool
 
 # vim: set ts=2 sw=2 expandtab:

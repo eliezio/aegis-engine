@@ -21,6 +21,7 @@
   file:
     path: "{{ engine_cache }}/repos/kubespray"
     state: absent
+  when: not offline_deployment|bool
 
 - name: Clone kubespray repository and checkout '{{ kubespray_version }}'
   git:
@@ -29,6 +30,7 @@
     version: "{{ kubespray_version }}"
     force: true
   environment: "{{ idf.proxy_settings | default({}) }}"
+  when: not offline_deployment|bool
 
 # TODO: some stuff below could and perhaps should be pushed into the scenario
 # it is put here to make basic installation work without complexities
@@ -147,5 +149,25 @@
   template:
     src: kubespray-extra-vars.yml.j2
     dest: "{{ config_path }}/kubespray-extra-vars.yml"
+
+# Ensure proper configuration for offline deployment
+- include_tasks: prepare-offline.yml
+  when: offline_deployment|bool
+
+# Enable file download for offline "Fetch dependency mode"
+- name: Enable one time file download in master node
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^download_run_once:.*"
+    line: "download_run_once: true"
+  when: offline_dependencies|bool
+
+# Use a fake docker repository to overcome apt-cacher-ng limitation with https
+- name: Configure docker repo to use jumphost apt proxy
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/container-engine/docker/defaults/main.yml"
+    regexp: "^docker_ubuntu_repo_base_url:.*"
+    line: 'docker_ubuntu_repo_base_url: "http://nordix.download.docker.com/linux/ubuntu"'
+  when: offline_dependencies|bool or offline_deployment|bool
 
 # vim: set ts=2 sw=2 expandtab:

@@ -1,0 +1,103 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+# skip the default repo sync in helm init for offline deployments
+# Helm 2 has hardcoded links to google repositories
+- name: Skip default repository in helm
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/kubernetes-apps/helm/defaults/main.yml"
+    regexp: "^helm_skip_refresh:.*"
+    line: "helm_skip_refresh: true"
+
+- name: Disable file download
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^download_run_once:.*"
+    line: "download_run_once: false"
+
+# Kubernetes version is hardcoded in the downloads section. This point to the wrong versions
+# of kubeadm, kubectl and other packages stored in cache.
+- name: Set k8s version to '{{ kubernetes_version }}' in downloads file
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^kube_version:.*"
+    line: "kube_version: {{ kubernetes_version }}"
+
+# Downloads should take place in master node since has docker properly configure, i.e.
+# the current user is either in the docker group or can do passwordless sudo.
+- name: Ensure download happens in master node
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^download_localhost:.*"
+    line: "download_localhost: false"
+
+- name: Enable the use of local cache
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^download_force_cache:.*"
+    line: "download_force_cache: true"
+
+# This will overcome a bug in Kubespray that only loads Helm docker containers in
+# the worker nodes, while some tasks needing those containers are executed in the
+# master node. Thus, hitting the error image not found.
+- name: Configure helm docker container to be loaded in master node
+  replace:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: '(helm:(?:\n.*){1,8}-\s)kube.*(\n)'
+    replace: '\1k8s-cluster\2'
+
+# This will introduce the bug related to image names and docker default registry
+- name: Enable local loading of docker images
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: "^download_container:.*"
+    line: "download_container: true"
+
+# These two tasks will workaround a Kubespray bug that points to the wrong path
+# when using docker images from the default registry. This causes the error of
+# of image not found and timeout when trying to pull from Internet.
+- name: Override wrong paths in cached docker images
+  block:
+    - name: Remove links to docker default registry
+      replace:
+        path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+        regexp: '\{\{ docker_image_repo \}\}/'
+        replace: ''
+
+    - name: Fix path for nginx docker image
+      replace:
+        path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+        regexp: 'library/nginx'
+        replace: 'nginx'
+
+# Docker engine apt key is usually added using url argument. The key is provided as a file, so
+# the ansible task has to be modified accordingly.
+- name: Modify apt_key task to use file argument instead of url
+  replace:
+    path: "{{ engine_cache }}/repos/kubespray/roles/container-engine/docker/tasks/main.yml"
+    regexp: '(\s)url:(\s.*key)'
+    replace: '\1file:\2'
+
+- name: Point docker repo to use the provided key file
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/roles/container-engine/docker/defaults/main.yml"
+    regexp: "^docker_ubuntu_repo_gpgkey:.*"
+    line: 'docker_ubuntu_repo_gpgkey: "/tmp/docker.key"'
+
+# vim: set ts=2 sw=2 expandtab:

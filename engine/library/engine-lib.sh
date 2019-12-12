@@ -47,6 +47,7 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -o: Operating System to provision nodes with. (Default ubuntu1804)
     -l: List of stages to run in a comma separated fashion. (Default execute all)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
+    -x: Enable offline installation. Requires offline dependencies to be present in the machine. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
 
@@ -81,10 +82,12 @@ function parse_cmdline_opts() {
     DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
+    OFFLINE_DEPLOYMENT=${OFFLINE_DEPLOYMENT:-false}
+    OFFLINE_DEPENDENCIES=${OFFLINE_DEPENDENCIES:-false}
 
     # get values passed as command line arguments, overriding the defaults or
     # the ones set by using env variables
-    while getopts ":hd:r:s:b:o:p:i:e:u:l:cv" o; do
+    while getopts ":hd:r:s:b:o:p:i:e:u:l:cvx" o; do
         case "${o}" in
             h) usage ;;
             d) INSTALLER_TYPE="${OPTARG}" ;;
@@ -99,6 +102,7 @@ function parse_cmdline_opts() {
             c) CLEANUP="true" ;;
             v) VERBOSITY="true" ;;
             l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
+            x) OFFLINE_DEPLOYMENT="true" ;;
             *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
         esac
     done
@@ -121,6 +125,16 @@ function parse_cmdline_opts() {
       DO_INSTALL=$(echo "$DEPLOY_STAGE_LIST" | grep -c installer || true)
     fi
 
+    # Offline mode requires dependencies to be present in the machine
+    # TODO: this file/path should be provided as an extra parameter
+    if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
+        if [[ ! -f "$HOME/offline-dependencies.tar.gz" ]]; then
+            echo "Warning: You should have downloaded the offline dependencies first"
+            echo "Warning: Running in online mode with apt-cacher-ng"
+            OFFLINE_DEPENDENCIES="true"
+        fi
+    fi
+
     # Do all the exports
     export INSTALLER_TYPE="${INSTALLER_TYPE}"
     export PROVISIONER_TYPE="${PROVISIONER_TYPE}"
@@ -133,6 +147,8 @@ function parse_cmdline_opts() {
     export DO_PROVISION="${DO_PROVISION}"
     export DO_INSTALL="${DO_INSTALL}"
     export CLEANUP="${CLEANUP}"
+    export OFFLINE_DEPLOYMENT="${OFFLINE_DEPLOYMENT}"
+    export OFFLINE_DEPENDENCIES="${OFFLINE_DEPENDENCIES}"
     export VERBOSITY="${VERBOSITY}"
 
     log_summary
@@ -231,9 +247,13 @@ function cleanup() {
     # in some cases, apt-get purge complains with "E: Unable to locate package rabbitmq-server"
     # and exits 100, causing this script and deploy.sh to fail.
     # run apt-get update to get rid of this
-    sudo apt-get update -qq
-    # clean and remove rabbitmq service
-    sudo apt-get purge --auto-remove -y -qq rabbitmq-server > /dev/null
+    # This is not needed in offline installation mode and apt will fail since the proxy/mirror
+    # is not configured yet
+    if [[ "${OFFLINE_DEPLOYMENT}" == "false" ]]; then
+      sudo apt-get update -qq
+      # clean and remove rabbitmq service
+      sudo apt-get purge --auto-remove -y -qq rabbitmq-server > /dev/null
+    fi
 }
 
 #-------------------------------------------------------------------------------
@@ -291,12 +311,25 @@ function install_ansible() {
 
     echo "Info: Prepare virtual environment at $ENGINE_VENV on jumphost"
     # We need to prepare our virtualenv now
-    virtualenv --python python3 --quiet --no-site-packages "${ENGINE_VENV}" > /dev/null 2>&1
+    if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
+      virtualenv --python python3 --quiet --never-download "${ENGINE_VENV}" > /dev/null 2>&1
+      # Configure pip options to force offline operations
+      cp "${ENGINE_CACHE}/offline/pip/pip.conf" "${ENGINE_VENV}"
+    else
+      virtualenv --python python3 --quiet --no-site-packages "${ENGINE_VENV}" > /dev/null 2>&1
+    fi
     # NOTE: venv is created during runtime so shellcheck SC1090 is disabled
     set +u
     # shellcheck disable=SC1090
     source "${ENGINE_VENV}/bin/activate"
     set -u
+
+    # Pip might come by default with an old version that does not have the
+    # --no-color option making the following commands fail
+    if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
+      echo "Info: Upgrading pip in offline mode"
+      pip install --upgrade --quiet pip
+    fi
 
     # since we use bindep.txt to control distro packages to install, we need to install bindep first using pip
     echo "Info: Install bindep using pip"
@@ -312,9 +345,6 @@ function install_ansible() {
 
     echo "Info: Install python packages listed in requirements.txt using pip"
     pip install --force-reinstall --no-color --quiet -r requirements.txt
-
-    ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
-    export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
 
     if [[ "$OS_FAMILY" == "Debian" ]]; then
       # Get python3-apt and install into venv
@@ -356,19 +386,28 @@ function log_summary() {
     echo "#---------------------------------------------------#"
     echo "#                Deployment Started                 #"
     echo "#---------------------------------------------------#"
-    echo "Date & Time  : $(date -u '+%F %T UTC')"
-    echo "Scenario     : $DEPLOY_SCENARIO"
-    echo "Target OS    : $DISTRO"
-    echo "Installer    : $INSTALLER_TYPE"
-    echo "Provisioner  : $PROVISIONER_TYPE"
+    echo "Date & Time    : $(date -u '+%F %T UTC')"
+    echo "Scenario       : $DEPLOY_SCENARIO"
+    echo "Target OS      : $DISTRO"
+    echo "Installer      : $INSTALLER_TYPE"
+    echo "Provisioner    : $PROVISIONER_TYPE"
     if [[ "$PROVISIONER_TYPE" == "heat" ]]; then
-      echo "Openrc File  : $OPENRC"
-      echo "Heat Env File: $HEAT_ENV_FILE"
+      echo "Openrc File    : $OPENRC"
+      echo "Heat Env File  : $HEAT_ENV_FILE"
     else
-      echo "PDF          : $PDF"
-      echo "IDF          : $IDF"
+      echo "PDF            : $PDF"
+      echo "IDF            : $IDF"
     fi
-    echo "SDF          : $SDF"
+    echo "SDF            : $SDF"
+    if [[ "$OFFLINE_DEPLOYMENT" == "true" ]]; then
+        if [[ "$OFFLINE_DEPENDENCIES" == "true" ]]; then
+    echo "Deployment mode: Online with packaging"
+        else
+            echo "Deployment mode  : Offline"
+        fi
+    else
+        echo "Deployment mode  : Online"
+    fi
     echo "Cleanup      : $CLEANUP"
     echo "Verbosity    : $VERBOSITY"
     echo "#---------------------------------------------------#"
@@ -387,6 +426,63 @@ function log_elapsed_time() {
     echo "Date & Time  : $(date -u '+%F %T UTC')"
     echo "Elapsed      : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
     echo "#---------------------------------------------------#"
+}
+
+#-------------------------------------------------------------------------------
+# Prepare offline installation
+#-------------------------------------------------------------------------------
+function prepare_offline() {
+    # Check if we will run completely offline or in fetch dependency mode
+    if [[ "$OFFLINE_DEPENDENCIES" == "true" ]]; then
+        # Install apt-cacher-ng using apt
+        echo "Info: Installing apt-cacher-ng with apt"
+        sudo apt-get update -qq  > /dev/null
+        sudo apt-get -y -qq install apt-cacher-ng  > /dev/null
+        echo "Info: Configuring the local apt proxy in online mode"
+        sudo sed -i 's/^# Offlinemode:.*/Offlinemode: 0/' /etc/apt-cacher-ng/acng.conf
+        # From here on we can run online
+        export OFFLINE_DEPLOYMENT="false"
+    else
+        # Create the offline folder and repository folder (not available yet)
+        mkdir -p "$ENGINE_CACHE/offline"
+        mkdir -p "$ENGINE_CACHE/repos"
+
+        # Extract offline components
+        echo "Info: Extracting offline components"
+        tar -zxf "$HOME/offline-dependencies.tar.gz" -C "$ENGINE_CACHE/offline"
+        # Copy repos to engine default folder
+        cp -r "$ENGINE_CACHE/offline/repos/." "$ENGINE_CACHE/repos"
+        # Copy kubespray dependencies to localhost
+        cp -r "$ENGINE_CACHE/offline/kubespray_cache" /tmp
+
+        # Install apt-cacher to manage dependencies
+        echo "Info: Installing apt proxy"
+        # TODO: this depends on the specific OS (this is for debian)
+        sudo dpkg -i "$ENGINE_CACHE"/offline/apt-cacher-ng_3.1*.deb > /dev/null
+
+        # Configure local proxy in offline mode
+        echo "Info: Configure local apt proxy"
+        sudo sed -i 's/^# Offlinemode:.*/Offlinemode: 1/' /etc/apt-cacher-ng/acng.conf
+
+        # Move apt dependencies to cache folder
+        echo "Info: Moving apt cache to proxy folder"
+        sudo cp -rf "$ENGINE_CACHE/offline/apt/." /var/cache/apt-cacher-ng
+        sudo chown -R apt-cacher-ng:apt-cacher-ng /var/cache/apt-cacher-ng
+
+    fi
+
+    # Configure remapping for docker repositories
+    echo "https://download.docker.com/linux/ubuntu" | sudo tee /etc/apt-cacher-ng/docker_official
+    echo "Remap-docker: http://nordix.download.docker.com/linux/ubuntu ; file:docker_official" | sudo tee -a /etc/apt-cacher-ng/acng.conf
+    echo 'Acquire::http { Proxy "http://localhost:3142"; };' | sudo tee /etc/apt/apt.conf.d/02Proxy
+    # Restart apt-cacher-ng to fetch the new configuration
+    sudo systemctl restart apt-cacher-ng.service
+
+    # Ensure removal of apt cache
+    sudo rm -rf /var/cache/apt/*
+    sudo rm -rf /var/lib/apt/lists/*
+    sudo apt clean
+
 }
 
 # vim: set ts=2 sw=2 expandtab:

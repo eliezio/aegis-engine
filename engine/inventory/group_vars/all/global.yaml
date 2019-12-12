@@ -32,5 +32,7 @@ installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
 deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture', true) }}"
 stack_name: "{{ lookup('env', 'STACK_NAME') | default('nordix-' + deploy_scenario + '-custom', true) }}"
 apps_path: "{{ lookup('env', 'APPS_PATH') }}"
+offline_deployment: "{{ lookup('env', 'OFFLINE_DEPLOYMENT') }}"
+offline_dependencies: "{{ lookup('env', 'OFFLINE_DEPENDENCIES') }}"
 
 # vim: set ts=2 sw=2 expandtab:
