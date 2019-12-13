@@ -56,7 +56,10 @@ export ENGINE_PIP_VERSION="19.0.3"
 export ENGINE_ANSIBLE_VERSION="2.7.8"
 
 # ansible-lint version to use
-export ENGINE_ANSIBLE_LINT_VERSION="3.4.21"
+export ENGINE_ANSIBLE_LINT_VERSION="4.1.0"
+
+# yamllint version to use
+export ENGINE_YAML_LINT_VERSION="1.19.0"
 
 # ara version to use
 export ENGINE_ARA_VERSION="0.16.4"

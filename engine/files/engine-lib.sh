@@ -329,7 +329,8 @@ function install_ansible() {
     # We are inside the virtualenv now so we should be good to use pip and python from it.
     pip -q install --upgrade pip=="$ENGINE_PIP_VERSION" # We need a version which supports the '-c' parameter
     pip -q install --upgrade virtualenv pip setuptools shade ara=="$ENGINE_ARA_VERSION" \
-        ansible=="$ENGINE_ANSIBLE_VERSION" ansible-lint=="$ENGINE_ANSIBLE_LINT_VERSION"
+        ansible=="$ENGINE_ANSIBLE_VERSION" ansible-lint=="$ENGINE_ANSIBLE_LINT_VERSION" \
+        yamllint=="$ENGINE_YAML_LINT_VERSION"
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
