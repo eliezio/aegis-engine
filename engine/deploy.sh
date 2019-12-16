@@ -25,15 +25,17 @@ set -o pipefail
 # Getting ready to run
 #-------------------------------------------------------------------------------
 # Find/set where we are
-export ENGINE_PATH="$(git rev-parse --show-toplevel)"
+ENGINE_PATH=$(git rev-parse --show-toplevel)
+export ENGINE_PATH
 
 # source helpers library
-source ${ENGINE_PATH}/engine/files/engine-lib.sh
+# shellcheck source=engine/files/engine-lib.sh
+source "${ENGINE_PATH}/engine/files/engine-lib.sh"
 
 #-------------------------------------------------------------------------------
 # Parse command line options
 #-------------------------------------------------------------------------------
-parse_cmdline_opts $*
+parse_cmdline_opts "$@"
 
 #-------------------------------------------------------------------------------
 # Check prerequisites before doing anything else to see if we should continue
@@ -43,66 +45,69 @@ check_prerequisites
 #-------------------------------------------------------------------------------
 # Bootstrap environment for Cloud Infra Deployment
 #-------------------------------------------------------------------------------
-echo "Info: Preparing environment for Cloud Infra deployment"
 bootstrap_environment
 
 #-------------------------------------------------------------------------------
 # Cleanup leftovers of previous run if it is explicitly set
 #-------------------------------------------------------------------------------
-if [[ "$CLEANUP" == "true" ]]; then
-  echo "Info: Removing leftovers of previous run"
+if [[ "${CLEANUP}" == "true" ]]; then
   cleanup
 fi
 
 #-------------------------------------------------------------------------------
 # Install Ansible
 #-------------------------------------------------------------------------------
-echo "Info: Installing Ansible from pip on jumphost"
-echo "-------------------------------------------------------------------------"
 install_ansible
-echo "-------------------------------------------------------------------------"
 
 #-------------------------------------------------------------------------------
 # Bootstrap hwconfig and swconfig
 #-------------------------------------------------------------------------------
-echo "Info: Bootstrapping hardware and software configuration"
+echo "Info: Bootstrap hardware and software configuration"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  engine/playbooks/bootstrap-configuration.yml
+cd "${ENGINE_PATH}"
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+    engine/playbooks/bootstrap-configuration.yml
 echo "-------------------------------------------------------------------------"
 
 #-------------------------------------------------------------------------------
 # Source scenario overrides
 #-------------------------------------------------------------------------------
-source $(find ${SCENARIO_OVERRIDES} 2>/dev/null) &>/dev/null &&
-  echo "Info: Sourced scenario overrides" || :
+# NOTE: shellcheck SC1090 is disabled since overrides file is put in place during runtime
+# shellcheck disable=SC1090
+if [[ -f "${SCENARIO_OVERRIDES}" ]]; then
+  source "${SCENARIO_OVERRIDES}"
+  echo "Info: Source scenario overrides"
+fi
 
 #-------------------------------------------------------------------------------
 # Provision nodes using the selected provisioning tool
 #-------------------------------------------------------------------------------
 if [[ "${DO_PROVISION}" -eq 1 ]]; then
-  source ${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh
+  # NOTE: the default provisioner is bifrost so we point it to shellcheck as source
+  # shellcheck source=engine/provisioner/bifrost/provision.sh
+  source "${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh"
 else
-  echo "Provisioning flag not specified"
+  echo "Error: Provisioning flag not specified"
   exit 1
 fi
 
 #-------------------------------------------------------------------------------
 # Install the stack using the selected installer
 #-------------------------------------------------------------------------------
-if [[ "${DO_INSTALLER}" -eq 1 ]]; then
-  source ${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh
+if [[ "${DO_INSTALL}" -eq 1 ]]; then
+  # NOTE: the default installer is kubespray so we point it to shellcheck as source
+  # shellcheck source=engine/installer/kubespray/install.sh
+  source "${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh"
 
   #-----------------------------------------------------------------------------
   # Install all the curated apps
   #-----------------------------------------------------------------------------
-  cd ${APPS_PATH}
-  ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-    -i ${ENGINE_CACHE}/config/inventory.ini \
+  cd "${APPS_PATH}"
+  ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+    -i "${ENGINE_CACHE}/config/inventory.ini" \
     install-apps.yml
 else
-  echo "No installer selected"
+  echo "Warning: No installer selected!"
 fi
 
 #-------------------------------------------------------------------------------

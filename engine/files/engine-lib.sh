@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -16,6 +18,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+# TODO: ignoring SC2015 for the timebeing so we don't break things
+# shellcheck disable=SC2015
 # Avoid double sourcing the file
 [[ -n ${ENGINE_LIB_SOURCED:-} ]] && return 0 || export ENGINE_LIB_SOURCED=1
 
@@ -24,8 +28,11 @@
 # and their default values if they are not specified
 #-------------------------------------------------------------------------------
 function usage() {
-    echo "
-Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l \"<provision>,<installer>\"] [-v] [-c] [-h]
+    # NOTE: shellcheck complains quoting in the example so SC2086 is disabled
+    # shellcheck disable=SC2086
+    cat <<EOF
+
+Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l "<provision>,<installer>"] [-v] [-c] [-h]
 
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -r: Provisioner type to use for provisioning nodes. (Default bifrost)
@@ -40,7 +47,8 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
-    "
+
+EOF
     exit 0
 }
 
@@ -67,7 +75,7 @@ function parse_cmdline_opts() {
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
     HEAT_ENV_FILE=${HEAT_ENV_FILE:-"https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml"}
     DO_PROVISION=${DO_PROVISION:-1}
-    DO_INSTALLER=${DO_INSTALLER:-1}
+    DO_INSTALL=${DO_INSTALL:-1}
     DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
@@ -106,24 +114,24 @@ function parse_cmdline_opts() {
     fi
 
     # check the stages enabled in DEPLOY_STAGE_LIST
-    if [[ ! -z "$DEPLOY_STAGE_LIST" ]]; then
+    if [[ -n "$DEPLOY_STAGE_LIST" ]]; then
       DO_PROVISION=$(echo "$DEPLOY_STAGE_LIST" | grep -c provision || true)
-      DO_INSTALLER=$(echo "$DEPLOY_STAGE_LIST" | grep -c installer || true)
+      DO_INSTALL=$(echo "$DEPLOY_STAGE_LIST" | grep -c installer || true)
     fi
 
     # Do all the exports
-    export INSTALLER_TYPE=${INSTALLER_TYPE}
-    export PROVISIONER_TYPE=${PROVISIONER_TYPE}
-    export DEPLOY_SCENARIO=${DEPLOY_SCENARIO}
-    export SDF=${SDF}
-    export DISTRO=${DISTRO}
-    export PDF=${PDF}
-    export IDF=${IDF}
-    export HEAT_ENV_FILE=${HEAT_ENV_FILE}
-    export DO_PROVISION=${DO_PROVISION}
-    export DO_INSTALLER=${DO_INSTALLER}
-    export CLEANUP=${CLEANUP}
-    export VERBOSITY=${VERBOSITY}
+    export INSTALLER_TYPE="${INSTALLER_TYPE}"
+    export PROVISIONER_TYPE="${PROVISIONER_TYPE}"
+    export DEPLOY_SCENARIO="${DEPLOY_SCENARIO}"
+    export SDF="${SDF}"
+    export DISTRO="${DISTRO}"
+    export PDF="${PDF}"
+    export IDF="${IDF}"
+    export HEAT_ENV_FILE="${HEAT_ENV_FILE}"
+    export DO_PROVISION="${DO_PROVISION}"
+    export DO_INSTALL="${DO_INSTALL}"
+    export CLEANUP="${CLEANUP}"
+    export VERBOSITY="${VERBOSITY}"
 
     log_summary
 }
@@ -137,10 +145,12 @@ function parse_cmdline_opts() {
 # - env_reset shall not be present
 #-------------------------------------------------------------------------------
 function check_prerequisites() {
+    echo "Info: Check prerequisites"
+
     #-------------------------------------------------------------------------------
     # We shouldn't be running as root
     #-------------------------------------------------------------------------------
-    if [[ $(whoami) == "root" ]]; then
+    if [[ "$(whoami)" == "root" ]]; then
         echo "WARNING: This script should not be run as root!"
         echo "Elevated privileges are acquired automatically when necessary"
         echo "Waiting 10s to give you a chance to stop the script (Ctrl-C)"
@@ -150,7 +160,7 @@ function check_prerequisites() {
     #-------------------------------------------------------------------------------
     # Check if SSH key exists
     #-------------------------------------------------------------------------------
-    if [[ ! -f $HOME/.ssh/id_rsa ]]; then
+    if [[ ! -f "$HOME/.ssh/id_rsa" ]]; then
         echo "ERROR: You must have SSH keypair in order to run this script!"
         exit 1
     fi
@@ -166,23 +176,30 @@ function check_prerequisites() {
 # environment variables set in them for further use
 #-------------------------------------------------------------------------------
 function bootstrap_environment() {
+    echo "Info: Prepare environment for Cloud Infra deployment"
+
     # source engine-vars
-    source $ENGINE_PATH/engine/config/engine-vars.sh
+    # shellcheck source=engine/config/engine-vars.sh
+    source "$ENGINE_PATH/engine/config/engine-vars.sh"
 
     # Make sure we pass ENGINE_PATH everywhere
     export ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"
+
+    # Remove leading whitespace to allow quoting of ENGINE_ANSIBLE_PARAMS
+    ENGINE_ANSIBLE_PARAMS="$(echo -e "${ENGINE_ANSIBLE_PARAMS}" | sed -e 's/^[[:space:]]*//')"
+    export ENGINE_ANSIBLE_PARAMS
 
     # Make sure everybody knows where our global roles are
     export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles"
 
     # Update path
-    if [[ -z $(echo $PATH | grep "$HOME/.local/bin")  ]]; then
+    if ! grep -q "$HOME/.local/bin" <<< "$PATH"; then
         export PATH="$HOME/.local/bin:$PATH"
     fi
 
     # Create engine workspace directory
-    sudo mkdir -p ${ENGINE_WORKSPACE}
-    sudo chown ${USER}:${USER} ${ENGINE_WORKSPACE}
+    sudo mkdir -p "${ENGINE_WORKSPACE}"
+    sudo chown "${USER}:${USER}" "${ENGINE_WORKSPACE}"
 }
 
 #-------------------------------------------------------------------------------
@@ -191,14 +208,16 @@ function bootstrap_environment() {
 # so this function is important to use but it is not executed by default.
 #-------------------------------------------------------------------------------
 function cleanup() {
+    echo "Info: Remove leftovers of previous run"
+
     # remove engine venv, cache and .ansible
-    sudo /bin/rm -rf $ENGINE_VENV $ENGINE_CACHE $HOME/.ansible
+    sudo /bin/rm -rf "$ENGINE_VENV" "$ENGINE_CACHE" "$HOME/.ansible"
 
     # stop ironic-conductor service before dropping ironic database
     sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
 
     # remove ironic and inspector database
-    if $(which mysql &> /dev/null); then
+    if command -v mysql &> /dev/null; then
         sudo mysql --execute "drop database ironic;" > /dev/null 2>&1 || true
         sudo mysql --execute "drop database inspector;" > /dev/null 2>&1 || true
     fi
@@ -226,6 +245,8 @@ function cleanup() {
 # OpenStack Upper Constraints is used so we install what is tested/verified.
 #-------------------------------------------------------------------------------
 function install_ansible() {
+    echo "Info: Install required system packages using on jumphost"
+
     set -eu
 
     local install_map
@@ -252,13 +273,13 @@ function install_ansible() {
         curl
     )
 
+    # shellcheck source=/etc/os-release
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         ubuntu|debian)
         OS_FAMILY="Debian"
         export DEBIAN_FRONTEND=noninteractive
-        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
-        CHECK_CMD="dpkg -l"
+        INSTALLER_CMD="sudo -H -E apt install -y -q=3"
         PKG_MAP=(
             [gcc]=gcc
             [libffi]=libffi-dev
@@ -277,54 +298,62 @@ function install_ansible() {
             [curl]=curl
         )
         EXTRA_PKG_DEPS=( apt-utils )
-        sudo apt-get update
+        sudo apt update -q=3 > /dev/null 2>&1
 
         ;;
 
         *) echo "ERROR: Supported package manager not found.  Supported: apt, dnf, yum, zypper"; exit 1;;
     esac
 
-    # Build instllation map
-    for pkgmap in ${CHECK_CMD_PKGS[@]}; do
-        install_map+=(${PKG_MAP[$pkgmap]} )
+    # Build installation map
+    for pkgmap in "${CHECK_CMD_PKGS[@]}"; do
+        install_map+=( "${PKG_MAP[$pkgmap]}" )
     done
 
-    install_map+=(${EXTRA_PKG_DEPS[@]} )
+    install_map+=( "${EXTRA_PKG_DEPS[@]}" )
 
-    ${INSTALLER_CMD} ${install_map[@]} > /dev/null
+    # NOTE: we want the elements to be split
+    # shellcheck disable=SC2068
+    ${INSTALLER_CMD} ${install_map[@]} > /dev/null 2>&1
 
+    echo "Info: Prepare virtual environment at $ENGINE_VENV on jumphost"
     # We need to prepare our virtualenv now
-    virtualenv -p python3 --quiet --no-site-packages ${ENGINE_VENV}
+    virtualenv --python python3 --quiet --no-site-packages "${ENGINE_VENV}" > /dev/null 2>&1
+    # NOTE: venv is created during runtime so shellcheck SC1090 is disabled
     set +u
-    source ${ENGINE_VENV}/bin/activate
+    # shellcheck disable=SC1090
+    source "${ENGINE_VENV}/bin/activate"
     set -u
 
+    echo "Info: Install Ansible $ENGINE_ANSIBLE_VERSION from pip on jumphost"
     # We are inside the virtualenv now so we should be good to use pip and python from it.
-    pip -q install --upgrade pip==$ENGINE_PIP_VERSION # We need a version which supports the '-c' parameter
-    pip -q install --upgrade virtualenv pip setuptools shade ara==$ENGINE_ARA_VERSION \
-        ansible==$ENGINE_ANSIBLE_VERSION ansible-lint==$ENGINE_ANSIBLE_LINT_VERSION
+    pip -q install --upgrade pip=="$ENGINE_PIP_VERSION" # We need a version which supports the '-c' parameter
+    pip -q install --upgrade virtualenv pip setuptools shade ara=="$ENGINE_ARA_VERSION" \
+        ansible=="$ENGINE_ANSIBLE_VERSION" ansible-lint=="$ENGINE_ANSIBLE_LINT_VERSION"
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
 
     if [[ "$OS_FAMILY" == "Debian" ]]; then
       # Get python3-apt and install into venv
-      venv_site_packages_dir="${ENGINE_VENV}/lib/python3*/site-packages"
+      # shellcheck disable=SC2125
+      venv_site_packages_dir="${ENGINE_VENV}"/lib/python3*/site-packages
       cd /tmp
-      echo "Downloading python3-apt using apt"
-      apt download python3-apt
+      echo "Info: Download and install python3-apt using apt"
+      apt download -q=3 python3-apt
 
-      echo "Extracting python3-apt..."
       dpkg -x python3-apt_*.deb python3-apt
-      chown -R $USER:$USER /tmp/python3-apt/usr/lib/python3*/dist-packages
+      chown -R "$USER:$USER" /tmp/python3-apt/usr/lib/python3*/dist-packages
 
-      echo "Moving python3-apt libraries into $venv_site_packages_dir"
+      # NOTE: we want the globbing
+      # shellcheck disable=SC2086
       cp -r /tmp/python3-apt/usr/lib/python3*/dist-packages/* $venv_site_packages_dir
+      # NOTE: we want the globbing
+      # shellcheck disable=SC2086
       cd $venv_site_packages_dir
       mv apt_pkg.*.so apt_pkg.so
       mv apt_inst.*.so apt_inst.so
 
-      echo "Removing downloaded python3-apt in /tmp"
       rm -rf /tmp/python3-apt*
     fi
 }
@@ -339,7 +368,7 @@ function log_summary() {
     echo "#---------------------------------------------------#"
     echo "User         : $USER"
     echo "Hostname     : $HOSTNAME"
-    echo "Host OS      : $(source /etc/os-release &>/dev/null || source /usr/lib/os-release &>/dev/null; echo ${PRETTY_NAME})"
+    echo "Host OS      : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
     echo "IP           : $(hostname -I | cut -d' ' -f1)"
     echo
     echo "#---------------------------------------------------#"
@@ -374,7 +403,7 @@ function log_elapsed_time() {
     echo "#                Deployment Completed               #"
     echo "#---------------------------------------------------#"
     echo "Date & Time  : $(date -u '+%F %T UTC')"
-    echo "Elapsed      : $(($elapsed_time / 60)) minutes and $(($elapsed_time % 60)) seconds"
+    echo "Elapsed      : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
     echo "#---------------------------------------------------#"
 }
 

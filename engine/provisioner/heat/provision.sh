@@ -21,27 +21,29 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-PROVISIONER_ROOT_DIR="$(dirname $(realpath ${BASH_SOURCE[0]}))"
+PROVISIONER_ROOT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles:${ENGINE_CACHE}/repos/bifrost/playbooks/roles"
 export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugins/modules"
 
 # set the BAREMETAL variable
 export BAREMETAL=false
 
+# NOTE: shellcheck SC1090 is disabled since openrc file is put in place during runtime
 # source openrc file
-source $OPENRC
+# shellcheck disable=SC1090
+source "$OPENRC"
 
 # create stack using the provided Heat Template
 echo "Info: Install, configure heat and create stack"
 echo "-------------------------------------------------------------------------"
-cd ${ENGINE_PATH}
-ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  ${PROVISIONER_ROOT_DIR}/playbooks/main.yml
+cd "${ENGINE_PATH}"
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+  "${PROVISIONER_ROOT_DIR}/playbooks/main.yml"
 
-cd ${ENGINE_PATH}
-ansible-playbook ${ENGINE_ANSIBLE_PARAMS} \
-  -i ${ENGINE_CACHE}/config/inventory.ini \
-  ${PROVISIONER_ROOT_DIR}/playbooks/configure-jumphost.yml
+cd "${ENGINE_PATH}"
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+  -i "${ENGINE_CACHE}/config/inventory.ini" \
+  "${PROVISIONER_ROOT_DIR}/playbooks/configure-jumphost.yml"
 echo "-------------------------------------------------------------------------"
 echo "Info: Nodes are provisioned using OpenStack Heat!"
 echo "-------------------------------------------------------------------------"

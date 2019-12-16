@@ -1,3 +1,4 @@
+#!/bin/bash
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -31,22 +32,22 @@
 export ENGINE_WORKSPACE=/opt/engine
 
 # location of ENGINE_VENV
-export ENGINE_VENV=${ENGINE_WORKSPACE}/.venv/
+export ENGINE_VENV="${ENGINE_WORKSPACE}/.venv/"
 
 # location of the cache the repositories will be cloned
-export ENGINE_CACHE=${ENGINE_PATH}/.cache
+export ENGINE_CACHE="${ENGINE_PATH}/.cache"
 
 # location of the apps in swconfig repo
-export APPS_PATH=${ENGINE_CACHE}/repos/swconfig/apps
+export APPS_PATH="${ENGINE_CACHE}/repos/swconfig/apps"
 
 # location of the scenario overrides if there is one
-export SCENARIO_OVERRIDES=${ENGINE_CACHE}/repos/swconfig/scenarios/${DEPLOY_SCENARIO}/${INSTALLER_TYPE}/overrides
+export SCENARIO_OVERRIDES="${ENGINE_CACHE}/repos/swconfig/scenarios/${DEPLOY_SCENARIO}/${INSTALLER_TYPE}/overrides"
 
 #-------------------------------------------------------------------------------
 # Set versions of the engine, pip, ansible, ansible-lint, and ara here as we use bash
 #-------------------------------------------------------------------------------
 # the Engine version to use
-export ENGINE_VERSION=${ENGINE_VERSION:-"master"}
+export ENGINE_VERSION="${ENGINE_VERSION:-master}"
 
 # PIP version to use
 export ENGINE_PIP_VERSION="19.0.3"
@@ -62,12 +63,12 @@ export ENGINE_ARA_VERSION="0.16.4"
 #-------------------------------------------------------------------------------
 # Set the inventory for bifrost
 #-------------------------------------------------------------------------------
-export BIFROST_INVENTORY_SOURCE=${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}
+export BIFROST_INVENTORY_SOURCE="${BIFROST_INVENTORY_SOURCE:-/tmp/baremetal.yml}"
 
 #-------------------------------------------------------------------------------
 # Other variables
 #-------------------------------------------------------------------------------
 # additional parameters to pass to Ansible
-export ENGINE_ANSIBLE_PARAMS=${ENGINE_ANSIBLE_PARAMS:-""}
+export ENGINE_ANSIBLE_PARAMS="${ENGINE_ANSIBLE_PARAMS:-""}"
 
 # vim: set ts=2 sw=2 expandtab:
