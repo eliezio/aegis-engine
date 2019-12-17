@@ -56,10 +56,10 @@ kubectl_version: "{{ lookup('env', 'KUBECTL_VERSION') | default(kubernetes_versi
 #-------------------------------------------------------------------------------
 # kolla-ansible and openstack versions
 #-------------------------------------------------------------------------------
-# kolla-ansible for stable/rocky as of 09.08.2019
-kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('71deb0a9da9955fbe41065d62da2bed783e33829', true) }}"
+# kolla-ansible for stable/stein as of 18.12.2019
+kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('76fa23e6f70a91f2b10693b17882ebaf524a85f8', true) }}"
 # openstack version that is supported by the pinned kolla-ansibe version
-openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('rocky', true) }}"
+openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('stein', true) }}"
 
 #-------------------------------------------------------------------------------
 # helm version

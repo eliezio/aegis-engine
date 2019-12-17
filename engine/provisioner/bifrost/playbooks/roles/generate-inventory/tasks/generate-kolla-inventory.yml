@@ -19,7 +19,7 @@
 
 - name: Generate Kolla inventory from PDF and IDF
   template:
-    src:  inventory_kolla.ini.j2
+    src:  "inventory_kolla_{{ openstack_version }}.ini.j2"
     dest: "{{ config_path }}/inventory.ini"
 
 # vim: set ts=2 sw=2 expandtab:

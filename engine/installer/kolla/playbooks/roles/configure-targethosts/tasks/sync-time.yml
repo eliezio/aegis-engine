@@ -47,7 +47,6 @@
     state: "restarted"
   become: true
 
-
 - name: "NTP should be synchronized"
   shell: |
       set -o pipefail

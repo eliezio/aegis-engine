@@ -32,5 +32,13 @@
     - "dbus"
     - "lvm2"
     - "nfs-kernel-server"
+    - "tzdata"
+
+# NOTE: raw install is required to support cloud images which do not have python installed
+# This is copied from kolla-ansible: ansible/roles/baremetal/tasks/pre-install.yml
+# DEBIAN_FRONTEND=noninteractive is added for uninterrupted installation of packages
+- name: Install python2.7
+  raw: "DEBIAN_FRONTEND=noninteractive apt-get install -y python2.7"
+  changed_when: true
 
 # vim: set ts=2 sw=2 expandtab:
