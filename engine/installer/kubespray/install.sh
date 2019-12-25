@@ -30,7 +30,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Configure target hosts"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml"
 
@@ -39,7 +39,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Configure installer"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml"
 
@@ -48,7 +48,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Execute scenario pre deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/pre-deployment.yml"
 
@@ -57,7 +57,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Install scenario ${DEPLOY_SCENARIO}"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kubespray"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i inventory/engine/inventory.ini \
   -e "@${ENGINE_CACHE}/config/kubespray-extra-vars.yml" \
   --flush-cache \
@@ -68,7 +68,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Execute scenario and common post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml"
 

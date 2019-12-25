@@ -183,10 +183,10 @@ function bootstrap_environment() {
     source "$ENGINE_PATH/engine/config/engine-vars.sh"
 
     # Make sure we pass ENGINE_PATH everywhere
-    export ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"
+    ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"
 
-    # Remove leading whitespace to allow quoting of ENGINE_ANSIBLE_PARAMS
-    ENGINE_ANSIBLE_PARAMS="$(echo -e "${ENGINE_ANSIBLE_PARAMS}" | sed -e 's/^[[:space:]]*//')"
+    # Convert to array to allow quoting of ENGINE_ANSIBLE_PARAMS
+    read -r -a ENGINE_ANSIBLE_PARAMS <<< "$(echo -e "${ENGINE_ANSIBLE_PARAMS}")"
     export ENGINE_ANSIBLE_PARAMS
 
     # Make sure everybody knows where our global roles are

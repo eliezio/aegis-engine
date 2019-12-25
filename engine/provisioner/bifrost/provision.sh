@@ -34,7 +34,7 @@ grep -o "vendor.*" "${ENGINE_CACHE}/config/pdf.yml" | grep -q libvirt && export 
 echo "Info: Prepare nodes, configure bifrost and create bifrost inventory"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -e baremetal="${BAREMETAL}" \
   "${PROVISIONER_ROOT_DIR}/playbooks/main.yml"
 echo "-------------------------------------------------------------------------"
@@ -52,7 +52,7 @@ export VENV="${ENGINE_VENV}"
 echo "Info: Install bifrost"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/bifrost/playbooks"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i inventory/target \
   -e ansible_python_interpreter="${ENGINE_VENV}/bin/python" \
   bifrost-install.yml
@@ -61,7 +61,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Enroll and deploy nodes using bifrost"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/bifrost/playbooks"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i inventory/bifrost_inventory.py \
   -e ansible_python_interpreter="${ENGINE_VENV}/bin/python" \
   bifrost-enroll-deploy.yml
@@ -70,7 +70,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Generate Ansible inventory"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/bifrost/playbooks"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i inventory/bifrost_inventory.py \
   --ssh-extra-args " -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
   "${PROVISIONER_ROOT_DIR}/playbooks/generate-inventory.yml"

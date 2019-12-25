@@ -65,7 +65,7 @@ install_ansible
 echo "Info: Bootstrap hardware and software configuration"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     engine/playbooks/bootstrap-configuration.yml
 echo "-------------------------------------------------------------------------"
 
@@ -103,7 +103,7 @@ if [[ "${DO_INSTALL}" -eq 1 ]]; then
   # Install all the curated apps
   #-----------------------------------------------------------------------------
   cd "${APPS_PATH}"
-  ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+  ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_CACHE}/config/inventory.ini" \
     install-apps.yml
 else

@@ -37,11 +37,11 @@ source "$OPENRC"
 echo "Info: Install, configure heat and create stack"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   "${PROVISIONER_ROOT_DIR}/playbooks/main.yml"
 
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${PROVISIONER_ROOT_DIR}/playbooks/configure-jumphost.yml"
 echo "-------------------------------------------------------------------------"

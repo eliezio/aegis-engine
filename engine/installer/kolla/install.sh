@@ -30,7 +30,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Configure target hosts"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml"
 
@@ -39,7 +39,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Configure kolla installer"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml"
 
@@ -49,7 +49,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Execute scenario pre deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/pre-deployment.yml"
 
@@ -111,7 +111,7 @@ echo "-------------------------------------------------------------------------"
 echo "Info: Execute scenario and common post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
-ansible-playbook "${ENGINE_ANSIBLE_PARAMS}" \
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
   "${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml"
 
