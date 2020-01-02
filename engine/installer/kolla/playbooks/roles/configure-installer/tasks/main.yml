@@ -88,6 +88,11 @@
     src: keystone.conf.j2
     dest: "{{ config_path }}/keystone.conf"
 
+- name: Place custom ceph configuration
+  template:
+    src: ceph.conf.j2
+    dest: "{{ config_path }}/ceph.conf"
+
 - name: Generate kolla passwords
   command: "{{ kolla_ansible_path }}/tools/generate_passwords.py -p {{ config_path }}/passwords.yml"
   changed_when: false

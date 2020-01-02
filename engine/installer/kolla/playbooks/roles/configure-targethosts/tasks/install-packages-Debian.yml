@@ -33,6 +33,7 @@
     - "lvm2"
     - "nfs-kernel-server"
     - "tzdata"
+    - "parted"
 
 # NOTE: raw install is required to support cloud images which do not have python installed
 # This is copied from kolla-ansible: ansible/roles/baremetal/tasks/pre-install.yml

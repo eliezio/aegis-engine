@@ -21,7 +21,7 @@
 - include: install-packages.yml
 - include: sync-time.yml
 - include: create-swap.yml
-- include: prepare-cinder-lvm-backend.yml
-- include: prepare-cinder-nfs-backup.yml
+- include: prepare-cinder-{{ cinder_storage_driver }}.yml
+- include: prepare-cinder-backup-{{ cinder_storage_backup_driver }}.yml
 
 # vim: set ts=2 sw=2 expandtab:

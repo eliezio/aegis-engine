@@ -29,10 +29,16 @@ enable_haproxy: "no"
 
 # cinder specific options
 enable_cinder: "yes"
-enable_cinder_backend_lvm: "yes"
 enable_cinder_backup: "yes"
-cinder_backup_driver: "nfs"
+enable_cinder_backend_lvm: "{{ (cinder_storage_driver == 'lvm') | ternary('yes','no') }}"
+enable_ceph: "{{ (cinder_storage_driver == 'ceph') | ternary('yes','no') }}"
+cinder_backup_driver: "{{ cinder_storage_backup_driver }}"
 cinder_backup_share: "{{ os_kolla_internal_vip_address }}:{{ cinder_backup_path }}"
+
+# ceph specific options
+# See: https://docs.ceph.com/docs/mimic/rados/operations/placement-groups/#a-preselection-of-pg-num
+ceph_pool_pg_num: 32
+ceph_pool_pgp_num: 32
 
 # Nova compute virt_type is set in inventory
 nova_compute_virt_type: "{{ (lookup('env', 'BAREMETAL') == 'true') | ternary('kvm','qemu') }}"

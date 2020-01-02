@@ -2,6 +2,9 @@
 ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 cinder_image_path='/var/lib/cinder.img'
 cinder_backup_path='/mnt/cinder-backup'
+cinder_storage_driver='{{ idf.kolla.storage.driver }}'
+cinder_storage_backup_driver='{{ idf.kolla.storage.backup_driver }}'
+cinder_image_size='{{ idf.kolla.storage.volume.size }}'
 
 [baremetal]
 {% for node in nodes %}
@@ -39,6 +42,7 @@ control
 control
 
 [storage:children]
+control
 compute
 
 [deployment:children]

@@ -73,6 +73,10 @@
     dest: "/etc/systemd/system/cinder-loopback.service"
   become: true
 
+- name: Force systemd to reread service configs
+  systemd:
+    daemon_reload: yes
+
 - name: Enable and start cinder loopback service
   systemd:
     name: cinder-loopback
