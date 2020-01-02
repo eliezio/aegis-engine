@@ -50,6 +50,7 @@ scenario:
           - centos7
         curated_apps:
           - ceph
+          - prometheus
   k8-flannel-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -64,6 +65,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
   k8-canal-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -78,6 +80,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
   k8-cilium-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -92,6 +95,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
   k8-weave-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -106,6 +110,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
   k8-multus-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -120,6 +125,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
   k8-calico-spinnaker:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -133,6 +139,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
   os-nosdn-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -180,6 +187,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - ceph
+          - prometheus
           - istio
 
 # the following section contains apps that are supported by engine.
@@ -197,6 +205,9 @@ apps:
     installers:
       - kubespray
   openstack-armada:
+    installers:
+      - kubespray
+  prometheus:
     installers:
       - kubespray
 
