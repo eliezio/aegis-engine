@@ -18,12 +18,15 @@
 # ============LICENSE_END=========================================================
 
 - hosts: jumphost
-  gather_facts: true
-  become: no
+  gather_facts: false
+  become: false
   vars_files:
     - "{{ engine_path }}/engine/var/global.yml"
 
   tasks:
+    - name: Install python and python-dev
+      script: files/install-python.sh
+
     - name: Copy SSH keys to jumphost for target node access
       copy:
         src: "{{ item }}"
@@ -34,5 +37,13 @@
       with_items:
         - "/home/{{ local_user }}/.ssh/id_rsa"
         - "/home/{{ local_user }}/.ssh/id_rsa.pub"
+
+- hosts: baremetal
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Install python and python-dev
+      script: files/install-python.sh
 
 # vim: set ts=2 sw=2 expandtab:

@@ -43,7 +43,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
   -i "${ENGINE_CACHE}/config/inventory.ini" \
-  "${PROVISIONER_ROOT_DIR}/playbooks/configure-jumphost.yml"
+  "${PROVISIONER_ROOT_DIR}/playbooks/configure-instances.yaml"
 echo "-------------------------------------------------------------------------"
 echo "Info: Nodes are provisioned using OpenStack Heat!"
 echo "-------------------------------------------------------------------------"

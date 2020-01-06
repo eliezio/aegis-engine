@@ -73,61 +73,17 @@ conditions:
     not: skip_volume
 
 resources:
-  wait_condition:
-    type: OS::Heat::WaitCondition
-    properties:
-      handle: { get_resource: wait_handle }
-      count: 1
-      timeout: 1200
-
-  wait_handle:
-    type: OS::Heat::WaitConditionHandle
-
   root_login:
     type: OS::Heat::CloudConfig
     properties:
       cloud_config:
         disable_root: false
 
-  boot_script:
-    type: OS::Heat::SoftwareConfig
-    properties:
-      group: ungrouped
-      config:
-        str_replace:
-          params:
-            wc_notify: { get_attr: ['wait_handle', 'curl_cli'] }
-          template: |
-            #!/bin/bash -ex
-
-            echo "Running boot script"
-            source /etc/os-release || source /usr/lib/os-release
-            case ${ID,,} in
-              ubuntu|debian)
-                echo "Debian distro"
-                # we need python for ansible
-                sudo apt update
-                sudo apt install -y python python-dev
-                ;;
-              rhel|fedora|centos)
-                echo "RHEL distro"
-                yum install -y python python-devel curl
-                ;;
-              *)
-                echo "ERROR: Supported package manager not found.  Supported: apt, dnf, yum, zypper"
-                exit 1
-                ;;
-            esac
-
-            # notify completion
-            wc_notify --data-binary '{"status": "SUCCESS"}'
-
   boot_config:
     type: OS::Heat::MultipartMime
     properties:
       parts:
       - config: {get_resource: root_login}
-      - config: {get_resource: boot_script}
 
   port:
     type: OS::Neutron::Port
