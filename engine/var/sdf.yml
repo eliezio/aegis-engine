@@ -34,13 +34,11 @@
 #           - <supported distro>
 
 # Kubernetes based scenarios
-# TODO: switch back to master for version!!!
 scenario:
   k8-calico-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
-    version: 1d9000bbff41847a339abd3c71ecf4318d25bb0f
-    refspec: refs/changes/65/3265/2
+    version: master
     provisioners:
       - bifrost
       - heat
