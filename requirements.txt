@@ -1,0 +1,48 @@
+#-------------------------------------------------------------------------------
+# This file contains engine python requirement version pins.
+# Changing versions might have side effects!
+#
+# An important point to highlight here is that this file contains all the
+# dependencies that is potentially needed for various combinations and
+# scenarios supported by the framework. This means that we might be installing
+# some unnecessary dependencies for the scenarios supported by the framework
+# by collecting everything in one place. An example to this is installing
+# libvirt dependencies that are not actually needed for cloud/heat based
+# deployments and vice versa. However, this is a very small cost comparing the
+# benefits we get such as having ability to list, manage, and install python
+# packages in one place or for pinning versions to ensure reproducibility.
+# If we see the need to adjust and limit the packages we need to install
+# dependending on the scenario, we can fine tune what is installed where by
+# introducing additional requirements files.
+#
+# Finally, this list currently only contains the dependencies required for
+# the engine itself meaning that the dependencies required for scenarios that
+# are developed in swconfig repo is not part of the file. They will be included
+# and controlled using this file over time once the basics are in place.
+#-------------------------------------------------------------------------------
+
+# NOTE: engine top level requirements
+# These packages are needed for basic engine functionality and not related
+# to any of the playbooks or roles located in this or other cloud-infra repositories
+bindep==2.8.1
+pip==19.0.3
+setuptools==44.0.0
+virtualenv==16.7.9
+shade==1.32.0
+ansible==2.7.8
+ara==0.16.4
+
+# NOTE: requirements coming from playbooks or roles in engine repo
+libvirt-python==5.10.0
+lxml==4.4.2
+openshift==0.10.1
+openstacksdk==0.39.0
+python-cinderclient==5.0.0
+python-glanceclient==2.17.0
+python-heatclient==1.18.0
+python-keystoneclient==3.22.0
+python-neutronclient==6.14.0
+python-novaclient==16.0.0
+python-openstackclient==4.0.0
+python-swiftclient==3.8.1
+virtualbmc==1.6.0

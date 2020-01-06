@@ -19,21 +19,6 @@
 - name: "Load distribution defaults"
   include_vars: "{{ ansible_os_family | lower }}.yml"
 
-- name: "Install required packages"
-  package:
-    name: "{{ required_packages }}"
-    update_cache: "{{ (ansible_pkg_mgr in ['apt', 'zypper']) | ternary('yes', omit) }}"
-    state: present
-
-- name: "Install libvirt and lxml using pip"
-  pip:
-    name: "{{ item }}"
-    virtualenv: "{{ engine_venv }}"
-  become: no
-  with_items:
-    - libvirt-python
-    - lxml
-
 - name: "Restart libvirt service"
   service:
     name: "{{ libvirt_service_name }}"

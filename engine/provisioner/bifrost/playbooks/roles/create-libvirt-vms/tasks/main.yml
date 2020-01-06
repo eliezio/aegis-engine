@@ -35,13 +35,6 @@
     path: "{{ ansible_env.HOME }}/.vbmc/"
     state: absent
 
-- name: Install virtualbmc
-  pip:
-    name: virtualbmc
-    version: "{{ virtualbmc_version }}"
-    virtualenv: "{{ engine_venv }}"
-  become: no
-
 - name: Create virtualbmc folder
   file:
     path: "{{ ansible_env.HOME }}/.vbmc/"

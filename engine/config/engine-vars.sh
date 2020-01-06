@@ -43,26 +43,9 @@ export APPS_PATH="${ENGINE_CACHE}/repos/swconfig/apps"
 # location of the scenario overrides if there is one
 export SCENARIO_OVERRIDES="${ENGINE_CACHE}/repos/swconfig/scenarios/${DEPLOY_SCENARIO}/${INSTALLER_TYPE}/overrides"
 
-#-------------------------------------------------------------------------------
-# Set versions of the engine, pip, ansible, ansible-lint, and ara here as we use bash
-#-------------------------------------------------------------------------------
 # the Engine version to use
 export ENGINE_VERSION="${ENGINE_VERSION:-master}"
 
-# PIP version to use
-export ENGINE_PIP_VERSION="19.0.3"
-
-# Ansible version to use
-export ENGINE_ANSIBLE_VERSION="2.7.8"
-
-# ansible-lint version to use
-export ENGINE_ANSIBLE_LINT_VERSION="4.1.0"
-
-# yamllint version to use
-export ENGINE_YAML_LINT_VERSION="1.19.0"
-
-# ara version to use
-export ENGINE_ARA_VERSION="0.16.4"
 #-------------------------------------------------------------------------------
 # Set the inventory for bifrost
 #-------------------------------------------------------------------------------

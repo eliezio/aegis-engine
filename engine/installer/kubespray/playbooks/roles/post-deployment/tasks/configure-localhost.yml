@@ -17,11 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install openshift
-  pip:
-    name: openshift
-    virtualenv: "{{ engine_venv }}"
-
 - name: Ensure /home/{{ ansible_env.SUDO_USER }}/.kube folder exists and empty
   file:
     path: "/home/{{ ansible_env.SUDO_USER }}/.kube"

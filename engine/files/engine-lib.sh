@@ -18,6 +18,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+set -o pipefail
+
 # TODO: ignoring SC2015 for the timebeing so we don't break things
 # shellcheck disable=SC2015
 # Avoid double sourcing the file
@@ -245,7 +247,6 @@ function cleanup() {
 # OpenStack Upper Constraints is used so we install what is tested/verified.
 #-------------------------------------------------------------------------------
 function install_ansible() {
-    echo "Info: Install required system packages using on jumphost"
 
     set -eu
 
@@ -253,24 +254,12 @@ function install_ansible() {
 
     declare -A PKG_MAP
 
-    # workaround: for latest bindep to work, it needs to use en_US local
     export LANG="C"
 
+    # we only install the most basic dependencies outside of bindep.txt
     CHECK_CMD_PKGS=(
-        gcc
-        libffi
-        libopenssl
-        lsb-release
-        make
-        net-tools
-        python-devel
-        python
-        pip
-        python-pymysql
-        python-zmq
         venv
-        wget
-        curl
+        python
     )
 
     # shellcheck source=/etc/os-release
@@ -279,25 +268,12 @@ function install_ansible() {
         ubuntu|debian)
         OS_FAMILY="Debian"
         export DEBIAN_FRONTEND=noninteractive
+        PKG_MGR=apt
         INSTALLER_CMD="sudo -H -E apt install -y -q=3"
         PKG_MAP=(
-            [gcc]=gcc
-            [libffi]=libffi-dev
-            [libopenssl]=libssl-dev
-            [lsb-release]=lsb-release
-            [make]=make
-            [net-tools]=net-tools
-            [python-devel]=libpython3-dev
             [python]=python3-minimal
-            [pip]=python3-pip
-            [python-pyyaml]=python3-yaml
-            [python-pymysql]=python3-pymysql
-            [python-zmq]=python3-zmq
             [venv]=virtualenv
-            [wget]=wget
-            [curl]=curl
         )
-        EXTRA_PKG_DEPS=( apt-utils )
         sudo apt update -q=3 > /dev/null 2>&1
 
         ;;
@@ -310,9 +286,7 @@ function install_ansible() {
         install_map+=( "${PKG_MAP[$pkgmap]}" )
     done
 
-    install_map+=( "${EXTRA_PKG_DEPS[@]}" )
-
-    # NOTE: we want the elements to be split
+    echo "Info: Install ${install_map[*]} using $PKG_MGR on jumphost"
     # shellcheck disable=SC2068
     ${INSTALLER_CMD} ${install_map[@]} > /dev/null 2>&1
 
@@ -325,12 +299,17 @@ function install_ansible() {
     source "${ENGINE_VENV}/bin/activate"
     set -u
 
-    echo "Info: Install Ansible $ENGINE_ANSIBLE_VERSION from pip on jumphost"
-    # We are inside the virtualenv now so we should be good to use pip and python from it.
-    pip -q install --upgrade pip=="$ENGINE_PIP_VERSION" # We need a version which supports the '-c' parameter
-    pip -q install --upgrade virtualenv pip setuptools shade ara=="$ENGINE_ARA_VERSION" \
-        ansible=="$ENGINE_ANSIBLE_VERSION" ansible-lint=="$ENGINE_ANSIBLE_LINT_VERSION" \
-        yamllint=="$ENGINE_YAML_LINT_VERSION"
+    # since we use bindep.txt to control distro packages to install, we need to install bindep first using pip
+    echo "Info: Install bindep using pip"
+    pip install --upgrade --no-color --quiet bindep
+
+    echo "Info: Install system packages listed in bindep.txt using $PKG_MGR"
+    cd "$ENGINE_PATH"
+    # shellcheck disable=SC2046
+    bindep -b &> /dev/null || ${INSTALLER_CMD} $(bindep -b) > /dev/null 2>&1
+
+    echo "Info: Install python packages listed in requirements.txt using pip"
+    pip install --upgrade --no-color --quiet -r requirements.txt
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"
@@ -341,7 +320,7 @@ function install_ansible() {
       venv_site_packages_dir="${ENGINE_VENV}"/lib/python3*/site-packages
       cd /tmp
       echo "Info: Download and install python3-apt using apt"
-      apt download -q=3 python3-apt
+      apt download -q=3 python3-apt > /dev/null 2>&1
 
       dpkg -x python3-apt_*.deb python3-apt
       chown -R "$USER:$USER" /tmp/python3-apt/usr/lib/python3*/dist-packages

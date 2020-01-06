@@ -40,16 +40,6 @@
     virtualenv: "{{ engine_venv }}"
   become: yes
 
-- name: Install openstack clients
-  pip:
-    name: "{{ item }}"
-    virtualenv: "{{ engine_venv }}"
-  become: yes
-  with_items:
-    - python-openstackclient
-    - python-glanceclient
-    - python-neutronclient
-
 - name: Copy globals.yml
   copy:
     src: "{{ kolla_ansible_path }}/etc/kolla/globals.yml"
