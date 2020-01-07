@@ -1,0 +1,10 @@
+#-------------------------------------------------------------------------------
+# This file contains engine python requirement version pins.
+# Changing versions might have side effects!
+#-------------------------------------------------------------------------------
+
+# NOTE: engine test requirements
+tox==3.14.3
+ansible-lint==4.1.0
+yamllint==1.19.0
+shellcheck-py==0.7.0.1
