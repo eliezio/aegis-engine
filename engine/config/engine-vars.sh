@@ -29,13 +29,13 @@
 # Set paths of key stuff
 #-------------------------------------------------------------------------------
 # location of nordix workspace
-export ENGINE_WORKSPACE=/opt/engine
+export ENGINE_WORKSPACE="${ENGINE_WORKSPACE:-/opt/engine}"
 
 # location of ENGINE_VENV
-export ENGINE_VENV="${ENGINE_WORKSPACE}/.venv/"
+export ENGINE_VENV="${ENGINE_WORKSPACE}/.venv"
 
-# location of the cache the repositories will be cloned
-export ENGINE_CACHE="${ENGINE_PATH}/.cache"
+# location of the cache where the various config files will be kept and repositories will be cloned
+export ENGINE_CACHE="${ENGINE_WORKSPACE}/.cache"
 
 # location of the apps in swconfig repo
 export APPS_PATH="${ENGINE_CACHE}/repos/swconfig/apps"
