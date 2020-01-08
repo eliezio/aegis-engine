@@ -66,6 +66,7 @@ echo "Info: Bootstrap hardware and software configuration"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
+    -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
     engine/playbooks/bootstrap-configuration.yml
 echo "-------------------------------------------------------------------------"
 
@@ -104,8 +105,8 @@ if [[ "${DO_INSTALL}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   cd "${APPS_PATH}"
   ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-    -i "${ENGINE_CACHE}/config/inventory.ini" \
-    install-apps.yml
+      -i "${ENGINE_CACHE}/config/inventory.ini" \
+      install-apps.yml
 else
   echo "Warning: No installer selected!"
 fi

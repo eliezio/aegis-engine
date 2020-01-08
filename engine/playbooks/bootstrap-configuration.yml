@@ -21,9 +21,6 @@
   connection: local
   gather_facts: false
   become: no
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
 
   roles:
     - role: bootstrap-hwconfig

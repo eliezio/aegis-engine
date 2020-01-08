@@ -16,6 +16,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
+# TODO - group_vars: needed for backward compatibility - remove this once the transition is done
 - name: Remove existing SDF file
   file:
     path: "{{ item }}"
@@ -23,6 +25,7 @@
   with_items:
     - "{{ sdf_file }}"
 
+# TODO - group_vars: needed for backward compatibility - remove this once the transition is done
 - name: Get SDF file
   get_url:
     url: "{{ item.src }}"
@@ -30,10 +33,6 @@
     mode: 0644
   with_items:
     - { src: "{{ lookup('env', 'SDF') }}", dest: "{{ sdf_file }}" }
-
-- name: Get scenario metadata
-  include_vars:
-    file: "{{ sdf_file }}"
 
 - name: Get curated apps for '{{ deploy_scenario }}'
   set_fact:

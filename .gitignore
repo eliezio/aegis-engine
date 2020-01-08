@@ -57,3 +57,7 @@ coverage.xml
 
 # track these files, if they exist
 !.gitignore
+
+# engine temporary files
+engine/inventory/group_vars/all/pdf.yaml
+engine/inventory/group_vars/all/idf.yaml

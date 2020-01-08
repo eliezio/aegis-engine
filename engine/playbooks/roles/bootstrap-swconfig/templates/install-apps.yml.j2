@@ -16,12 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-{% raw %}
 - hosts: localhost
-  vars_files:
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ sdf_file }}"
-{% endraw %}
   tasks:
     - name: Fetch all applications that need to be installed
       debug:
