@@ -305,8 +305,11 @@ function install_ansible() {
 
     echo "Info: Install system packages listed in bindep.txt using $PKG_MGR"
     cd "$ENGINE_PATH"
+    # bindep -b exits with non-zero if it identifies a missing package so we disable pipefail
+    set +o pipefail
     # shellcheck disable=SC2046
     bindep -b &> /dev/null || ${INSTALLER_CMD} $(bindep -b) > /dev/null 2>&1
+    set -o pipefail
 
     echo "Info: Install python packages listed in requirements.txt using pip"
     pip install --upgrade --no-color --quiet -r requirements.txt
