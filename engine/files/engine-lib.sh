@@ -269,7 +269,7 @@ function install_ansible() {
         OS_FAMILY="Debian"
         export DEBIAN_FRONTEND=noninteractive
         PKG_MGR=apt
-        INSTALLER_CMD="sudo -H -E apt install -y -q=3"
+        INSTALLER_CMD="sudo -H -E apt install -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew -q=3"
         PKG_MAP=(
             [python]=python3-minimal
             [venv]=virtualenv
