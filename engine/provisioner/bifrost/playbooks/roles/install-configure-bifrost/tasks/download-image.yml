@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
 - name: Set download source and destination for the deployment image
   set_fact:
     source: "{{ item.source }}"
@@ -42,3 +43,5 @@
       sha256sum: "{{ header.x_checksum_sha256 }}"
   when: download_image
   become: yes
+
+# vim: set ts=2 sw=2 expandtab:

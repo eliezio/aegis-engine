@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
 - include_tasks: cleanup-bifrost.yml
 
 - name: Clone bifrost repository and checkout '{{ bifrost_version }}'

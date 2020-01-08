@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
 - name: "Load distribution defaults"
   include_vars: "{{ ansible_os_family | lower }}.yml"
 

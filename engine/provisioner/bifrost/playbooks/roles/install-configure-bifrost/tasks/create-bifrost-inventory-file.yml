@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
 - name: Remove previous bifrost inventory {{ bifrost_inventory_source }}
   file:
     state: absent

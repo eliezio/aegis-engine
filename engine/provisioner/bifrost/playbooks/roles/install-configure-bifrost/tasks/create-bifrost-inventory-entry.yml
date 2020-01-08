@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
 - name: Find node in PDF by node name '{{ host.key }}'
   set_fact:
     hostname: "{{ host.value }}"
@@ -49,3 +50,5 @@
 - name: Add node data of '{{ hostname }}' to bifrost inventory
   set_fact:
     bifrost_inventory: "{{ bifrost_inventory | combine({hostname: node_data}) }}"
+
+# vim: set ts=2 sw=2 expandtab:

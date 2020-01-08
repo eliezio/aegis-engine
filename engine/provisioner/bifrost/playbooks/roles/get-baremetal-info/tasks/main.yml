@@ -54,3 +54,5 @@
   when:
     - interface.macaddress == node.interfaces[idf.net_config.neutron.interface].mac_address
     - "'.' not in interface.device"
+
+# vim: set ts=2 sw=2 expandtab:

@@ -17,9 +17,16 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+# TODO - group_vars: needed for backward compatibility - remove this once the transition is done
 - name: Generate Kubespray inventory from PDF and IDF
   template:
     src:  inventory_kubespray.ini.j2
     dest: "{{ config_path }}/inventory.ini"
+
+# TODO - group_vars: update the task name once the transition is done
+- name: Generate Kubespray inventory from PDF and IDF (new)
+  template:
+    src:  inventory_kubespray.ini.j2
+    dest: "{{ inventory_path }}/inventory.ini"
 
 # vim: set ts=2 sw=2 expandtab:
