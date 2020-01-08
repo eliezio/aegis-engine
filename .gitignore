@@ -59,5 +59,6 @@ coverage.xml
 !.gitignore
 
 # engine temporary files
+engine/inventory/inventory.ini
 engine/inventory/group_vars/all/pdf.yaml
 engine/inventory/group_vars/all/idf.yaml

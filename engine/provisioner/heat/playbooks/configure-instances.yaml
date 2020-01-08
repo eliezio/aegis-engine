@@ -20,8 +20,6 @@
 - hosts: jumphost
   gather_facts: false
   become: false
-  vars_files:
-    - "{{ engine_path }}/engine/var/global.yml"
 
   tasks:
     - name: Install python and python-dev

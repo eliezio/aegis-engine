@@ -58,8 +58,9 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "{{ config_path }}/inventory.ini"
+    - "{{ inventory_path }}/inventory.ini"
     - "/tmp/inventory.ini"
+    - "{{ config_path }}/inventory.ini" # TODO - group_vars: delete this
   ignore_errors: yes
 
 - name: Generate kubespray inventory
@@ -67,7 +68,8 @@
     src: inventory_kubespray.ini.j2
     dest: "{{ item }}"
   with_items:
-    - "{{ config_path }}/inventory.ini"
+    - "{{ inventory_path }}/inventory.ini"
     - "/tmp/inventory.ini"
+    - "{{ config_path }}/inventory.ini" # TODO - group_vars: delete this
 
 # vim: set ts=2 sw=2 expandtab:
