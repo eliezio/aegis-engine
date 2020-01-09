@@ -42,7 +42,7 @@
 # place generated kubespray inventory to kubespray/inventory/engine
 - name: Place inventory
   copy:
-    src: "{{ config_path }}/inventory.ini"
+    src: "{{ inventory_path }}/inventory.ini"
     dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/inventory.ini"
     mode: 0644
 

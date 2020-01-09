@@ -20,10 +20,6 @@
 - hosts: localhost
   connection: local
   gather_facts: true
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ idf_file }}"
 
   roles:
     - role: configure-installer

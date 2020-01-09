@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+
 - name: Add the OS specific variables
   include_vars: '{{ ansible_os_family }}.yml'
 

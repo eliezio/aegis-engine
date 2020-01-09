@@ -31,8 +31,8 @@ echo "Info: Configure target hosts"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-  -i "${ENGINE_CACHE}/config/inventory.ini" \
-  "${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml"
+    -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+    "${INSTALLER_ROOT_DIR}/playbooks/configure-targethosts.yml"
 
 # configure installer
 echo "-------------------------------------------------------------------------"
@@ -40,8 +40,8 @@ echo "Info: Configure installer"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-  -i "${ENGINE_CACHE}/config/inventory.ini" \
-  "${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml"
+    -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+    "${INSTALLER_ROOT_DIR}/playbooks/configure-installer.yml"
 
 # bootstrap scenario
 echo "-------------------------------------------------------------------------"
@@ -49,8 +49,8 @@ echo "Info: Execute scenario pre deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-  -i "${ENGINE_CACHE}/config/inventory.ini" \
-  "${INSTALLER_ROOT_DIR}/playbooks/pre-deployment.yml"
+    -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+    "${INSTALLER_ROOT_DIR}/playbooks/pre-deployment.yml"
 
 # install scenario
 echo "-------------------------------------------------------------------------"
@@ -58,10 +58,10 @@ echo "Info: Install scenario ${DEPLOY_SCENARIO}"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kubespray"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-  -i inventory/engine/inventory.ini \
-  -e "@${ENGINE_CACHE}/config/kubespray-extra-vars.yml" \
-  --flush-cache \
-  cluster.yml
+    -i inventory/engine/inventory.ini \
+    -e "@${ENGINE_CACHE}/config/kubespray-extra-vars.yml" \
+    --flush-cache \
+    cluster.yml
 
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"
@@ -69,7 +69,7 @@ echo "Info: Execute scenario and common post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-  -i "${ENGINE_CACHE}/config/inventory.ini" \
-  "${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml"
+    -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+    "${INSTALLER_ROOT_DIR}/playbooks/post-deployment.yml"
 
 # vim: set ts=2 sw=2 expandtab:
