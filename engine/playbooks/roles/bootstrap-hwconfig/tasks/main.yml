@@ -17,7 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# TODO - group_vars: needed for backward compatibility - remove this once the transition is done
 - name: Ensure config path exists and empty
   file:
     path: "{{ config_path }}"
@@ -26,7 +25,6 @@
     - absent
     - directory
 
-# TODO - group_vars: needed for backward compatibility - remove this once the transition is done
 - name: Remove existing PDF and IDF files
   file:
     path: "{{ item }}"
@@ -35,7 +33,6 @@
     - "{{ pdf_file }}"
     - "{{ idf_file }}"
 
-# TODO - group_vars: needed for backward compatibility - remove this once the transition is done
 - name: Get PDF and IDF files
   get_url:
     url: "{{ item.src }}"
@@ -44,24 +41,5 @@
   with_items:
     - { src: "{{ lookup('env', 'PDF') }}", dest: "{{ pdf_file }}" }
     - { src: "{{ lookup('env', 'IDF') }}", dest: "{{ idf_file }}" }
-
-# TODO - group_vars: update the task name once the transition is done
-- name: Remove existing PDF and IDF files (new)
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ inventory_path }}/group_vars/all/pdf.yaml"
-    - "{{ inventory_path }}/group_vars/all/idf.yaml"
-
-# TODO - group_vars: update the task name once the transition is done
-- name: Get PDF and IDF files (new)
-  get_url:
-    url: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0644
-  with_items:
-    - { src: "{{ lookup('env', 'PDF') }}", dest: "{{ inventory_path }}/group_vars/all/pdf.yaml" }
-    - { src: "{{ lookup('env', 'IDF') }}", dest: "{{ inventory_path }}/group_vars/all/idf.yaml" }
 
 # vim: set ts=2 sw=2 expandtab:

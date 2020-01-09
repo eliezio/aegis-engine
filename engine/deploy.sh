@@ -105,7 +105,7 @@ if [[ "${DO_INSTALL}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   cd "${APPS_PATH}"
   ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-      -i "${ENGINE_CACHE}/config/inventory.ini" \
+      -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
       install-apps.yml
 else
   echo "Warning: No installer selected!"

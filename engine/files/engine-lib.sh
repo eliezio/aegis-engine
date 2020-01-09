@@ -39,7 +39,7 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -r: Provisioner type to use for provisioning nodes. (Default bifrost)
     -s: Scenario which the SUT is deployed with. (Default k8-calico-nofeature)
-    -b: URI to Scenario Baseline File. (SDF) (Default file://\$ENGINE_PATH/engine/var/sdf.yml)
+    -b: URI to Scenario Baseline File. (SDF) (Default file://\$ENGINE_PATH/engine/inventory/group_vars/all/sdf.yaml)
     -p: URI to POD Descriptor File (PDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml)
     -i: URI to Installer Descriptor File (IDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml)
     -u: If provisioner is Heat, path to OpenStack openrc file. (No default)
@@ -71,7 +71,7 @@ function parse_cmdline_opts() {
     INSTALLER_TYPE=${INSTALLER_TYPE:-kubespray}
     PROVISIONER_TYPE=${PROVISIONER_TYPE:-bifrost}
     DEPLOY_SCENARIO=${DEPLOY_SCENARIO:-k8-calico-nofeature}
-    SDF=${SDF:-"file://${ENGINE_PATH}/engine/var/sdf.yml"}
+    SDF=${SDF:-"file://${ENGINE_PATH}/engine/inventory/group_vars/all/sdf.yaml"}
     DISTRO=${DISTRO:-ubuntu1804}
     PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}

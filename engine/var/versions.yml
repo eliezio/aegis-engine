@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
+# TODO - group_vars: delete this file once the scenarios and apps are adapted for group_vars
 
 #-------------------------------------------------------------------------------
 # Please note that changing versions of components to anything other than what

@@ -25,13 +25,9 @@ inventory_path: "{{ lookup('env', 'ENGINE_PATH') }}/engine/inventory"
 apps_path: "{{ lookup('env', 'APPS_PATH') }}"
 provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
 installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
+pdf_file: "{{ inventory_path }}/group_vars/all/pdf.yaml"
+idf_file: "{{ inventory_path }}/group_vars/all/idf.yaml"
+sdf_file: "{{ inventory_path }}/group_vars/all/sdf.yaml"
 heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
 distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804', true) }}"
 deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture', true) }}"
-
-# TODO: below variables are here to keep backward compatibility
-# look for the comments next to them to see what will happen once the
-# transition to group_vars completed
-pdf_file: "{{ config_path }}/pdf.yml" # TODO - group_vars: will be replaced with pdf_file: "{{ inventory_path }}/group_vars/all/pdf.yaml"
-idf_file: "{{ config_path }}/idf.yml" # TODO - group_vars: will be replaced with idf_file: "{{ inventory_path }}/group_vars/all/idf.yaml"
-sdf_file: "{{ config_path }}/sdf.yml" # TODO - group_vars: will be removed as sdf_file will be located "{{ inventory_path }}/group_vars/all/idf.yaml"

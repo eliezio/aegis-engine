@@ -151,6 +151,12 @@ scenario:
         role: scenarios/os-nosdn-nofeature/kolla/role/os-nosdn-nofeature
         distros:
           - ubuntu1804
+      kubespray:
+        role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
+        distros:
+          - ubuntu1804
+        curated_apps:
+          - openstack-armada
   onap-nofeature-noha:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -160,17 +166,6 @@ scenario:
     installers:
       kubespray:
         role: scenarios/onap-nofeature-noha/kubespray/role/onap-nofeature-noha
-        distros:
-          - ubuntu1804
-  armada-nofeature-noha:
-    scm: git
-    src: https://gerrit.nordix.org/infra/swconfig.git
-    version: master
-    provisioners:
-      - bifrost
-    installers:
-      kubespray:
-        role: scenarios/armada-nofeature-noha/kubespray/role/armada-nofeature-noha
         distros:
           - ubuntu1804
   k8-calico-istio:
