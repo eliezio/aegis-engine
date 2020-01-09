@@ -22,10 +22,6 @@
   connection: local
   gather_facts: false
   become: yes
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ sdf_file }}"
 
   tasks:
     - name: Check if any pre-deployment task defined for '{{ deploy_scenario }}' role
@@ -37,10 +33,6 @@
 - hosts: localhost
   connection: local
   gather_facts: false
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ sdf_file }}"
 
   tasks:
     - name: Execute pre-deployment tasks of '{{ deploy_scenario }}' role

@@ -22,10 +22,6 @@
   connection: local
   gather_facts: true
   become: yes
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ sdf_file }}"
 
   tasks:
     - name: Check if any post-deployment task defined for '{{ deploy_scenario }}' role
@@ -37,10 +33,6 @@
 - hosts: all
   gather_facts: true
   become: yes
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ sdf_file }}"
 
   tasks:
     - name: Execute post-deployment tasks of '{{ deploy_scenario }}' role
@@ -54,11 +46,6 @@
   connection: local
   gather_facts: true
   become: no
-  vars_files:
-    - "{{ engine_path }}/engine/var/versions.yml"
-    - "{{ engine_path }}/engine/var/global.yml"
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
 
   roles:
     - role: post-deployment
