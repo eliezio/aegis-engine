@@ -29,6 +29,14 @@
   with_items:
     - { src: "{{ lookup('env', 'SDF') }}", dest: "{{ sdf_file }}" }
 
+# NOTE: This task is still needed even with groups_vars as we need the SDF information
+# from the user provided sdf.yaml file in this playbook. Although we have replaced the
+# SDF in group_vars/all directory, this playbook is run with whatever information was
+# read from the default SDF when the playbook was invoked.
+- name: Get scenario metadata
+  include_vars:
+    file: "{{ sdf_file }}"
+
 - name: Get curated apps for '{{ deploy_scenario }}'
   set_fact:
     curated_apps: "{{ scenario[deploy_scenario].installers[installer_type].curated_apps | default ([], true) }}"
