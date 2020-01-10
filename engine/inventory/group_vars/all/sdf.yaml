@@ -152,7 +152,7 @@ scenario:
         distros:
           - ubuntu1804
       kubespray:
-        role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
+        role: scenarios/os-nosdn-nofeature/kubespray/role/os-nosdn-nofeature
         distros:
           - ubuntu1804
         curated_apps:
@@ -177,7 +177,7 @@ scenario:
       - heat
     installers:
       kubespray:
-        role: scenarios/k8-calico-nofeature/kubespray/role/k8-calico-nofeature
+        role: scenarios/k8-calico-istio/kubespray/role/k8-calico-istio
         distros:
           - ubuntu1804
         curated_apps:
