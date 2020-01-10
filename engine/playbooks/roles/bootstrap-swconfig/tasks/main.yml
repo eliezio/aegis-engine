@@ -25,6 +25,7 @@
     url: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: 0644
+    force: true
   with_items:
     - { src: "{{ lookup('env', 'SDF') }}", dest: "{{ sdf_file }}" }
 
