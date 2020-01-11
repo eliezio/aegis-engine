@@ -17,11 +17,60 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# create stack
-- include: create-stack.yml
+- name: Set keypair name
+  set_fact:
+    keypair_name: "keypair-{{ stack_name | regex_replace('\\.', '_') }}"
 
-# generate kubespray inventory from heat output
-- include: generate-kubespray-inventory.yml
-  when: installer_type == 'kubespray'
+- name: Delete keypair '{{ keypair_name }}'
+  os_keypair:
+    name: "{{ keypair_name }}"
+    state: absent
+  ignore_errors: yes
+
+- name: Delete stack '{{ stack_name }}'
+  os_stack:
+    name: "{{ stack_name }}"
+    state: absent
+    wait: yes
+  ignore_errors: no
+  register: stack_delete_output
+
+- name: Log stack delete output to console
+  debug:
+    msg: "{{ stack_delete_output }}"
+
+- name: Create keypair '{{ keypair_name }}'
+  os_keypair:
+    name: "{{ keypair_name }}"
+    state: present
+    public_key_file: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+
+- name: Create stack '{{ stack_name }}'
+  os_stack:
+    name: "{{ stack_name }}"
+    state: present
+    template: "{{ engine_cache }}/config/heat-template.yaml"
+    environment:
+      - "{{ engine_cache }}/config/heat-environment.yaml"
+    parameters:
+      keypair: "{{ keypair_name }}"
+    wait: yes
+  ignore_errors: no
+  register: stack_create_output
+
+- name: Log stack create output to console
+  debug:
+    msg: "{{ stack_create_output }}"
+
+- name: Get stack list
+  command: "openstack stack list --property name={{ stack_name }}"
+  when: stack_create_output
+  register: stack_list_output
+  environment:
+    PATH: "{{ engine_venv }}/bin"
+
+- name: Log stack list output to console
+  debug:
+    msg: "{{ stack_list_output.stdout_lines }}"
 
 # vim: set ts=2 sw=2 expandtab:

@@ -17,9 +17,31 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Generate Kubespray inventory from PDF and IDF
+- name: Ensure outdated inventory.ini does not exist
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ inventory_path }}/inventory.ini"
+    - "{{ config_path }}/inventory.ini"
+  ignore_errors: yes
+
+- name: Generate Kubespray inventory.ini from PDF and IDF
   template:
     src:  inventory_kubespray.ini.j2
+    dest: "{{ item }}"
+    mode: 0644
+    force: true
+  with_items:
+    - "{{ config_path }}/inventory.ini"
+
+# NOTE: generated inventory is linked from config_path to inventory folder
+# in order to ensure we have single inventory file
+- name: Link generated inventory.ini to inventory folder
+  file:
+    src: "{{ config_path }}/inventory.ini"
     dest: "{{ inventory_path }}/inventory.ini"
+    state: link
+    force: true
 
 # vim: set ts=2 sw=2 expandtab:

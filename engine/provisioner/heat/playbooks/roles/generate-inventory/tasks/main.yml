@@ -16,6 +16,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-stack_name: "{{ lookup('env', 'STACK_NAME') | default('nordix-' + deploy_scenario + '-custom', true) }}"
+
+# generate kubespray inventory from Heat stack output
+- include: generate-kubespray-inventory.yml
+  when: installer_type == 'kubespray'
 
 # vim: set ts=2 sw=2 expandtab:

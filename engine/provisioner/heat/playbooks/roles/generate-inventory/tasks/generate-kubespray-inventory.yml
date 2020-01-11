@@ -53,19 +53,33 @@
     master_ip: "{{ stack_output_master_ip.stdout }}"
     worker_ip: "{{ stack_output_worker_ip.stdout }}"
 
-- name: Delete outdated kubespray inventory
+# TODO: update jobs and scenarios to ensure inventory.ini is not used from /tmp
+- name: Ensure outdated inventory.ini does not exist
   file:
     path: "{{ item }}"
     state: absent
   with_items:
     - "{{ inventory_path }}/inventory.ini"
     - "/tmp/inventory.ini"
+    - "{{ config_path }}/inventory.ini"
   ignore_errors: yes
 
-- name: Generate kubespray inventory
+- name: Generate Kubespray inventory from Heat stack output
   template:
     src: inventory_kubespray.ini.j2
+    dest: "{{ config_path }}/inventory.ini"
+    mode: 0644
+    force: true
+
+# NOTE: generated inventory is linked from config_path to inventory folder
+# in order to ensure we have single inventory file
+# TODO: update jobs and scenarios to ensure inventory.ini is not used from /tmp
+- name: Link generated inventory.ini to inventory folder
+  file:
+    src: "{{ config_path }}/inventory.ini"
     dest: "{{ item }}"
+    state: link
+    force: true
   with_items:
     - "{{ inventory_path }}/inventory.ini"
     - "/tmp/inventory.ini"

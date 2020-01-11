@@ -17,6 +17,39 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- hosts: jumphost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Do initial configuration jumphost
+      block:
+        - name: Install python and python-dev
+          script: files/install-python.sh
+
+        - name: Copy SSH keys to jumphost for target node access
+          copy:
+            src: "{{ item }}"
+            dest: "/root/.ssh/"
+            owner: "root"
+            group: "root"
+            mode: 0600
+          with_items:
+            - "/home/{{ local_user }}/.ssh/id_rsa"
+            - "/home/{{ local_user }}/.ssh/id_rsa.pub"
+      when: provisioner_type == 'heat'
+
+- hosts: baremetal
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Do initial configuration on target hosts
+      block:
+        - name: Install python and python-dev
+          script: files/install-python.sh
+      when: provisioner_type == 'heat'
+
 - hosts: baremetal
   gather_facts: true
 
