@@ -181,8 +181,8 @@ function bootstrap_environment() {
     echo "Info: Prepare environment for Cloud Infra deployment"
 
     # source engine-vars
-    # shellcheck source=engine/config/engine-vars.sh
-    source "$ENGINE_PATH/engine/config/engine-vars.sh"
+    # shellcheck source=engine/library/engine-vars.sh
+    source "$ENGINE_PATH/engine/library/engine-vars.sh"
 
     # Make sure we pass ENGINE_PATH everywhere
     ENGINE_ANSIBLE_PARAMS+=" -e engine_path=${ENGINE_PATH}"

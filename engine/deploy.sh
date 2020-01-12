@@ -29,8 +29,8 @@ ENGINE_PATH=$(git rev-parse --show-toplevel)
 export ENGINE_PATH
 
 # source helpers library
-# shellcheck source=engine/files/engine-lib.sh
-source "${ENGINE_PATH}/engine/files/engine-lib.sh"
+# shellcheck source=engine/library/engine-lib.sh
+source "${ENGINE_PATH}/engine/library/engine-lib.sh"
 
 #-------------------------------------------------------------------------------
 # Parse command line options
