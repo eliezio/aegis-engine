@@ -21,7 +21,7 @@
 - hosts: localhost
   connection: local
   gather_facts: true
-  become: yes
+  become: true
 
   tasks:
     - name: Check if any post-deployment task defined for '{{ deploy_scenario }}' role
@@ -32,7 +32,7 @@
 # run the scenario post-deployment tasks before running the common post-deployment tasks
 - hosts: all
   gather_facts: true
-  become: yes
+  become: true
 
   tasks:
     - name: Execute post-deployment tasks of '{{ deploy_scenario }}' role
@@ -45,7 +45,7 @@
 - hosts: localhost
   connection: local
   gather_facts: true
-  become: no
+  become: false
 
   roles:
     - role: post-deployment

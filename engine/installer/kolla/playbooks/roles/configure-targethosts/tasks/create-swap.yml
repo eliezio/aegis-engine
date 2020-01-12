@@ -25,36 +25,36 @@
   register: swap
 
 - block:
-  - name: Create swap file
-    command: "fallocate -l 4096M /swapfile"
-    args:
-      creates: /swapfile
+    - name: Create swap file
+      command: "fallocate -l 4096M /swapfile"
+      args:
+        creates: /swapfile
 
-  - name: Set swap file permissions
-    file:
-      path: /swapfile
-      state: "file"
-      owner: "root"
-      group: "root"
-      mode: "0600"
+    - name: Set swap file permissions
+      file:
+        path: /swapfile
+        state: "file"
+        owner: "root"
+        group: "root"
+        mode: "0600"
 
-  - name: Initialize swap file
-    command: "mkswap /swapfile"
-    changed_when: false
+    - name: Initialize swap file
+      command: "mkswap /swapfile"
+      changed_when: false
 
-  - name: Enable swap file
-    command: "swapon /swapfile"
-    changed_when: false
+    - name: Enable swap file
+      command: "swapon /swapfile"
+      changed_when: false
 
-  - name: Manage swap file in /etc/fstab
-    mount:
-      src: /swapfile
-      name: "none"
-      fstype: "swap"
-      opts: "sw,nofail"
-      dump: "0"
-      passno: "0"
-      state: present
+    - name: Manage swap file in /etc/fstab
+      mount:
+        src: /swapfile
+        name: "none"
+        fstype: "swap"
+        opts: "sw,nofail"
+        dump: "0"
+        passno: "0"
+        state: present
   when: not swap.stat.exists
 
 # vim: set ts=2 sw=2 expandtab:

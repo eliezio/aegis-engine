@@ -24,33 +24,33 @@
   lvg:
     vg: cinder-volumes
     state: absent
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Check for cinder image
   stat:
     path: "{{ cinder_image_path }}"
   register: cinder_image
-  ignore_errors: yes
+  ignore_errors: true
 
 - block:
-  - name: Get loopback device
-    command: "losetup -l | awk '/cinder.img/ {print $1}'"
-    register: cinder_device
-    ignore_errors: yes
+    - name: Get loopback device
+      command: "losetup -l | awk '/cinder.img/ {print $1}'"
+      register: cinder_device
+      ignore_errors: true
 
-  - name: Delete PV on loopback device
-    command: "pvremove {{ cinder_device.stdout }}"
-    ignore_errors: yes
+    - name: Delete PV on loopback device
+      command: "pvremove {{ cinder_device.stdout }}"
+      ignore_errors: true
 
-  - name: Delete loopback device
-    command: "losetup -d {{ cinder_device.stdout }}"
-    ignore_errors: yes
+    - name: Delete loopback device
+      command: "losetup -d {{ cinder_device.stdout }}"
+      ignore_errors: true
 
-  - name: Remove cinder image
-    file:
-      path: "{{ cinder_image_path }}"
-      state: absent
-    ignore_errors: yes
+    - name: Remove cinder image
+      file:
+        path: "{{ cinder_image_path }}"
+        state: absent
+      ignore_errors: true
   when: cinder_image.stat.exists
 
 - name: Get free loopback device
@@ -75,7 +75,7 @@
 
 - name: Force systemd to reread service configs
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Enable and start cinder loopback service
   systemd:

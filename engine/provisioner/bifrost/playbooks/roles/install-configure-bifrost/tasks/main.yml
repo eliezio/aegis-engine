@@ -24,7 +24,7 @@
     repo: "{{ bifrost_git_url }}"
     dest: "{{ engine_cache }}/repos/bifrost"
     version: "{{ bifrost_version }}"
-    force: yes
+    force: true
   environment:
     http_proxy: "{{ lookup('env','http_proxy') }}"
     https_proxy: "{{ lookup('env','https_proxy') }}"
@@ -50,7 +50,7 @@
     owner: "root"
     group: "root"
     mode: 0755
-  become: yes
+  become: true
 
 - include_tasks: create-bifrost-inventory-entry.yml
   with_dict: "{{ hosts }}"
@@ -71,15 +71,15 @@
   with_items:
     - /httpboot
     - /tftpboot
-  become: yes
+  become: true
 
 # we want users to use prebuilt ipa images but not deployment images
 # as the deployment images contain ssh public key of the user so we
 # download ipa images by default and not the deployment image
 - include_tasks: download-image.yml
   with_items:
-    - { source: "{{ deployment_image }}", destination: "/httpboot/deployment_image.qcow2", download: "{{ use_prebuilt_deployment_image }}" }
-    - { source: "{{ ipa_initramfs }}", destination: "/httpboot/ipa.initramfs", download: "true" }
-    - { source: "{{ ipa_kernel }}", destination: "/httpboot/ipa.kernel", download: "true" }
+    - {source: "{{ deployment_image }}", destination: "/httpboot/deployment_image.qcow2", download: "{{ use_prebuilt_deployment_image }}"}
+    - {source: "{{ ipa_initramfs }}", destination: "/httpboot/ipa.initramfs", download: "true"}
+    - {source: "{{ ipa_kernel }}", destination: "/httpboot/ipa.kernel", download: "true"}
 
 # vim: set ts=2 sw=2 expandtab:

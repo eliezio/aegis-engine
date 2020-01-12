@@ -20,8 +20,8 @@
 # check if any post-deployment task defined for the scenario
 - hosts: localhost
   connection: local
-  gather_facts: no
-  become: no
+  gather_facts: false
+  become: false
 
   tasks:
     - name: Check if any post-deployment task defined for '{{ deploy_scenario }}' scenario
@@ -31,8 +31,8 @@
 
 # run the scenario post-deployment tasks before running the common post-deployment tasks
 - hosts: all
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
 
   tasks:
     - name: Execute post-deployment tasks of '{{ deploy_scenario }}' scenario
@@ -47,8 +47,8 @@
 # in future, when statement could be moved to tasks in role if the current
 # tasks become relevant or new tasks are added.
 - hosts: all
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
 
   roles:
     - role: post-deployment

@@ -20,4 +20,3 @@ os_distro: "ubuntu"
 os_kolla_install_type: "source"
 
 # vim: set ts=2 sw=2 expandtab:
-

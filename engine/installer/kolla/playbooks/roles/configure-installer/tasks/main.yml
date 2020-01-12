@@ -31,14 +31,14 @@
     repo: "{{ kolla_ansible_git_url }}"
     dest: "{{ kolla_ansible_path }}"
     version: "{{ kolla_ansible_version }}"
-    force: yes
+    force: true
   environment: "{{ idf.proxy_settings | default({}) }}"
 
 - name: Install kolla-ansible requirements
   pip:
     requirements: "{{ kolla_ansible_path }}/requirements.txt"
     virtualenv: "{{ engine_venv }}"
-  become: yes
+  become: true
 
 - name: Copy globals.yml
   copy:

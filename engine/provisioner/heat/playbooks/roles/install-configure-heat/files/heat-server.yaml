@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -93,72 +94,72 @@ resources:
     type: OS::Heat::MultipartMime
     properties:
       parts:
-      - config: {get_resource: root_login}
+        - config: {get_resource: root_login}
 
   port_private:
     type: OS::Neutron::Port
     condition: use_private_network
     properties:
-      network: { get_param: private_network }
+      network: {get_param: private_network}
       replacement_policy: AUTO
       security_groups:
-        - { get_param: internal_security_group }
+        - {get_param: internal_security_group}
 
   port_public:
     type: OS::Neutron::Port
     condition: use_public_network
     properties:
-      network: { get_param: public_network }
+      network: {get_param: public_network}
       replacement_policy: AUTO
-# This has to be addressed, current combination of security group
-# doesn't allow ingress/egress comunication to k8s api via https.
-# Worked around by using default security group
-#      security_groups:
-#  - { get_param: internal_security_group }
-#  - { get_param: external_security_group }
+  # This has to be addressed, current combination of security group
+  # doesn't allow ingress/egress comunication to k8s api via https.
+  # Worked around by using default security group
+  #    security_groups:
+  #     - {get_param: internal_security_group}
+  #     - {get_param: external_security_group}
 
   bootable_volume:
     type: OS::Cinder::Volume
     condition: create_volume
     properties:
       name:
-        list_join: ['.', ['volume', { get_param: instance_name } ]]
-      size: { get_param: volume_size }
-      image: { get_param: image }
+        list_join: ['.', ['volume', {get_param: instance_name}]]
+      size: {get_param: volume_size}
+      image: {get_param: image}
 
   instance_with_volume:
     type: OS::Nova::Server
     condition: create_volume
     properties:
-      name: { get_param: instance_name }
-      image: { get_param: image }
-      flavor: { get_param: flavor }
-      key_name: { get_param: keypair }
+      name: {get_param: instance_name}
+      image: {get_param: image}
+      flavor: {get_param: flavor}
+      key_name: {get_param: keypair}
       networks:
-        - port: {if: [use_public_network, {get_resource: port_public}, {get_resource: port_private}] }
+        - port: {if: [use_public_network, {get_resource: port_public}, {get_resource: port_private}]}
       block_device_mapping:
         - device_name: vda
-          volume_id: { get_resource: bootable_volume }
+          volume_id: {get_resource: bootable_volume}
           delete_on_termination: true
       user_data_format: SOFTWARE_CONFIG
-      user_data: { get_resource: boot_config }
-      config_drive: True
+      user_data: {get_resource: boot_config}
+      config_drive: true
   instance_without_volume:
     type: OS::Nova::Server
     condition: skip_volume
     properties:
-      name: { get_param: instance_name }
-      image: { get_param: image }
-      flavor: { get_param: flavor }
-      key_name: { get_param: keypair }
+      name: {get_param: instance_name}
+      image: {get_param: image}
+      flavor: {get_param: flavor}
+      key_name: {get_param: keypair}
       networks:
-        - port: {if: [use_public_network, {get_resource: port_public}, {get_resource: port_private}] }
+        - port: {if: [use_public_network, {get_resource: port_public}, {get_resource: port_private}]}
       user_data_format: SOFTWARE_CONFIG
-      user_data: { get_resource: boot_config }
-      config_drive: True
+      user_data: {get_resource: boot_config}
+      config_drive: true
 
 outputs:
   instance_ip:
-     value: {if: ["create_volume", {get_attr: [instance_with_volume, first_address]}, {get_attr: [instance_without_volume, first_address]}]}
+    value: {if: ["create_volume", {get_attr: [instance_with_volume, first_address]}, {get_attr: [instance_without_volume, first_address]}]}
 
 # vim: set ts=2 sw=2 expandtab:

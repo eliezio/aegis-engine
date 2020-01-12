@@ -49,14 +49,14 @@
 
 - name: Initialize disk information for vm '{{ hostname }}'
   set_fact:
-    disks: [ ]
+    disks: []
     dev_suffix: "abcdefghijklmnopqrstuvwxyz"
 
 - name: Create target device names of all disks for vm '{{ hostname }}'
   set_fact:
     disks: "{{ disks + [ disk | combine( { 'dev': 'vd' + dev_suffix[disk_no] } ) ] }}"
   with_items:
-   - "{{ node.disks }}"
+    - "{{ node.disks }}"
   loop_control:
     loop_var: disk
     index_var: disk_no
@@ -64,7 +64,7 @@
 - name: Setup volumes for vm '{{ hostname }}'
   include_tasks: create-libvirt-volumes.yml
   with_items:
-   - "{{ disks }}"
+    - "{{ disks }}"
   loop_control:
     loop_var: disk
 

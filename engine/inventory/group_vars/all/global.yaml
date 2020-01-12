@@ -32,3 +32,5 @@ sdf_file: "{{ inventory_path }}/group_vars/all/sdf.yaml"
 heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
 stack_name: "{{ lookup('env', 'STACK_NAME') | default('nordix-' + deploy_scenario + '-custom', true) }}"
 distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804', true) }}"
+
+# vim: set ts=2 sw=2 expandtab:

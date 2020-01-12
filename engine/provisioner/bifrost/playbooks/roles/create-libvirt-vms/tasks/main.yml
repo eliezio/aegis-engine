@@ -28,7 +28,7 @@
   command: killall -w vbmc
   args:
     removes: "{{ ansible_env.HOME }}/.vbmc/master.pid"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Remove outdated virtualbmc folder
   file:
@@ -42,7 +42,7 @@
 
 - name: Create vbmc configuration
   template:
-    src:  virtualbmc.conf.j2
+    src: virtualbmc.conf.j2
     dest: "{{ ansible_env.HOME }}/.vbmc/virtualbmc.conf"
 
 - include_tasks: create-libvirt-vms.yml

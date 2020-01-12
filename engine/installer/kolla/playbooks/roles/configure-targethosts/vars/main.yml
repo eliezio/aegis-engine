@@ -22,3 +22,5 @@ ceph_partition_name: "KOLLA_CEPH_OSD_BOOTSTRAP_BS"
 nfs_exports_file: "/etc/exports"
 nfs_network: "{{ idf.net_config.mgmt.network }}/{{ idf.net_config.mgmt.mask }}"
 nfs_service: "nfs-kernel-server"
+
+# vim: set ts=2 sw=2 expandtab:

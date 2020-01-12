@@ -33,7 +33,7 @@
 - name: Create external subnet {{ external_subnet }}
   os_subnet:
     state: present
-    enable_dhcp: no
+    enable_dhcp: false
     network_name: "{{ external_network }}"
     name: "{{ external_subnet }}"
     cidr: "{{ idf.net_config.neutron.network }}/{{ idf.net_config.neutron.mask }}"

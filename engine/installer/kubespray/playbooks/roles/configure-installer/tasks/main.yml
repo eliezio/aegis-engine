@@ -27,7 +27,7 @@
     repo: "{{ kubespray_git_url }}"
     dest: "{{ engine_cache }}/repos/kubespray"
     version: "{{ kubespray_version }}"
-    force: yes
+    force: true
   environment: "{{ idf.proxy_settings | default({}) }}"
 
 # TODO: some stuff below could and perhaps should be pushed into the scenario
@@ -36,8 +36,8 @@
   synchronize:
     src: "{{ engine_cache }}/repos/kubespray/inventory/sample/"
     dest: "{{ engine_cache }}/repos/kubespray/inventory/engine"
-    recursive: yes
-    delete: yes
+    recursive: true
+    delete: true
 
 # place generated kubespray inventory to kubespray/inventory/engine
 - name: Place inventory
@@ -53,9 +53,9 @@
     regexp: "^[#\\s]*{{ item.name }}"
     line: "{{ item.name }}: {{ item.value }}"
   with_items:
-    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}' }
-    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}' }
-    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}' }
+    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}'}
+    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}'}
+    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}'}
   when:
     idf.proxy_settings is defined
 

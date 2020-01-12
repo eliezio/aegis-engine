@@ -28,7 +28,7 @@
     vol-delete --pool {{ libvirt_storage_pool }} {{ vm_volume_name }}
   args:
     removes: "{{ vm_vol_path_prefix }}-{{ disk.name }}.qcow2"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Create volume '{{ vm_volume_name }}' for vm '{{ hostname }}'
   command: |
@@ -49,7 +49,7 @@
 # case is for CI testing.
 - name: Set copy-on-write for volume on non-CentOS systems
   command: chattr +C {{ vm_vol_path_prefix }}-{{ disk.name }}.qcow2
-  ignore_errors: yes
+  ignore_errors: true
   when:
     - ansible_distribution != 'CentOS'
     - vm_libvirt_uri == 'qemu:///system'

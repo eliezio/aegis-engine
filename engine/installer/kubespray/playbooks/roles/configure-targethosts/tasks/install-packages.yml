@@ -22,31 +22,31 @@
 
 - name: Config docker proxy
   block:
-  - name: Check that /etc/systemd/system/docker.service.d exists
-    stat:
-      path: "/etc/systemd/system/docker.service.d"
-    register: dir_stats
+    - name: Check that /etc/systemd/system/docker.service.d exists
+      stat:
+        path: "/etc/systemd/system/docker.service.d"
+      register: dir_stats
 
-  - name: Create /etc/systemd/system/docker.service.d if not exists
-    file:
-      path: "/etc/systemd/system/docker.service.d"
-      state: directory
-    when: not dir_stats.stat.exists
+    - name: Create /etc/systemd/system/docker.service.d if not exists
+      file:
+        path: "/etc/systemd/system/docker.service.d"
+        state: directory
+      when: not dir_stats.stat.exists
 
-  - name: Create proxy conf file under /etc/systemd/system/docker.service.d/
-    file:
-      path: "/etc/systemd/system/docker.service.d/http-proxy.conf"
-      state: touch
+    - name: Create proxy conf file under /etc/systemd/system/docker.service.d/
+      file:
+        path: "/etc/systemd/system/docker.service.d/http-proxy.conf"
+        state: touch
 
-  - name: Config docker proxy in http-proxy.conf
-    blockinfile:
-      dest: "/etc/systemd/system/docker.service.d/http-proxy.conf"
-      block: |
-        [Service]
-        Environment="HTTP_PROXY={{ idf.proxy_settings.http_proxy }}"
-        Environment="HTTPS_PROXY={{ idf.proxy_settings.https_proxy }}"
-        Environment="NO_PROXY={{ idf.proxy_settings.no_proxy }}"
+    - name: Config docker proxy in http-proxy.conf
+      blockinfile:
+        dest: "/etc/systemd/system/docker.service.d/http-proxy.conf"
+        block: |
+          [Service]
+          Environment="HTTP_PROXY={{ idf.proxy_settings.http_proxy }}"
+          Environment="HTTPS_PROXY={{ idf.proxy_settings.https_proxy }}"
+          Environment="NO_PROXY={{ idf.proxy_settings.no_proxy }}"
   when:
-      idf.proxy_settings is defined
+    idf.proxy_settings is defined
 
 # vim: set ts=2 sw=2 expandtab:

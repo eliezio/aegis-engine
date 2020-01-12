@@ -27,13 +27,13 @@
   virt_pool:
     name: "{{ libvirt_storage_pool }}"
     state: active
-    autostart: yes
+    autostart: true
     uri: "{{ vm_libvirt_uri }}"
 
 - name: Set libvirt pool to autostart
   virt_pool:
     name: "{{ libvirt_storage_pool }}"
-    autostart: yes
+    autostart: true
     uri: "{{ vm_libvirt_uri }}"
 
 # vim: set ts=2 sw=2 expandtab:

@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -68,7 +69,7 @@ parameters:
     description: Public network
 
 conditions:
-  skip_volume: {equals : [{get_param: volume_size}, "0"]}
+  skip_volume: {equals: [{get_param: volume_size}, "0"]}
   create_volume:
     not: skip_volume
 
@@ -83,66 +84,66 @@ resources:
     type: OS::Heat::MultipartMime
     properties:
       parts:
-      - config: {get_resource: root_login}
+        - config: {get_resource: root_login}
 
   port:
     type: OS::Neutron::Port
     properties:
-      network: { get_param: private_network }
+      network: {get_param: private_network}
       replacement_policy: AUTO
       security_groups:
-        - { get_param: internal_security_group }
-        - { get_param: external_security_group }
+        - {get_param: internal_security_group}
+        - {get_param: external_security_group}
 
   floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
-      floating_network: { get_param: public_network }
+      floating_network: {get_param: public_network}
 
   floating_ip_assoc:
     type: OS::Neutron::FloatingIPAssociation
     properties:
-      floatingip_id: { get_resource: floating_ip }
-      port_id: { get_resource: port }
+      floatingip_id: {get_resource: floating_ip}
+      port_id: {get_resource: port}
 
   bootable_volume:
     type: OS::Cinder::Volume
     condition: create_volume
     properties:
       name:
-        list_join: ['.', ['volume', { get_param: instance_name } ]]
-      size: { get_param: volume_size }
-      image: { get_param: image }
+        list_join: ['.', ['volume', {get_param: instance_name}]]
+      size: {get_param: volume_size}
+      image: {get_param: image}
 
   instance_with_volume:
     type: OS::Nova::Server
     condition: create_volume
     properties:
-      name: { get_param: instance_name }
-      image: { get_param: image }
-      flavor: { get_param: flavor }
-      key_name: { get_param: keypair }
+      name: {get_param: instance_name}
+      image: {get_param: image}
+      flavor: {get_param: flavor}
+      key_name: {get_param: keypair}
       networks:
-        - port: { get_resource: port }
+        - port: {get_resource: port}
       block_device_mapping:
         - device_name: vda
-          volume_id: { get_resource: bootable_volume }
+          volume_id: {get_resource: bootable_volume}
           delete_on_termination: true
       user_data_format: SOFTWARE_CONFIG
-      user_data: { get_resource: boot_config }
+      user_data: {get_resource: boot_config}
 
   instance_without_volume:
     type: OS::Nova::Server
     condition: skip_volume
     properties:
-      name: { get_param: instance_name }
-      image: { get_param: image }
-      flavor: { get_param: flavor }
-      key_name: { get_param: keypair }
+      name: {get_param: instance_name}
+      image: {get_param: image}
+      flavor: {get_param: flavor}
+      key_name: {get_param: keypair}
       networks:
-        - port: { get_resource: port }
+        - port: {get_resource: port}
       user_data_format: SOFTWARE_CONFIG
-      user_data: { get_resource: boot_config }
+      user_data: {get_resource: boot_config}
 
 
 outputs:

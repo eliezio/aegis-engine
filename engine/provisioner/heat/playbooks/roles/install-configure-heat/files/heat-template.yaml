@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -113,7 +114,7 @@ resources:
     type: OS::Neutron::SecurityGroup
     properties:
       name:
-        list_join: ['.', ['external-sg', { get_param: 'OS::stack_name' } ]]
+        list_join: ['.', ['external-sg', {get_param: 'OS::stack_name'}]]
       description: |
         Security Group to place jumphost in
       rules: [
@@ -130,7 +131,7 @@ resources:
     type: OS::Neutron::SecurityGroup
     properties:
       name:
-        list_join: ['.', ['internal-sg', { get_param: 'OS::stack_name' } ]]
+        list_join: ['.', ['internal-sg', {get_param: 'OS::stack_name'}]]
       description: |
         Security Group to place jumphost and cluster instances in
       rules: [
@@ -145,8 +146,8 @@ resources:
   internal_security_group_rule_tcp:
     type: OS::Neutron::SecurityGroupRule
     properties:
-      security_group: { get_resource: internal_security_group }
-      remote_group: { get_resource: internal_security_group }
+      security_group: {get_resource: internal_security_group}
+      remote_group: {get_resource: internal_security_group}
       direction: ingress
       protocol: tcp
 
@@ -154,8 +155,8 @@ resources:
   internal_security_group_rule_udp:
     type: OS::Neutron::SecurityGroupRule
     properties:
-      security_group: { get_resource: internal_security_group }
-      remote_group: { get_resource: internal_security_group }
+      security_group: {get_resource: internal_security_group}
+      remote_group: {get_resource: internal_security_group}
       direction: ingress
       protocol: udp
 
@@ -164,30 +165,30 @@ resources:
     type: OS::Neutron::Net
     properties:
       name:
-        list_join: ['.', ['network', { get_param: 'OS::stack_name' } ]]
+        list_join: ['.', ['network', {get_param: 'OS::stack_name'}]]
 
   private_subnet:
     type: OS::Neutron::Subnet
     properties:
       name:
-        list_join:  ['.', ['subnet', { get_param: 'OS::stack_name' } ]]
-      network_id: { get_resource: private_network }
+        list_join: ['.', ['subnet', {get_param: 'OS::stack_name'}]]
+      network_id: {get_resource: private_network}
       cidr: 10.1.0.0/24
-      dns_nameservers: { get_param: dns_nameservers }
+      dns_nameservers: {get_param: dns_nameservers}
 
   router:
     type: OS::Neutron::Router
     properties:
       name:
-        list_join:  ['.', ['router', { get_param: 'OS::stack_name' } ]]
+        list_join: ['.', ['router', {get_param: 'OS::stack_name'}]]
       external_gateway_info:
-        network: { get_param: public_network }
+        network: {get_param: public_network}
 
   router_interface:
     type: OS::Neutron::RouterInterface
     properties:
-      router_id: { get_resource: router }
-      subnet: { get_resource: private_subnet }
+      router_id: {get_resource: router}
+      subnet: {get_resource: private_subnet}
 
   # create jumphost
   jumphost:
@@ -197,15 +198,15 @@ resources:
         type: heat-jumphost.yaml
         properties:
           instance_name:
-            list_join: ['.', ['jumphost', { get_param: 'OS::stack_name' } ]]
-          image: { get_param: jumphost_image }
-          flavor: { get_param: jumphost_flavor }
-          volume_size: { get_param: jumphost_volume_size }
-          keypair: { get_param: keypair }
-          private_network: { get_resource: private_network }
-          public_network: { get_param: public_network }
-          internal_security_group: { get_resource: internal_security_group }
-          external_security_group: { get_resource: external_security_group }
+            list_join: ['.', ['jumphost', {get_param: 'OS::stack_name'}]]
+          image: {get_param: jumphost_image}
+          flavor: {get_param: jumphost_flavor}
+          volume_size: {get_param: jumphost_volume_size}
+          keypair: {get_param: keypair}
+          private_network: {get_resource: private_network}
+          public_network: {get_param: public_network}
+          internal_security_group: {get_resource: internal_security_group}
+          external_security_group: {get_resource: external_security_group}
     depends_on:
       - router_interface
 
@@ -213,42 +214,41 @@ resources:
   master_nodes:
     type: OS::Heat::ResourceGroup
     properties:
-      count: { get_param: no_of_master_nodes }
+      count: {get_param: no_of_master_nodes}
       resource_def:
         type: heat-server.yaml
         properties:
           instance_name:
-            list_join: ['.', ['master%index%', { get_param: 'OS::stack_name' } ]]
-          image: { get_param: master_image }
-          flavor: { get_param: master_flavor }
-          volume_size: { get_param: master_volume_size }
-          keypair: { get_param: keypair }
-          private_network: { get_resource: private_network }
-          public_network: { get_param: public_network }
-          internal_security_group: { get_resource: internal_security_group }
-          external_security_group: { get_resource: external_security_group }
-          use_network: {if: ["use_private_network", "private", "public"] }
+            list_join: ['.', ['master%index%', {get_param: 'OS::stack_name'}]]
+          image: {get_param: master_image}
+          flavor: {get_param: master_flavor}
+          volume_size: {get_param: master_volume_size}
+          keypair: {get_param: keypair}
+          private_network: {get_resource: private_network}
+          public_network: {get_param: public_network}
+          internal_security_group: {get_resource: internal_security_group}
+          external_security_group: {get_resource: external_security_group}
+          use_network: {if: ["use_private_network", "private", "public"]}
 
   # create worker nodes
   worker_nodes:
     type: OS::Heat::ResourceGroup
     properties:
-      count: { get_param: no_of_worker_nodes }
+      count: {get_param: no_of_worker_nodes}
       resource_def:
         type: heat-server.yaml
         properties:
           instance_name:
-            list_join: ['.', ['worker%index%', { get_param: 'OS::stack_name' } ]]
-          image: { get_param: worker_image }
-          flavor: { get_param: worker_flavor }
-          volume_size: { get_param: worker_volume_size }
-          flavor: { get_param: worker_flavor }
-          keypair: { get_param: keypair }
-          private_network: { get_resource: private_network }
-          public_network: { get_param: public_network }
-          internal_security_group: { get_resource: internal_security_group }
-          external_security_group: { get_resource: external_security_group }
-          use_network: {if: ["use_private_network", "private", "public"] }
+            list_join: ['.', ['worker%index%', {get_param: 'OS::stack_name'}]]
+          image: {get_param: worker_image}
+          flavor: {get_param: worker_flavor}
+          volume_size: {get_param: worker_volume_size}
+          keypair: {get_param: keypair}
+          private_network: {get_resource: private_network}
+          public_network: {get_param: public_network}
+          internal_security_group: {get_resource: internal_security_group}
+          external_security_group: {get_resource: external_security_group}
+          use_network: {if: ["use_private_network", "private", "public"]}
 
 
 outputs:

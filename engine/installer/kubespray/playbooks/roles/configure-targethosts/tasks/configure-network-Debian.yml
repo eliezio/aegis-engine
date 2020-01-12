@@ -21,7 +21,7 @@
   lineinfile:
     dest: /etc/modules
     state: present
-    create: yes
+    create: true
     line: "8021q"
 
 - name: Add modules
@@ -77,26 +77,26 @@
 
 - name: Proxy configuration for apt
   block:
-  - name: Check that the /etc/apt/apt.conf exists
-    stat:
-      path: /etc/apt/apt.conf
-    register: stat_result
+    - name: Check that the /etc/apt/apt.conf exists
+      stat:
+        path: /etc/apt/apt.conf
+      register: stat_result
 
-  - name: Create /etc/apt/apt.conf, if it doesn't exist
-    file:
-      path: /etc/apt/apt.conf
-      state: touch
-    when: not stat_result.stat.exists
+    - name: Create /etc/apt/apt.conf, if it doesn't exist
+      file:
+        path: /etc/apt/apt.conf
+        state: touch
+      when: not stat_result.stat.exists
 
-  - name: Add proxy setting to /etc/apt/apt.conf
-    lineinfile:
-      dest: /etc/apt/apt.conf
-      state: present
-      regexp: "^{{ item.name }}"
-      line: "{{ item.name }} {{ item.value }} "
-    with_items:
-      - {name: 'Acquire::http::Proxy', value: '"{{ idf.proxy_settings.http_proxy }}";' }
-      - {name: 'Acquire::https::Proxy', value: '"{{ idf.proxy_settings.https_proxy }}";' }
+    - name: Add proxy setting to /etc/apt/apt.conf
+      lineinfile:
+        dest: /etc/apt/apt.conf
+        state: present
+        regexp: "^{{ item.name }}"
+        line: "{{ item.name }} {{ item.value }} "
+      with_items:
+        - {name: 'Acquire::http::Proxy', value: '"{{ idf.proxy_settings.http_proxy }}";'}
+        - {name: 'Acquire::https::Proxy', value: '"{{ idf.proxy_settings.https_proxy }}";'}
   when: idf.proxy_settings is defined
 
 - name: Reboot the machine

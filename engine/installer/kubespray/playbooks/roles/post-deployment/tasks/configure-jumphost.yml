@@ -19,7 +19,7 @@
 
 - name: Install pip
   action: |
-    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=true
   with_items:
     - "python-pip"
     - "python-setuptools"
@@ -56,13 +56,13 @@
 - name: Download helm client
   unarchive:
     src: "{{ helm_client_download_url }}"
-    remote_src: yes
+    remote_src: true
     dest: /tmp
 
 - name: Place helm and tiller binaries to /usr/local/bin
   copy:
     src: "/tmp/linux-amd64/{{ item }}"
-    remote_src: yes
+    remote_src: true
     dest: "/usr/local/bin/{{ item }}"
     owner: root
     group: root

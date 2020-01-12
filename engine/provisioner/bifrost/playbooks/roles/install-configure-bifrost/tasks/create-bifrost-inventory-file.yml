@@ -21,7 +21,7 @@
   file:
     state: absent
     path: "{{ bifrost_inventory_source }}"
-  become: yes
+  become: true
 
 - name: Write bifrost inventory {{ bifrost_inventory_source }}
   copy:

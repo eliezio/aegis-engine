@@ -32,7 +32,7 @@
 - name: Set libvirt network '{{ item.key }}' to autostart
   virt_net:
     name: "{{ item.key }}"
-    autostart: yes
+    autostart: true
     uri: "{{ vm_libvirt_uri }}"
 
 - name: Ensure libvirt network '{{ item.key }}' is running

@@ -39,7 +39,7 @@
     dest: "{{ item.dest }}"
     mode: 0644
   with_items:
-    - { src: "{{ lookup('env', 'PDF') }}", dest: "{{ pdf_file }}" }
-    - { src: "{{ lookup('env', 'IDF') }}", dest: "{{ idf_file }}" }
+    - {src: "{{ lookup('env', 'PDF') }}", dest: "{{ pdf_file }}"}
+    - {src: "{{ lookup('env', 'IDF') }}", dest: "{{ idf_file }}"}
 
 # vim: set ts=2 sw=2 expandtab:

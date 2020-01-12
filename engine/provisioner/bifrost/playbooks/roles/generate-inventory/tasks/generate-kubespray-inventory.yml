@@ -24,11 +24,11 @@
   with_items:
     - "{{ inventory_path }}/inventory.ini"
     - "{{ config_path }}/inventory.ini"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Generate Kubespray inventory.ini from PDF and IDF
   template:
-    src:  inventory_kubespray.ini.j2
+    src: inventory_kubespray.ini.j2
     dest: "{{ item }}"
     mode: 0644
     force: true

@@ -26,7 +26,7 @@
     src: "{{ item.src }}"
     dest: "{{ item.dst }}"
   with_items:
-    - { src: 'bifrost-install.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-install.yml' }
-    - { src: 'bifrost-enroll-deploy.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-enroll-deploy.yml' }
+    - {src: 'bifrost-install.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-install.yml'}
+    - {src: 'bifrost-enroll-deploy.yml.j2', dst: '{{ engine_cache }}/repos/bifrost/playbooks/bifrost-enroll-deploy.yml'}
 
 # vim: set ts=2 sw=2 expandtab:

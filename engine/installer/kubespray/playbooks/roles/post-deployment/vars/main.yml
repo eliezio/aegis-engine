@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -19,3 +20,5 @@ jumphost: "{{ 'jumphost' if provisioner_type == 'heat' else 'localhost' }}"
 
 kubectl_download_url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
 helm_client_download_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+
+# vim: set ts=2 sw=2 expandtab:

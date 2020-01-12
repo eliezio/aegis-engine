@@ -24,24 +24,24 @@
     download_image: "{{ item.download }}"
 
 - block:
-  - name: Remove existing image {{ destination }}
-    file:
-      path: "{{ destination }}"
-      state: absent
+    - name: Remove existing image {{ destination }}
+      file:
+        path: "{{ destination }}"
+        state: absent
 
-  - name: Get sha256sum of image {{ source }}
-    uri:
-      url: "{{ source }}"
-      method: HEAD
-    register: header
+    - name: Get sha256sum of image {{ source }}
+      uri:
+        url: "{{ source }}"
+        method: HEAD
+      register: header
 
-  - name: Download image
-    get_url:
-      url: "{{ source }}"
-      dest: "{{ destination }}"
-      mode: 0644
-      sha256sum: "{{ header.x_checksum_sha256 }}"
+    - name: Download image
+      get_url:
+        url: "{{ source }}"
+        dest: "{{ destination }}"
+        mode: 0644
+        sha256sum: "{{ header.x_checksum_sha256 }}"
   when: download_image
-  become: yes
+  become: true
 
 # vim: set ts=2 sw=2 expandtab:

@@ -21,7 +21,7 @@
 - hosts: localhost
   connection: local
   gather_facts: false
-  become: yes
+  become: true
 
   tasks:
     - name: Check if any pre-deployment task defined for '{{ deploy_scenario }}' role

@@ -48,8 +48,8 @@
   apt:
     name: "{{ item }}"
     state: present
-    update_cache: yes
-    allow_unauthenticated: yes
+    update_cache: true
+    allow_unauthenticated: true
   with_items:
     - "docker-ce={{ docker_ce_version }}"
     - "containerd.io"

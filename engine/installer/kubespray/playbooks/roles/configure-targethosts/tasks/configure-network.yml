@@ -50,9 +50,9 @@
     regexp: "^{{ item.name }}"
     line: "{{ item.name }}={{ item.value }}"
   with_items:
-    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}' }
-    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}' }
-    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}' }
+    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}'}
+    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}'}
+    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}'}
   when:
     idf.proxy_settings is defined
 

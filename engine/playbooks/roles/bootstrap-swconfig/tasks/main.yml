@@ -27,7 +27,7 @@
     mode: 0644
     force: true
   with_items:
-    - { src: "{{ lookup('env', 'SDF') }}", dest: "{{ sdf_file }}" }
+    - {src: "{{ lookup('env', 'SDF') }}", dest: "{{ sdf_file }}"}
 
 # NOTE: This task is still needed even with groups_vars as we need the SDF information
 # from the user provided sdf.yaml file in this playbook. Although we have replaced the
@@ -75,7 +75,7 @@
     dest: "{{ engine_cache }}/repos/swconfig"
     version: "{{ scenario[deploy_scenario].version }}"
     refspec: "{{ scenario[deploy_scenario].refspec | default(omit) }}"
-    force: yes
+    force: true
   environment:
     http_proxy: "{{ lookup('env','http_proxy') }}"
     https_proxy: "{{ lookup('env','https_proxy') }}"

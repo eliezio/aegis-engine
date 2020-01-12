@@ -18,8 +18,8 @@
 # ============LICENSE_END=========================================================
 - name: Stop existing libvirt dnsmasq processes
   command: killall -w dnsmasq
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
   changed_when: false
 
 - name: Remove existing files and directories
@@ -31,6 +31,6 @@
     - "/etc/dnsmasq.d/bifrost.dhcp-hosts.d/"
     - "/var/lib/misc/dnsmasq.leases"
     - "{{ ansible_env.HOME }}/.config/openstack"
-  become: yes
+  become: true
 
 # vim: set ts=2 sw=2 expandtab:

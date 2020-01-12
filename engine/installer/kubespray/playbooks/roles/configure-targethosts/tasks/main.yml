@@ -32,6 +32,6 @@
   service:
     name: docker
     state: restarted
-    enabled: yes
+    enabled: true
 
 # vim: set ts=2 sw=2 expandtab:

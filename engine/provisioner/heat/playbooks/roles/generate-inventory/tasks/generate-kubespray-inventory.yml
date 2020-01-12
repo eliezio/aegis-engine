@@ -62,7 +62,7 @@
     - "{{ inventory_path }}/inventory.ini"
     - "/tmp/inventory.ini"
     - "{{ config_path }}/inventory.ini"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Generate Kubespray inventory from Heat stack output
   template:

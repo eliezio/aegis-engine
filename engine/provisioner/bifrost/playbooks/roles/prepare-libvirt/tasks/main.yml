@@ -31,9 +31,9 @@
   sysctl:
     name: "net.ipv4.ip_forward"
     value: 1
-    sysctl_set: yes
+    sysctl_set: true
     state: present
-    reload: yes
+    reload: true
 
 # NOTE(Shrews) Ubuntu packaging+apparmor issue prevents libvirt from loading
 # the ROM from /usr/share/misc.
