@@ -60,14 +60,14 @@ fi
 install_ansible
 
 #-------------------------------------------------------------------------------
-# Bootstrap hwconfig and swconfig
+# Bootstrap swconfig
 #-------------------------------------------------------------------------------
-echo "Info: Bootstrap hardware and software configuration"
+echo "Info: Bootstrap software configuration"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
-    engine/playbooks/bootstrap-configuration.yml
+    engine/playbooks/bootstrap-swconfig.yaml
 echo "-------------------------------------------------------------------------"
 
 #-------------------------------------------------------------------------------

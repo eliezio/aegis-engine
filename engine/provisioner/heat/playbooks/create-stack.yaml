@@ -3,7 +3,7 @@
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may  use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #      http://www.apache.org/licenses/LICENSE-2.0
@@ -17,29 +17,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Ensure config path exists and empty
-  file:
-    path: "{{ config_path }}"
-    state: "{{ item }}"
-  with_items:
-    - absent
-    - directory
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  become: false
 
-- name: Remove existing PDF and IDF files
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ pdf_file }}"
-    - "{{ idf_file }}"
-
-- name: Get PDF and IDF files
-  get_url:
-    url: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: 0644
-  with_items:
-    - {src: "{{ lookup('env', 'PDF') }}", dest: "{{ pdf_file }}"}
-    - {src: "{{ lookup('env', 'IDF') }}", dest: "{{ idf_file }}"}
+  roles:
+    - role: create-stack
 
 # vim: set ts=2 sw=2 expandtab:

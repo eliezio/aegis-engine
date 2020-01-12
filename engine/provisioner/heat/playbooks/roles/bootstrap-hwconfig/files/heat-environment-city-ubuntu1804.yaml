@@ -17,19 +17,30 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Copy Heat templates
-  copy:
-    src: "{{ item }}"
-    dest: "{{ engine_cache }}/config/"
-  with_items:
-    - heat-template.yaml
-    - heat-server.yaml
-    - heat-jumphost.yaml
+# this is an example heat environment file and the resources are limited
+# in order to ensure using the engine without proper environment file
+# does not result in too much usage on the cloud
+parameters:
+  # parameters for jumphost
+  jumphost_image: 'Ubuntu 18.04 Bionic Beaver'
+  jumphost_flavor: 2C-4GB
+  jumphost_volume_size: 150
 
-- name: Get Heat environment file
-  get_url:
-    url: "{{ heat_env_file }}"
-    dest: "{{ engine_cache }}/config/heat-environment.yaml"
-    mode: 0644
+  # parameters for master nodes
+  no_of_master_nodes: 1
+  master_image: 'Ubuntu 18.04 Bionic Beaver'
+  master_flavor: 2C-4GB
+  master_volume_size: 150
+
+  # parameters for worker nodes
+  no_of_worker_nodes: 1
+  worker_image: 'Ubuntu 18.04 Bionic Beaver'
+  worker_flavor: 2C-4GB
+  worker_volume_size: 150
+
+  # common parameters
+  public_network: ext-net
+  dns_nameservers: ['8.8.8.8', '8.8.4.4', '1.1.1.1']
+  use_tenant_network: true
 
 # vim: set ts=2 sw=2 expandtab:

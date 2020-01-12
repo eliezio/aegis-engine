@@ -17,13 +17,30 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  become: false
+# this is an example heat environment file and the resources are limited
+# in order to ensure using the engine without proper environment file
+# does not result in too much usage on the cloud
+parameters:
+  # parameters for jumphost
+  jumphost_image: 'Ubuntu 18.04'
+  jumphost_flavor: c2m4
+  jumphost_volume_size: 150
 
-  roles:
-    - role: bootstrap-hwconfig
-    - role: bootstrap-swconfig
+  # parameters for master nodes
+  no_of_master_nodes: 1
+  master_image: 'Ubuntu 18.04'
+  master_flavor: c2m4
+  master_volume_size: 150
+
+  # parameters for worker nodes
+  no_of_worker_nodes: 1
+  worker_image: 'Ubuntu 18.04'
+  worker_flavor: c2m4
+  worker_volume_size: 150
+
+  # common parameters
+  public_network: internet
+  dns_nameservers: ['8.8.8.8', '8.8.4.4', '1.1.1.1']
+  use_tenant_network: true
 
 # vim: set ts=2 sw=2 expandtab:

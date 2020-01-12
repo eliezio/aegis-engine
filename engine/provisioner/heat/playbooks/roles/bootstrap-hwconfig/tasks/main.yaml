@@ -16,21 +16,36 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-local_user: "{{ lookup('env', 'USER') }}"
-engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
-engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
-engine_venv: "{{ lookup('env', 'ENGINE_VENV') }}"
-config_path: "{{ engine_cache }}/config"
-inventory_path: "{{ lookup('env', 'ENGINE_PATH') }}/engine/inventory"
-sdf_file: "{{ inventory_path }}/group_vars/all/sdf.yaml"
-pdf_file: "{{ config_path }}/pdf.yaml"
-idf_file: "{{ config_path }}/idf.yaml"
-heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
-distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804', true) }}"
-provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
-installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
-deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture', true) }}"
-stack_name: "{{ lookup('env', 'STACK_NAME') | default('nordix-' + deploy_scenario + '-custom', true) }}"
-apps_path: "{{ lookup('env', 'APPS_PATH') }}"
+
+- name: Copy Heat templates and IDF file
+  copy:
+    src: "{{ item }}"
+    dest: "{{ config_path }}"
+  with_items:
+    - heat-template.yaml
+    - heat-server.yaml
+    - heat-jumphost.yaml
+    - heat-idf.yaml
+
+- name: Get Heat environment file
+  get_url:
+    url: "{{ heat_env_file }}"
+    dest: "{{ config_path }}/heat-environment.yaml"
+    mode: 0644
+
+- name: Remove existing Heat IDF symlink
+  file:
+    path: "{{ inventory_path }}/group_vars/idf.yaml"
+    state: absent
+  ignore_errors: true
+
+# NOTE: Heat IDF file is linked from config_path to inventory
+# folder in order to ensure we have single IDF
+- name: Link collected Heat IDF file to inventory folder
+  file:
+    src: "{{ config_path }}/heat-idf.yaml"
+    dest: "{{ inventory_path }}/group_vars/all/idf.yaml"
+    state: link
+    force: true
 
 # vim: set ts=2 sw=2 expandtab:

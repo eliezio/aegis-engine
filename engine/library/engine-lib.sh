@@ -43,7 +43,7 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -p: URI to POD Descriptor File (PDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml)
     -i: URI to Installer Descriptor File (IDF). (Default https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml)
     -u: If provisioner is Heat, path to OpenStack openrc file. (No default)
-    -e: URI to OpenStack Heat Environment File specific to cloud and scenario. (Default https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml)
+    -e: URI to OpenStack Heat Environment File specific to cloud and scenario. (Default https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/bootstrap-hwconfig/files/heat-environment.yaml)
     -o: Operating System to provision nodes with. (Default ubuntu1804)
     -l: List of stages to run in a comma separated fashion. (Default execute all)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
@@ -75,7 +75,7 @@ function parse_cmdline_opts() {
     DISTRO=${DISTRO:-ubuntu1804}
     PDF=${PDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-pdf.yml"}
     IDF=${IDF:-"https://gerrit.nordix.org/gitweb?p=infra/hwconfig.git;a=blob_plain;f=pods/nordix-vpod1-idf.yml"}
-    HEAT_ENV_FILE=${HEAT_ENV_FILE:-"https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/install-configure-heat/files/heat-environment.yaml"}
+    HEAT_ENV_FILE=${HEAT_ENV_FILE:-"https://gerrit.nordix.org/gitweb?p=infra/engine.git;a=blob_plain;f=engine/provisioner/heat/playbooks/roles/bootstrap-hwconfig/files/heat-environment.yaml"}
     DO_PROVISION=${DO_PROVISION:-1}
     DO_INSTALL=${DO_INSTALL:-1}
     DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}

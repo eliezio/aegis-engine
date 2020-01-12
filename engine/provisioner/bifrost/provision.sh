@@ -25,6 +25,17 @@ PROVISIONER_ROOT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 export ANSIBLE_ROLES_PATH="$HOME/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ENGINE_PATH}/engine/playbooks/roles:${ENGINE_CACHE}/repos/bifrost/playbooks/roles"
 export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugins/modules:${ENGINE_CACHE}/repos/bifrost/playbooks/library"
 
+#-------------------------------------------------------------------------------
+# Bootstrap hwconfig
+#-------------------------------------------------------------------------------
+echo "Info: Bootstrap hardware configuration"
+echo "-------------------------------------------------------------------------"
+cd "${ENGINE_PATH}"
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
+    -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
+    "${PROVISIONER_ROOT_DIR}/playbooks/bootstrap-hwconfig.yaml"
+echo "-------------------------------------------------------------------------"
+
 # TODO: ignoring SC2015 for the timebeing so we don't break things
 # shellcheck disable=SC2015
 # set the BAREMETAL variable

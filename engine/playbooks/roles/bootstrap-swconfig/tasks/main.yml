@@ -17,6 +17,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+# NOTE: config_path is used by all the components so we prepare it here
+- name: Ensure config path exists and empty
+  file:
+    path: "{{ config_path }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
+
 # NOTE: this task is still needed even with group_vars as it is possible for users to
 # provide their own sdf.yaml files. In this case, we copy it as engine/inventory/groups_vars/all/sdf.yaml
 # If it is not provided, the default sdf.yaml file will still be in use.
