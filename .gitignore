@@ -63,3 +63,7 @@ engine/inventory/inventory.ini
 engine/inventory/bifrost_inventory.py
 engine/inventory/group_vars/all/pdf.yaml
 engine/inventory/group_vars/all/idf.yaml
+
+# sphinx temporary files
+.docs_build/
+.docs_doctree/
