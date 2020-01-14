@@ -13,6 +13,7 @@ Contents:
    overview.rst
    user-guide.rst
    developer-guide.rst
+   cicd-guide.rst
 
 Indices and Tables
 ==================
