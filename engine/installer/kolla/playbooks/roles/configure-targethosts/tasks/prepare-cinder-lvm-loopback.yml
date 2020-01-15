@@ -28,7 +28,7 @@
 
 - name: Check for cinder image
   stat:
-    path: "{{ cinder_image_path }}"
+    path: "{{ cinder_volume_path }}"
   register: cinder_image
   ignore_errors: true
 
@@ -48,7 +48,7 @@
 
     - name: Remove cinder image
       file:
-        path: "{{ cinder_image_path }}"
+        path: "{{ cinder_volume_path }}"
         state: absent
       ignore_errors: true
   when: cinder_image.stat.exists
@@ -63,9 +63,9 @@
     loopback_device_name: "{{ free_device.stdout }}"
 
 - name: Create cinder image
-  command: "fallocate -l {{ cinder_image_size }} {{ cinder_image_path }}"
+  command: "fallocate -l {{ cinder_volume_size }} {{ cinder_volume_path }}"
   args:
-    creates: "{{ cinder_image_path }}"
+    creates: "{{ cinder_volume_path }}"
 
 - name: Create cinder loopback service
   template:

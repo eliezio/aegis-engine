@@ -17,12 +17,25 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- include: configure-network.yml
-- include: install-packages.yml
-- include: sync-time.yml
-- include: create-swap.yml
-- include: prepare-nova-kvm.yml
-- include: prepare-cinder-{{ cinder_storage_driver }}-{{ cinder_storage_type }}.yml
-- include: prepare-cinder-backup-{{ cinder_storage_backup_driver }}.yml
+- name: Read "{{ cinder_volume_device }}" volume information
+  parted:
+    device: "{{ cinder_volume_device }}"
+    unit: "MiB"
+  register: device_info
+
+- name: Remove all partitions from disk
+  parted:
+    device: "{{ cinder_volume_device }}"
+    number: '{{ item.num }}'
+    state: absent
+  loop: '{{ device_info.partitions }}'
+
+- name: Create Ceph RBD partition
+  parted:
+    label: gpt
+    state: present
+    device: "{{ cinder_volume_device }}"
+    number: 1
+    name: "{{ ceph_partition_name }}"
 
 # vim: set ts=2 sw=2 expandtab:

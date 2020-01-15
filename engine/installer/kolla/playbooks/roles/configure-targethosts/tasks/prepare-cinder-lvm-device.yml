@@ -17,12 +17,16 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- include: configure-network.yml
-- include: install-packages.yml
-- include: sync-time.yml
-- include: create-swap.yml
-- include: prepare-nova-kvm.yml
-- include: prepare-cinder-{{ cinder_storage_driver }}-{{ cinder_storage_type }}.yml
-- include: prepare-cinder-backup-{{ cinder_storage_backup_driver }}.yml
+- name: Remove cinder-volumes volume group if it exists
+  lvg:
+    vg: cinder-volumes
+    state: absent
+    force: true
+  ignore_errors: true
+
+- name: Add cinder-volumes volume group
+  lvg:
+    vg: cinder-volumes
+    pvs: "{{ cinder_volume_device }}"
 
 # vim: set ts=2 sw=2 expandtab:

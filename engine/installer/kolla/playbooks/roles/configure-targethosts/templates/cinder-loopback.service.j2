@@ -6,7 +6,7 @@ Before=lvm2-activation-early.service
 Wants=systemd-udev-settle.service
 
 [Service]
-ExecStart=/sbin/losetup {{ loopback_device_name }} {{ cinder_image_path }}
+ExecStart=/sbin/losetup {{ loopback_device_name }} {{ cinder_volume_path }}
 Type=oneshot
 
 [Install]

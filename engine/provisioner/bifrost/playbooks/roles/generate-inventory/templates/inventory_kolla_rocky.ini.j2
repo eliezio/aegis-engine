@@ -1,10 +1,17 @@
 [all:vars]
 ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-cinder_image_path='/var/lib/cinder.img'
 cinder_backup_path='/mnt/cinder-backup'
 cinder_storage_driver='{{ idf.kolla.storage.driver }}'
 cinder_storage_backup_driver='{{ idf.kolla.storage.backup_driver }}'
-cinder_image_size='{{ idf.kolla.storage.volume.size }}'
+{% if idf.kolla.storage.volume.size is defined %}
+cinder_storage_type='loopback'
+cinder_volume_path='/var/lib/cinder.img'
+cinder_volume_size='{{ idf.kolla.storage.volume.size }}'
+{% endif %}
+{% if idf.kolla.storage.volume.device is defined %}
+cinder_storage_type='device'
+cinder_volume_device='{{ idf.kolla.storage.volume.device }}'
+{% endif %}
 
 [baremetal]
 {% for node in nodes %}
