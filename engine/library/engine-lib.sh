@@ -153,10 +153,9 @@ function check_prerequisites() {
     # We shouldn't be running as root
     #-------------------------------------------------------------------------------
     if [[ "$(whoami)" == "root" ]]; then
-        echo "WARNING: This script should not be run as root!"
-        echo "Elevated privileges are acquired automatically when necessary"
-        echo "Waiting 10s to give you a chance to stop the script (Ctrl-C)"
-        for x in $(seq 10 -1 1); do echo -n "$x..."; sleep 1; done
+        echo "ERROR: This script must not be run as root!"
+        echo "       Please switch to a regular user before running the script."
+        exit 1
     fi
 
     #-------------------------------------------------------------------------------
