@@ -45,4 +45,6 @@ python-neutronclient==6.14.0
 python-novaclient==16.0.0
 python-openstackclient==4.0.0
 python-swiftclient==3.8.1
+kolla==9.0.0
+kolla-ansible==9.0.0
 virtualbmc==1.6.0

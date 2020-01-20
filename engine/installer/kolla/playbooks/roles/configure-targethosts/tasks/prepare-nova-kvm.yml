@@ -17,50 +17,52 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Get node name from IDF for host "{{ inventory_hostname }}"
-  set_fact:
-    node_name: "{{ item.key }}"
-  with_dict: "{{ idf.kolla.hostnames }}"
-  when: item.value == inventory_hostname
+- block:
+    - name: Get node name from IDF for host "{{ inventory_hostname }}"
+      set_fact:
+        node_name: "{{ item.key }}"
+      with_dict: "{{ idf.kolla.hostnames }}"
+      when: item.value == inventory_hostname
 
-- name: Set facts for the node "{{ node_name }}"
-  set_fact:
-    node: "{{ nodes | selectattr('name', 'equalto', node_name) | first }}"
+    - name: Set facts for the node "{{ node_name }}"
+      set_fact:
+        node: "{{ nodes | selectattr('name', 'equalto', node_name) | first }}"
 
-- name: Setup nested virtualization for Debian hosts
-  lineinfile:
-    path: "/etc/modprobe.d/qemu-system-x86.conf"
-    regexp: "^options kvm_intel nested=.*"
-    line: "options kvm_intel nested=1"
-    create: true
+    - name: Setup nested virtualization for Debian hosts
+      lineinfile:
+        path: "/etc/modprobe.d/qemu-system-x86.conf"
+        regexp: "^options kvm_intel nested=.*"
+        line: "options kvm_intel nested=1"
+        create: true
+      when:
+        - ansible_os_family == 'Debian'
+
+    - name: Setup nested virtualization for RedHat hosts
+      lineinfile:
+        path: "/etc/modprobe.d/kvm-nested.conf"
+        regexp: "^options kvm_intel nested=.*"
+        line: "options kvm_intel nested=1"
+        create: true
+      when:
+        - ansible_os_family == 'RedHat'
+
+    - name: Reboot the machine
+      shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      changed_when: false
+
+    - name: Wait for host to come back to life
+      wait_for_connection:
+        connect_timeout: 10
+        sleep: 5
+        delay: 120
+        timeout: 300
+      register: result
+      until: result | succeeded
+      retries: 3
+
   when:
-    - ansible_os_family == 'Debian'
     - node.node.type == 'baremetal'
-
-- name: Setup nested virtualization for RedHat hosts
-  lineinfile:
-    path: "/etc/modprobe.d/kvm-nested.conf"
-    regexp: "^options kvm_intel nested=.*"
-    line: "options kvm_intel nested=1"
-    create: true
-  when:
-    - ansible_os_family == 'RedHat'
-    - node.node.type == 'baremetal'
-
-- name: Reboot the machine
-  shell: "sleep 5 && reboot"
-  async: 1
-  poll: 0
-  changed_when: false
-
-- name: Wait for host to come back to life
-  wait_for_connection:
-    connect_timeout: 10
-    sleep: 5
-    delay: 120
-    timeout: 300
-  register: result
-  until: result | succeeded
-  retries: 3
 
 # vim: set ts=2 sw=2 expandtab:
