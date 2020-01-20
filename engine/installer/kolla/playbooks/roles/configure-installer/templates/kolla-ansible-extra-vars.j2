@@ -42,3 +42,8 @@ ceph_pool_pgp_num: 32
 
 # Nova compute virt_type is set in inventory
 nova_compute_virt_type: "{{ (lookup('env', 'BAREMETAL') == 'true') | ternary('kvm','qemu') }}"
+
+# Provider networks allow to connect compute instances directly to physical
+# networks avoiding tunnels. This is necessary for example for some performance
+# critical applications.
+enable_neutron_provider_networks: "yes"

@@ -89,6 +89,16 @@
     src: ceph.conf.j2
     dest: "{{ config_path }}/ceph.conf"
 
+- name: Ensure neutron custom config directory exists
+  file:
+    path: "{{ config_path }}/neutron"
+    state: directory
+
+- name: Place custom neutron configuration
+  template:
+    src: ml2_conf.ini.j2
+    dest: "{{ config_path }}/neutron/ml2_conf.ini"
+
 - name: Generate kolla passwords
   command: "{{ kolla_ansible_path }}/tools/generate_passwords.py -p {{ config_path }}/passwords.yml"
   changed_when: false
