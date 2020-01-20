@@ -118,6 +118,15 @@ prom_prometheus_version: "v2.16.0"
 prom_push_gateway_version: "v1.0.1"
 
 # -------------------------------------------------------------------------------
+# Kubernetes: Versions of spinnaker and its dependencies
+# TODO (fdegir): These versions will potentially move to infra/installer/kubespray
+# repository in future
+# -------------------------------------------------------------------------------
+# Helm chart and docker version
+spinnaker_version: "1.23.2"
+spinnaker_app_version: "1.16.2"
+
+# -------------------------------------------------------------------------------
 # Kubernetes: App versions
 # TODO (fdegir): These versions will potentially move to infra/installer/kubespray
 # repository in future

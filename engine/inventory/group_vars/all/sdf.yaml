@@ -146,6 +146,7 @@ scenario:
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
     provisioners:
+      - bifrost
       - heat
     installers:
       kubespray:
@@ -155,6 +156,7 @@ scenario:
         curated_apps:
           - ceph
           - prometheus
+          - spinnaker
   os-nosdn-nofeature:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -226,6 +228,9 @@ apps:
     installers:
       - kubespray
   onap:
+    installers:
+      - kubespray
+  spinnaker:
     installers:
       - kubespray
 
