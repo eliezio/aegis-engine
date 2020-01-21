@@ -311,7 +311,7 @@ function install_ansible() {
     set -o pipefail
 
     echo "Info: Install python packages listed in requirements.txt using pip"
-    pip install --upgrade --no-color --quiet -r requirements.txt
+    pip install --force-reinstall --no-color --quiet -r requirements.txt
 
     ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
     export ANSIBLE_CALLBACK_PLUGINS="/etc/ansible/roles/plugins/callback:${ara_location}/plugins/callbacks"

@@ -24,8 +24,8 @@
 # NOTE: engine top level requirements
 # These packages are needed for basic engine functionality and not related
 # to any of the playbooks or roles located in this or other cloud-infra repositories
+pip==20.0.1
 bindep==2.8.1
-pip==19.0.3
 setuptools==44.0.0
 virtualenv==16.7.9
 shade==1.32.0
