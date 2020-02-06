@@ -31,27 +31,4 @@
     - "chrony"
     - "dbus"
 
-# docker stuff here is put in place temporarily in order to
-# avoid hitting the kubespray bug:
-# https://github.com/kubernetes-sigs/kubespray/issues/4300
-- name: Add docker official gpg key
-  apt_key:
-    url: "https://download.docker.com/linux/ubuntu/gpg"
-    state: present
-
-- name: Add docker apt repository
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
-    state: present
-
-- name: Install docker version {{ docker_ce_version }}
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-    allow_unauthenticated: true
-  with_items:
-    - "docker-ce={{ docker_ce_version }}"
-    - "containerd.io"
-
 # vim: set ts=2 sw=2 expandtab:

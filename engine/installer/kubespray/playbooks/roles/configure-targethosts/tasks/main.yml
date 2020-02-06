@@ -25,13 +25,4 @@
 - include: install-packages.yml
 - include: sync-time.yml
 
-# docker stuff here is put in place temporarily in order to
-# avoid hitting the kubespray bug:
-# https://github.com/kubernetes-sigs/kubespray/issues/4300
-- name: Enable and start docker service
-  service:
-    name: docker
-    state: restarted
-    enabled: true
-
 # vim: set ts=2 sw=2 expandtab:
