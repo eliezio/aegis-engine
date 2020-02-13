@@ -94,6 +94,14 @@
     regexp: "^#metrics_server_kubelet_preferred_address_types:.*"
     line: "metrics_server_kubelet_preferred_address_types: 'InternalIP'"
 
+# disable kubernetes dashboard installation. It does not work with versions >=v1.16.0
+# https://github.com/kubernetes-sigs/kubespray/issues/5347
+- name: Disable kubernetes dashboard installation
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/k8s-cluster/addons.yml"
+    regexp: "^dashboard_enabled:.*"
+    line: "dashboard_enabled: false"
+
 # enable creation of kubeconfig on localhost for all the scenarios using kubespray
 - name: Enable creation of kubeconfig on localhost
   lineinfile:
