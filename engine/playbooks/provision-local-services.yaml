@@ -17,17 +17,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# TODO: for the nodes provisioned from openstack using heat, we might not need
-# to adjust the network. apart from that, we don't have pdf & idf for them so
-# it is tricky to make it work quickly so we skip it for those nodes
-- include: configure-network.yml
-  when: provisioner_type == "bifrost"
-- include: configure-offline.yml
-  when: provisioner_type == "bifrost" and offline_deployment|bool
-- include: install-packages.yml
-# TODO: NTP is not working in offline mode. We should look either into a proper
-# configuration or bringing up a local npt server in kickstart.
-- include: sync-time.yml
-  when: not offline_deployment|bool
+- hosts: jumphost
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: provision-local-services
 
 # vim: set ts=2 sw=2 expandtab:

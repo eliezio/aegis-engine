@@ -168,6 +168,6 @@
     path: "{{ engine_cache }}/repos/kubespray/roles/container-engine/docker/defaults/main.yml"
     regexp: "^docker_ubuntu_repo_base_url:.*"
     line: 'docker_ubuntu_repo_base_url: "http://nordix.download.docker.com/linux/ubuntu"'
-  when: offline_dependencies|bool or offline_deployment|bool
+  when: offline_deployment|bool
 
 # vim: set ts=2 sw=2 expandtab:

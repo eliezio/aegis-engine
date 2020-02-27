@@ -20,7 +20,7 @@
 # Set-up Bifrost dependencies for offline installation
 - name: Unpack local repositories in engine cache
   synchronize:
-    src: "{{ engine_cache }}/offline/repos/"
+    src: "{{ engine_cache }}/offline/git/"
     dest: "{{ engine_cache }}/repos"
 
 - name: Create folder to override Bifrost dependencies
@@ -48,7 +48,7 @@
 
 - name: Copy offline images
   synchronize:
-    src: "{{ engine_cache }}/offline/images/"
+    src: "{{ engine_cache }}/offline/dib/"
     dest: "/httpboot"
   become: true
 

@@ -83,7 +83,6 @@ function parse_cmdline_opts() {
     CLEANUP=${CLEANUP:-false}
     VERBOSITY=${VERBOSITY:-false}
     OFFLINE_DEPLOYMENT=${OFFLINE_DEPLOYMENT:-false}
-    OFFLINE_DEPENDENCIES=${OFFLINE_DEPENDENCIES:-false}
 
     # get values passed as command line arguments, overriding the defaults or
     # the ones set by using env variables
@@ -125,16 +124,6 @@ function parse_cmdline_opts() {
       DO_INSTALL=$(echo "$DEPLOY_STAGE_LIST" | grep -c installer || true)
     fi
 
-    # Offline mode requires dependencies to be present in the machine
-    # TODO: this file/path should be provided as an extra parameter
-    if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
-        if [[ ! -f "$HOME/offline-dependencies.tar.gz" ]]; then
-            echo "Warning: You should have downloaded the offline dependencies first"
-            echo "Warning: Running in online mode with apt-cacher-ng"
-            OFFLINE_DEPENDENCIES="true"
-        fi
-    fi
-
     # Do all the exports
     export INSTALLER_TYPE="${INSTALLER_TYPE}"
     export PROVISIONER_TYPE="${PROVISIONER_TYPE}"
@@ -148,7 +137,6 @@ function parse_cmdline_opts() {
     export DO_INSTALL="${DO_INSTALL}"
     export CLEANUP="${CLEANUP}"
     export OFFLINE_DEPLOYMENT="${OFFLINE_DEPLOYMENT}"
-    export OFFLINE_DEPENDENCIES="${OFFLINE_DEPENDENCIES}"
     export VERBOSITY="${VERBOSITY}"
 
     log_summary
@@ -236,6 +224,11 @@ function cleanup() {
     # remove engine venv, cache and .ansible
     sudo /bin/rm -rf "$ENGINE_VENV" "$ENGINE_CACHE" "$HOME/.ansible" \
         /tmp/offline-package
+
+    # stop docker service since docker registry keeps creating
+    # $ENGINE_CACHE/certs folder, making engine prep to fail due
+    # to ownership issus
+    sudo systemctl stop docker > /dev/null 2>&1 || true
 
     # stop ironic-conductor service before dropping ironic database
     sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
@@ -394,6 +387,11 @@ function log_summary() {
     echo "#                Deployment Started                 #"
     echo "#---------------------------------------------------#"
     echo "Date & Time    : $(date -u '+%F %T UTC')"
+    if [[ "$OFFLINE_DEPLOYMENT" == "true" ]]; then
+      echo "Execution Mode : Offline deployment"
+    else
+      echo "Execution mode : Online deployment"
+    fi
     echo "Scenario       : $DEPLOY_SCENARIO"
     echo "Target OS      : $DISTRO"
     echo "Installer      : $INSTALLER_TYPE"
@@ -406,15 +404,6 @@ function log_summary() {
       echo "IDF            : $IDF"
     fi
     echo "SDF            : $SDF"
-    if [[ "$OFFLINE_DEPLOYMENT" == "true" ]]; then
-        if [[ "$OFFLINE_DEPENDENCIES" == "true" ]]; then
-    echo "Execution mode : Online with packaging"
-        else
-            echo "Execution mode : Offline"
-        fi
-    else
-        echo "Execution mode : Online"
-    fi
     echo "Cleanup        : $CLEANUP"
     echo "Verbosity      : $VERBOSITY"
     echo "#---------------------------------------------------#"
@@ -445,57 +434,35 @@ function prepare_offline() {
         return 0
     fi
 
-    # Check if we will run completely offline or in fetch dependency mode
-    if [[ "$OFFLINE_DEPENDENCIES" == "true" ]]; then
-        # Install apt-cacher-ng using apt
-        echo "Info  : Installing apt-cacher-ng with apt"
-        sudo apt-get update -qq  > /dev/null
-        sudo apt-get -y -qq install apt-cacher-ng  > /dev/null
-        echo "Info  : Configuring the local apt proxy in online mode"
-        sudo sed -i 's/^# Offlinemode:.*/Offlinemode: 0/' /etc/apt-cacher-ng/acng.conf
-        # From here on we can run online
-        export OFFLINE_DEPLOYMENT="false"
-    else
-        # Create the offline folder and repository folder (not available yet)
-        mkdir -p "$ENGINE_CACHE/offline"
-        mkdir -p "$ENGINE_CACHE/repos"
-
-        # Extract offline components
-        echo "Info  : Extracting offline components"
-        tar -zxf "$HOME/offline-dependencies.tar.gz" -C "$ENGINE_CACHE/offline"
-        # Copy repos to engine default folder
-        cp -r "$ENGINE_CACHE/offline/repos/." "$ENGINE_CACHE/repos"
-        # Copy kubespray dependencies to localhost
-        cp -r "$ENGINE_CACHE/offline/kubespray_cache" /tmp
-
-        # Install apt-cacher to manage dependencies
-        echo "Info  : Installing apt proxy"
-        # TODO: this depends on the specific OS (this is for debian)
-        sudo dpkg -i "$ENGINE_CACHE"/offline/apt-cacher-ng_3.1*.deb > /dev/null
-
-        # Configure local proxy in offline mode
-        echo "Info  : Configure local apt proxy"
-        sudo sed -i 's/^# Offlinemode:.*/Offlinemode: 1/' /etc/apt-cacher-ng/acng.conf
-
-        # Move apt dependencies to cache folder
-        echo "Info  : Moving apt cache to proxy folder"
-        sudo cp -rf "$ENGINE_CACHE/offline/apt/." /var/cache/apt-cacher-ng
-        sudo chown -R apt-cacher-ng:apt-cacher-ng /var/cache/apt-cacher-ng
-
+    # Offline mode requires dependencies to be present on the machine
+    if [[ ! -f "$OFFLINE_PKG_FILE" ]]; then
+        echo "ERROR : Offline dependencies file, $OFFLINE_PKG_FILE, does not exist!"
+        echo "        You may want to run package.sh to package dependencies"
+        exit 1
     fi
 
-    # Configure remapping for docker repositories
-    echo "https://download.docker.com/linux/ubuntu" | sudo tee /etc/apt-cacher-ng/docker_official
-    echo "Remap-docker: http://nordix.download.docker.com/linux/ubuntu ; file:docker_official" | sudo tee -a /etc/apt-cacher-ng/acng.conf
-    echo 'Acquire::http { Proxy "http://localhost:3142"; };' | sudo tee /etc/apt/apt.conf.d/02Proxy
-    # Restart apt-cacher-ng to fetch the new configuration
-    sudo systemctl restart apt-cacher-ng.service
+    # Create the offline folder and repository folder (not available yet)
+    mkdir -p "$ENGINE_CACHE/offline"
+    mkdir -p "$ENGINE_CACHE/repos"
 
-    # Ensure removal of apt cache
-    sudo rm -rf /var/cache/apt/*
-    sudo rm -rf /var/lib/apt/lists/*
-    sudo apt clean
+    # Extract offline components
+    echo "Info  : Preparing for offline deployment"
+    tar -zxf "$OFFLINE_PKG_FILE" -C "$ENGINE_CACHE/offline"
 
+    # Copy repos to engine default folder
+    cp -r "$ENGINE_CACHE/offline/git/." "$ENGINE_CACHE/repos"
+
+    # move apt cache to the directory which will become the root directory of web server
+    rm -rf "$ENGINE_CACHE/www" && mkdir -p "$ENGINE_CACHE/www"
+    mv -fi "$ENGINE_CACHE/offline/pkg" "$ENGINE_CACHE/www"
+
+    # NOTE (fdegir): we don't have nginx yet so we use local directory
+    # as the apt repository to continue with basic preperation
+    sudo cp -f /etc/apt/sources.list /etc/apt/sources.list.bak
+    sudo bash -c "echo deb [trusted=yes] file:$ENGINE_CACHE/www/pkg amd64/ > /etc/apt/sources.list"
+
+    # run apt update to ensure our apt mirror works or we bail out before proceeding further
+    sudo apt update > /dev/null 2>&1
 }
 
 # vim: set ts=2 sw=2 expandtab:

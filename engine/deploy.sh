@@ -97,6 +97,19 @@ else
 fi
 
 #-------------------------------------------------------------------------------
+# Provision local apt repo, docker registry, and ntp server services
+#-------------------------------------------------------------------------------
+if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
+  echo "Info  : Provision local services"
+  echo "-------------------------------------------------------------------------"
+  cd "${ENGINE_PATH}"
+  ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
+      -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+      engine/playbooks/provision-local-services.yaml
+  echo "-------------------------------------------------------------------------"
+fi
+
+#-------------------------------------------------------------------------------
 # Install the stack using the selected installer
 #-------------------------------------------------------------------------------
 if [[ "${DO_INSTALL}" -eq 1 ]]; then

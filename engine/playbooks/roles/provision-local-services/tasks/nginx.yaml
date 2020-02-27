@@ -17,17 +17,25 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# TODO: for the nodes provisioned from openstack using heat, we might not need
-# to adjust the network. apart from that, we don't have pdf & idf for them so
-# it is tricky to make it work quickly so we skip it for those nodes
-- include: configure-network.yml
-  when: provisioner_type == "bifrost"
-- include: configure-offline.yml
-  when: provisioner_type == "bifrost" and offline_deployment|bool
-- include: install-packages.yml
-# TODO: NTP is not working in offline mode. We should look either into a proper
-# configuration or bringing up a local npt server in kickstart.
-- include: sync-time.yml
-  when: not offline_deployment|bool
+- name: Load distribution variables
+  include_vars: '{{ ansible_os_family }}.yaml'
+
+# NOTE (fdegir): Bifrost installs nginx and we might be reinstalling it for no
+# reason but this is because we want offline deployment capability available for
+# Heat based deployment as well
+- name: Install nginx
+  action: |
+    {{ ansible_pkg_mgr }} name={{ nginx_package_name }} state=present update_cache=true
+
+- name: Place nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    backup: true
+
+- name: Restart nginx service
+  service:
+    name: "{{ nginx_service_name }}"
+    state: restarted
 
 # vim: set ts=2 sw=2 expandtab:

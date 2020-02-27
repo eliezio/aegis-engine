@@ -17,17 +17,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# TODO: for the nodes provisioned from openstack using heat, we might not need
-# to adjust the network. apart from that, we don't have pdf & idf for them so
-# it is tricky to make it work quickly so we skip it for those nodes
-- include: configure-network.yml
-  when: provisioner_type == "bifrost"
-- include: configure-offline.yml
-  when: provisioner_type == "bifrost" and offline_deployment|bool
-- include: install-packages.yml
-# TODO: NTP is not working in offline mode. We should look either into a proper
-# configuration or bringing up a local npt server in kickstart.
-- include: sync-time.yml
-  when: not offline_deployment|bool
+- name: Load distribution variables
+  include_vars: '{{ ansible_os_family }}.yaml'
+
+- name: Install chrony
+  action: |
+    {{ ansible_pkg_mgr }} name={{ chrony_package_name }} state=present update_cache=true
+
+- name: Place chrony.conf
+  template:
+    src: chrony.conf.j2
+    dest: "{{ chrony_conf_file }}"
+    backup: true
+
+- name: Restart chrony service
+  service:
+    name: "{{ chrony_service_name }}"
+    state: restarted
 
 # vim: set ts=2 sw=2 expandtab:
