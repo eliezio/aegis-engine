@@ -54,66 +54,20 @@ bootstrap_environment
 cleanup
 
 #-------------------------------------------------------------------------------
-# Prepare for offline deployment
-#-------------------------------------------------------------------------------
-prepare_offline
-
-#-------------------------------------------------------------------------------
 # Install Ansible
 #-------------------------------------------------------------------------------
 install_ansible
 
 #-------------------------------------------------------------------------------
-# Bootstrap swconfig
+# Start packaging process
 #-------------------------------------------------------------------------------
-echo "Info  : Bootstrap software configuration"
+echo "Info  : Start packaging process"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
-    engine/playbooks/bootstrap-swconfig.yaml
+    engine/playbooks/package-dependencies.yaml
 echo "-------------------------------------------------------------------------"
-
-#-------------------------------------------------------------------------------
-# Source scenario overrides
-#-------------------------------------------------------------------------------
-# NOTE: shellcheck SC1090 is disabled since overrides file is put in place during runtime
-# shellcheck disable=SC1090
-if [[ -f "${SCENARIO_OVERRIDES}" ]]; then
-  source "${SCENARIO_OVERRIDES}"
-  echo "Info  : Source scenario overrides"
-fi
-
-#-------------------------------------------------------------------------------
-# Provision nodes using the selected provisioning tool
-#-------------------------------------------------------------------------------
-if [[ "${DO_PROVISION}" -eq 1 ]]; then
-  # NOTE: the default provisioner is bifrost so we point it to shellcheck as source
-  # shellcheck source=engine/provisioner/bifrost/provision.sh
-  source "${ENGINE_PATH}/engine/provisioner/${PROVISIONER_TYPE}/provision.sh"
-else
-  echo "ERROR : Provisioning flag not specified"
-  exit 1
-fi
-
-#-------------------------------------------------------------------------------
-# Install the stack using the selected installer
-#-------------------------------------------------------------------------------
-if [[ "${DO_INSTALL}" -eq 1 ]]; then
-  # NOTE: the default installer is kubespray so we point it to shellcheck as source
-  # shellcheck source=engine/installer/kubespray/install.sh
-  source "${ENGINE_PATH}/engine/installer/${INSTALLER_TYPE}/install.sh"
-
-  #-----------------------------------------------------------------------------
-  # Install all the curated apps
-  #-----------------------------------------------------------------------------
-  cd "${APPS_PATH}"
-  ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-      -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
-      install-apps.yml
-else
-  echo "Warning: No installer selected!"
-fi
 
 #-------------------------------------------------------------------------------
 # Log total time it took to finish to console

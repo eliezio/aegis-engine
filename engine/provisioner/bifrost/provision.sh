@@ -28,7 +28,7 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 #-------------------------------------------------------------------------------
 # Bootstrap hwconfig
 #-------------------------------------------------------------------------------
-echo "Info: Bootstrap hardware configuration"
+echo "Info  : Bootstrap hardware configuration"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -42,7 +42,7 @@ echo "-------------------------------------------------------------------------"
 grep -o "vendor.*" "${ENGINE_PATH}/engine/inventory/group_vars/all/pdf.yaml" | grep -q libvirt && export BAREMETAL=false || export BAREMETAL=true
 
 # create libvirt resources if not baremetal, install and configure bifrost
-echo "Info: Prepare nodes, configure bifrost and create bifrost inventory"
+echo "Info  : Prepare nodes, configure bifrost and create bifrost inventory"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -61,7 +61,7 @@ export VENV="${ENGINE_VENV}"
 # tasks to force ansible to use python from virtual environment.
 
 # install bifrost and enroll & deploy nodes
-echo "Info: Install bifrost"
+echo "Info  : Install bifrost"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/bifrost/playbooks"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -70,7 +70,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     bifrost-install.yml
 echo "-------------------------------------------------------------------------"
 
-echo "Info: Enroll and deploy nodes using bifrost"
+echo "Info  : Enroll and deploy nodes using bifrost"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/bifrost/playbooks"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -83,7 +83,7 @@ echo "-------------------------------------------------------------------------"
 /bin/cp -f "${ENGINE_CACHE}/repos/bifrost/playbooks/inventory/bifrost_inventory.py" \
     "${ENGINE_PATH}/engine/inventory/bifrost_inventory.py"
 
-echo "Info: Generate Ansible inventory"
+echo "Info  : Generate Ansible inventory"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -92,7 +92,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     "${PROVISIONER_ROOT_DIR}/playbooks/generate-inventory.yml"
 
 echo "-------------------------------------------------------------------------"
-echo "Info: Nodes are provisioned using bifrost!"
+echo "Info  : Nodes are provisioned using bifrost!"
 echo "-------------------------------------------------------------------------"
 
 # vim: set ts=2 sw=2 expandtab:

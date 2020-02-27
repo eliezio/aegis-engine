@@ -1,0 +1,65 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+- name: Create folder to store dependencies for offline deployment
+  file:
+    path: "{{ offline_pkg_folder }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
+
+# TODO (fdegir): we need to switch to build with dib here
+- name: Fetch operating system images for provisioning
+  include_tasks: dib.yaml
+
+# collect apt packages
+- name: Fetch operating system packages
+  include_tasks: "pkg-{{ ansible_os_family }}.yaml"
+
+# clone git repositories
+- name: Fetch git repositories
+  include_tasks: git.yaml
+
+# download binaries
+- name: Fetch binaries
+  include_tasks: binaries.yaml
+
+# download pip packages
+- name: Fetch pip python packages
+  include_tasks: pip.yaml
+
+# fetch k8s container images
+- name: Fetch container images
+  include_tasks: containers.yaml
+
+# ensure we don't have leftover tarball
+- name: Delete outdated archive
+  file:
+    path: "{{ offline_pkg_file }}"
+    state: absent
+
+# create tarball
+- name: Archive dependencies for offline deployment
+  archive:
+    path: "{{ offline_pkg_folder }}/*"
+    dest: "{{ offline_pkg_file }}"
+    mode: 0644
+
+# vim: set ts=2 sw=2 expandtab:

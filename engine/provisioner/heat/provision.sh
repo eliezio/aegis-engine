@@ -36,21 +36,21 @@ source "$OPENRC"
 #-------------------------------------------------------------------------------
 # Bootstrap hwconfig
 #-------------------------------------------------------------------------------
-echo "Info: Bootstrap hardware configuration"
+echo "Info  : Bootstrap hardware configuration"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
     "${PROVISIONER_ROOT_DIR}/playbooks/bootstrap-hwconfig.yaml"
 
-echo "Info: Create stack using Heat"
+echo "Info  : Create stack using Heat"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
     "${PROVISIONER_ROOT_DIR}/playbooks/create-stack.yaml"
 
-echo "Info: Generate Ansible inventory"
+echo "Info  : Generate Ansible inventory"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -58,7 +58,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     "${PROVISIONER_ROOT_DIR}/playbooks/generate-inventory.yml"
 
 echo "-------------------------------------------------------------------------"
-echo "Info: Nodes are provisioned using OpenStack Heat!"
+echo "Info  : Nodes are provisioned using OpenStack Heat!"
 echo "-------------------------------------------------------------------------"
 
 # vim: set ts=2 sw=2 expandtab:

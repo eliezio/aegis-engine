@@ -29,7 +29,18 @@
 # -------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------
-# bifrost and ironic versions
+# Nordix: Versions of the engine repositories
+# NOTE (fdegir): These versions are put here as placeholders and for packaging
+# TODO (fdegir): We need to determine how to pin these versions for release purposes
+# -------------------------------------------------------------------------------
+nordix_swconfig_version: "{{ lookup('env', 'NORDIX_SWCONFIG_VERSION') | default('master', true) }}"
+nordix_hwconfig_version: "{{ lookup('env', 'NORDIX_HWCONFIG_VERSION') | default('master', true) }}"
+nordix_test_version: "{{ lookup('env', 'NORDIX_TEST_VERSION') | default('master', true) }}"
+
+# -------------------------------------------------------------------------------
+# OpenDev: Bifrost and Ironic versions
+# TODO (fdegir): These versions will potentially move to infra/provisioner/bifrost
+# repository in future
 # -------------------------------------------------------------------------------
 # HEAD of bifrost "stable/train" as of 15.11.2019
 bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('1ec396d8e473587c4d653b6f518bcaa25c819b34', true) }}"
@@ -37,7 +48,38 @@ bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('1ec396d8e473587
 ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('cfa58afd8f43add656c680c649006cefd3e6a296', true) }}"
 
 # -------------------------------------------------------------------------------
-# kubespray, kubernetes, and kubectl versions
+# OpenDev: Versions of Bifrost and Ironic dependencies
+# NOTE (fdegir): Do not modify these versions unless you know what you are doing
+# TODO (fdegir): These versions will potentially move to infra/provisioner/bifrost
+# repository in future
+# -------------------------------------------------------------------------------
+diskimage_builder_version: "9d08848f2576781e1d94bc25e05c1c412e447a82"
+ironic_inspector_version: "355cab804ffdaaaa5bdc0059e4a530f82d1b8557"
+ironic_python_agent_version: "4c69b3c0c0b07f5f390f663393f254c0c209e39f"
+ironic_python_agent_builder_version: "044ae3f2d6be8f732e75de4cb7ba6d352580b7e4"
+ironic_staging_drivers_version: "bcedf4332c4b43cb136ea1967ad455ef92eca57f"
+keystone_version: "40b7de87e04fbc49ab3a96b5114a9ab09c2734b7"
+openstacksdk_version: "50c989891e5e6f9d92cc84619ba237182bd1d14a"
+python_ironicclient_version: "1220d7685723b8235135d2d02c11008c7f7fb18a"
+python_ironic_inspector_client_version: "3a411274c261d66b1d5cfb803c0d4322ccd279f6"
+requirements_version: "c669fbb2b7617b8b8016962ea9b6e52b0f156e3e"
+shade_version: "e1e0f47e31f933648042b1c23a326917c605c8aa"
+sushy_version: "3f08acc80369d0f226da87ab106682b68cb1c0ae"
+
+# -------------------------------------------------------------------------------
+# OpenDev: kolla-ansible and openstack versions
+# TODO (fdegir): These versions will potentially move to infra/installer/kolla
+# repository in future
+# -------------------------------------------------------------------------------
+# kolla-ansible for stable/train as of 20.01.2020
+kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('81e00d3c8981c6a3b0cf7443a00a53a652a7d3f7', true) }}"
+# openstack version that is supported by the pinned kolla-ansibe version
+openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('train', true) }}"
+
+# -------------------------------------------------------------------------------
+# Kubernetes: Kubespray, kubernetes, and kubectl versions
+# TODO (fdegir): These versions will potentially move to infra/installer/kubespray
+# repository in future
 # -------------------------------------------------------------------------------
 # HEAD of kubespray as of 12.12.2019
 kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('815eebf1d7baa8f7f20cb90e11c64a229666f5fb', true) }}"
@@ -48,24 +90,44 @@ kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.17.0',
 kubectl_version: "{{ lookup('env', 'KUBECTL_VERSION') | default(kubernetes_version, true) }}"
 
 # -------------------------------------------------------------------------------
-# kolla-ansible and openstack versions
-# -------------------------------------------------------------------------------
-# kolla-ansible for stable/train as of 20.01.2020
-kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('81e00d3c8981c6a3b0cf7443a00a53a652a7d3f7', true) }}"
-# openstack version that is supported by the pinned kolla-ansibe version
-openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('train', true) }}"
-
-# -------------------------------------------------------------------------------
-# helm version
-# -------------------------------------------------------------------------------
-helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.16.1', true) }}"
-charts_version: "{{ lookup('env', 'CHARTS_VERSION') | default('0b64349aeb537d0fd038df0e1d40ec5cf1206609', true) }}"
-
-# -------------------------------------------------------------------------------
-# app versions
+# Kubernetes: Versions of rook, ceph and their dependencies
+# TODO (fdegir): These versions will potentially move to infra/installer/kubespray
+# repository in future
 # -------------------------------------------------------------------------------
 rook_version: "{{ lookup('env', 'ROOK_VERSION') | default('v1.1.2', true) }}"
 ceph_version: "{{ lookup('env', 'CEPH_VERSION') | default('v14.2.4-20190917', true) }}"
+cephcsi_version: "v1.2.1"
+csi_node_driver_registrar_version: "v1.1.0"
+csi_attacher_version: "v1.2.0"
+csi_provisioner_version: "v1.3.0"
+csi_snapshotter_version: "v1.2.0"
+
+# -------------------------------------------------------------------------------
+# Kubernetes: Versions of prometheus and its dependencies
+# TODO (fdegir): These versions will potentially move to infra/installer/kubespray
+# repository in future
+# -------------------------------------------------------------------------------
+# TODO (fdegir): prometheus version of what? helm chart?
+prometheus_version: "{{ lookup('env', 'PROMETHEUS_VERSION') | default('1.3.1', true) }}"
+prom_alertmanager_version: "v0.20.0"
+prom_node_exporter_version: "v0.18.1"
+prom_prometheus_version: "v2.16.0"
+prom_push_gateway_version: "v1.0.1"
+
+# -------------------------------------------------------------------------------
+# Kubernetes: App versions
+# TODO (fdegir): These versions will potentially move to infra/installer/kubespray
+# repository in future
+# -------------------------------------------------------------------------------
+helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.16.1', true) }}"
+charts_version: "{{ lookup('env', 'CHARTS_VERSION') | default('0b64349aeb537d0fd038df0e1d40ec5cf1206609', true) }}"
 istio_version: "{{ lookup('env', 'ISTIO_VERSION') | default('1.3.1', true) }}"
+
+# -------------------------------------------------------------------------------
+# Misc: Versions of other components
+# -------------------------------------------------------------------------------
+configmap_reload_version: "v0.3.0"
+kube_state_metrics_version: "v1.9.5"
+docker_registry_version: "2.7.1"
 
 # vim: set ts=2 sw=2 expandtab:

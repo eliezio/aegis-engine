@@ -46,6 +46,12 @@ export SCENARIO_OVERRIDES="${ENGINE_CACHE}/repos/swconfig/scenarios/${DEPLOY_SCE
 # the Engine version to use
 export ENGINE_VERSION="${ENGINE_VERSION:-master}"
 
+# the Engine offline package folder
+export OFFLINE_PKG_FOLDER="${OFFLINE_PKG_FOLDER:-/tmp/offline-package}"
+
+# the Engine offline package tarball
+export OFFLINE_PKG_FILE="${OFFLINE_PKG_FILE:-/tmp/offline-package.tgz}"
+
 #-------------------------------------------------------------------------------
 # Set the inventory for bifrost
 #-------------------------------------------------------------------------------

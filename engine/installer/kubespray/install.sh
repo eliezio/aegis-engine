@@ -27,7 +27,7 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 
 # configure target hosts
 echo "-------------------------------------------------------------------------"
-echo "Info: Configure target hosts"
+echo "Info  : Configure target hosts"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -36,7 +36,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 
 # configure installer
 echo "-------------------------------------------------------------------------"
-echo "Info: Configure installer"
+echo "Info  : Configure installer"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -45,7 +45,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 
 # bootstrap scenario
 echo "-------------------------------------------------------------------------"
-echo "Info: Execute scenario pre deployment tasks"
+echo "Info  : Execute scenario pre deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -54,7 +54,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 
 # install scenario
 echo "-------------------------------------------------------------------------"
-echo "Info: Install scenario ${DEPLOY_SCENARIO}"
+echo "Info  : Install scenario ${DEPLOY_SCENARIO}"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kubespray"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -65,7 +65,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"
-echo "Info: Execute scenario and common post deployment tasks"
+echo "Info  : Execute scenario and common post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \

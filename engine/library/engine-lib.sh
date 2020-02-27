@@ -103,19 +103,19 @@ function parse_cmdline_opts() {
             v) VERBOSITY="true" ;;
             l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
             x) OFFLINE_DEPLOYMENT="true" ;;
-            *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
+            *) echo "ERROR : Invalid option '-${OPTARG}'"; usage ;;
         esac
     done
 
     # if provisioner type is heat, we need openrc as well
     if [[ "$PROVISIONER_TYPE" == "heat" && -z "${OPENRC:-}" ]]; then
-      echo "Error: You must provide path to openrc file in order to use Heat as provisioner!"
+      echo "ERROR : You must provide path to openrc file in order to use Heat as provisioner!"
       exit 1
     fi
 
     # check if specified openrc exists
     if [[ "$PROVISIONER_TYPE" == "heat" && ! -f $OPENRC ]]; then
-      echo "Error: Specified openrc file '$OPENRC' does not exist!"
+      echo "ERROR : Specified openrc file '$OPENRC' does not exist!"
       exit 1
     fi
 
@@ -163,14 +163,14 @@ function parse_cmdline_opts() {
 # - env_reset shall not be present
 #-------------------------------------------------------------------------------
 function check_prerequisites() {
-    echo "Info: Check prerequisites"
+    echo "Info  : Check prerequisites"
 
     #-------------------------------------------------------------------------------
     # We shouldn't be running as root
     #-------------------------------------------------------------------------------
     if [[ "$(whoami)" == "root" ]]; then
-        echo "ERROR: This script must not be run as root!"
-        echo "       Please switch to a regular user before running the script."
+        echo "ERROR : This script must not be run as root!"
+        echo "        Please switch to a regular user before running the script."
         exit 1
     fi
 
@@ -178,7 +178,7 @@ function check_prerequisites() {
     # Check if SSH key exists
     #-------------------------------------------------------------------------------
     if [[ ! -f "$HOME/.ssh/id_rsa" ]]; then
-        echo "ERROR: You must have SSH keypair in order to run this script!"
+        echo "ERROR : You must have SSH keypair in order to run this script!"
         exit 1
     fi
 
@@ -193,7 +193,7 @@ function check_prerequisites() {
 # environment variables set in them for further use
 #-------------------------------------------------------------------------------
 function bootstrap_environment() {
-    echo "Info: Prepare environment for Cloud Infra deployment"
+    echo "Info  : Prepare environment for Cloud Infra deployment"
 
     # source engine-vars
     # shellcheck source=engine/library/engine-vars.sh
@@ -225,10 +225,17 @@ function bootstrap_environment() {
 # so this function is important to use but it is not executed by default.
 #-------------------------------------------------------------------------------
 function cleanup() {
-    echo "Info: Remove leftovers of previous run"
+
+    # skip cleanup if not requested
+    if [[ "${CLEANUP}" != "true" ]]; then
+        return 0
+    fi
+
+    echo "Info  : Remove leftovers of previous run"
 
     # remove engine venv, cache and .ansible
-    sudo /bin/rm -rf "$ENGINE_VENV" "$ENGINE_CACHE" "$HOME/.ansible"
+    sudo /bin/rm -rf "$ENGINE_VENV" "$ENGINE_CACHE" "$HOME/.ansible" \
+        /tmp/offline-package
 
     # stop ironic-conductor service before dropping ironic database
     sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
@@ -297,7 +304,7 @@ function install_ansible() {
 
         ;;
 
-        *) echo "ERROR: Supported package manager not found.  Supported: apt, dnf, yum, zypper"; exit 1;;
+        *) echo "ERROR : Supported package manager not found.  Supported: apt, dnf, yum, zypper"; exit 1;;
     esac
 
     # Build installation map
@@ -305,11 +312,11 @@ function install_ansible() {
         install_map+=( "${PKG_MAP[$pkgmap]}" )
     done
 
-    echo "Info: Install ${install_map[*]} using $PKG_MGR on jumphost"
+    echo "Info  : Install ${install_map[*]} using $PKG_MGR on jumphost"
     # shellcheck disable=SC2068
     ${INSTALLER_CMD} ${install_map[@]} > /dev/null 2>&1
 
-    echo "Info: Prepare virtual environment at $ENGINE_VENV on jumphost"
+    echo "Info  : Prepare virtual environment at $ENGINE_VENV on jumphost"
     # We need to prepare our virtualenv now
     if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
       virtualenv --python python3 --quiet --never-download "${ENGINE_VENV}" > /dev/null 2>&1
@@ -327,15 +334,15 @@ function install_ansible() {
     # Pip might come by default with an old version that does not have the
     # --no-color option making the following commands fail
     if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
-      echo "Info: Upgrading pip in offline mode"
+      echo "Info  : Upgrading pip in offline mode"
       pip install --upgrade --quiet pip
     fi
 
     # since we use bindep.txt to control distro packages to install, we need to install bindep first using pip
-    echo "Info: Install bindep using pip"
+    echo "Info  : Install bindep using pip"
     pip install --upgrade --no-color --quiet bindep
 
-    echo "Info: Install system packages listed in bindep.txt using $PKG_MGR"
+    echo "Info  : Install system packages listed in bindep.txt using $PKG_MGR"
     cd "$ENGINE_PATH"
     # bindep -b exits with non-zero if it identifies a missing package so we disable pipefail
     set +o pipefail
@@ -343,7 +350,7 @@ function install_ansible() {
     bindep -b &> /dev/null || ${INSTALLER_CMD} $(bindep -b) > /dev/null 2>&1
     set -o pipefail
 
-    echo "Info: Install python packages listed in requirements.txt using pip"
+    echo "Info  : Install python packages listed in requirements.txt using pip"
     pip install --force-reinstall --no-color --quiet -r requirements.txt
 
     if [[ "$OS_FAMILY" == "Debian" ]]; then
@@ -351,7 +358,7 @@ function install_ansible() {
       # shellcheck disable=SC2125
       venv_site_packages_dir="${ENGINE_VENV}"/lib/python3*/site-packages
       cd /tmp
-      echo "Info: Download and install python3-apt using apt"
+      echo "Info  : Download and install python3-apt using apt"
       apt download -q=3 python3-apt > /dev/null 2>&1
 
       dpkg -x python3-apt_*.deb python3-apt
@@ -401,15 +408,15 @@ function log_summary() {
     echo "SDF            : $SDF"
     if [[ "$OFFLINE_DEPLOYMENT" == "true" ]]; then
         if [[ "$OFFLINE_DEPENDENCIES" == "true" ]]; then
-    echo "Deployment mode: Online with packaging"
+    echo "Execution mode : Online with packaging"
         else
-            echo "Deployment mode  : Offline"
+            echo "Execution mode : Offline"
         fi
     else
-        echo "Deployment mode  : Online"
+        echo "Execution mode : Online"
     fi
-    echo "Cleanup      : $CLEANUP"
-    echo "Verbosity    : $VERBOSITY"
+    echo "Cleanup        : $CLEANUP"
+    echo "Verbosity      : $VERBOSITY"
     echo "#---------------------------------------------------#"
     echo
 
@@ -432,13 +439,19 @@ function log_elapsed_time() {
 # Prepare offline installation
 #-------------------------------------------------------------------------------
 function prepare_offline() {
+
+    # return without doing anything if it is not an offline deployment
+    if [[ "$OFFLINE_DEPLOYMENT" != "true" ]]; then
+        return 0
+    fi
+
     # Check if we will run completely offline or in fetch dependency mode
     if [[ "$OFFLINE_DEPENDENCIES" == "true" ]]; then
         # Install apt-cacher-ng using apt
-        echo "Info: Installing apt-cacher-ng with apt"
+        echo "Info  : Installing apt-cacher-ng with apt"
         sudo apt-get update -qq  > /dev/null
         sudo apt-get -y -qq install apt-cacher-ng  > /dev/null
-        echo "Info: Configuring the local apt proxy in online mode"
+        echo "Info  : Configuring the local apt proxy in online mode"
         sudo sed -i 's/^# Offlinemode:.*/Offlinemode: 0/' /etc/apt-cacher-ng/acng.conf
         # From here on we can run online
         export OFFLINE_DEPLOYMENT="false"
@@ -448,7 +461,7 @@ function prepare_offline() {
         mkdir -p "$ENGINE_CACHE/repos"
 
         # Extract offline components
-        echo "Info: Extracting offline components"
+        echo "Info  : Extracting offline components"
         tar -zxf "$HOME/offline-dependencies.tar.gz" -C "$ENGINE_CACHE/offline"
         # Copy repos to engine default folder
         cp -r "$ENGINE_CACHE/offline/repos/." "$ENGINE_CACHE/repos"
@@ -456,16 +469,16 @@ function prepare_offline() {
         cp -r "$ENGINE_CACHE/offline/kubespray_cache" /tmp
 
         # Install apt-cacher to manage dependencies
-        echo "Info: Installing apt proxy"
+        echo "Info  : Installing apt proxy"
         # TODO: this depends on the specific OS (this is for debian)
         sudo dpkg -i "$ENGINE_CACHE"/offline/apt-cacher-ng_3.1*.deb > /dev/null
 
         # Configure local proxy in offline mode
-        echo "Info: Configure local apt proxy"
+        echo "Info  : Configure local apt proxy"
         sudo sed -i 's/^# Offlinemode:.*/Offlinemode: 1/' /etc/apt-cacher-ng/acng.conf
 
         # Move apt dependencies to cache folder
-        echo "Info: Moving apt cache to proxy folder"
+        echo "Info  : Moving apt cache to proxy folder"
         sudo cp -rf "$ENGINE_CACHE/offline/apt/." /var/cache/apt-cacher-ng
         sudo chown -R apt-cacher-ng:apt-cacher-ng /var/cache/apt-cacher-ng
 

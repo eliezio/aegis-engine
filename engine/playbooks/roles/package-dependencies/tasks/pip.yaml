@@ -17,19 +17,23 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-chrony_service_name: chrony
-chrony_config_location: /etc/chrony/chrony.conf
-chrony_config_driftfile: /var/lib/chrony/chrony.drift
-chrony_config_keyfile: /etc/chrony/chrony.keys
-chrony_config_logdir: /var/log/chrony
+- name: Create directory to store pip packages
+  file:
+    path: "{{ pip_folder }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
 
-packages:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - gnupg-agent
-  - software-properties-common
-  - chrony
-  - dbus
+- name: Download pip packages using requirements.txt file
+  command: "pip download -r {{ engine_path }}/requirements.txt --no-cache"
+  changed_when: false
+  args:
+    chdir: "{{ pip_folder }}"
+
+- name: Copy pip.conf
+  copy:
+    src: pip.conf
+    dest: "{{ pip_folder }}/pip.conf"
 
 # vim: set ts=2 sw=2 expandtab:

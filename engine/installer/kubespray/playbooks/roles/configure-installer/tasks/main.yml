@@ -160,7 +160,7 @@
     path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
     regexp: "^download_run_once:.*"
     line: "download_run_once: true"
-  when: offline_dependencies|bool
+  when: offline_deployment|bool
 
 # Use a fake docker repository to overcome apt-cacher-ng limitation with https
 - name: Configure docker repo to use jumphost apt proxy

@@ -17,19 +17,25 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-chrony_service_name: chrony
-chrony_config_location: /etc/chrony/chrony.conf
-chrony_config_driftfile: /var/lib/chrony/chrony.drift
-chrony_config_keyfile: /etc/chrony/chrony.keys
-chrony_config_logdir: /var/log/chrony
+- name: Create directory to store git repositories
+  file:
+    path: "{{ git_folder }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
 
-packages:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - gnupg-agent
-  - software-properties-common
-  - chrony
-  - dbus
+# TODO (fdegir): look at using stable/train for opendev repositories!!!
+- name: Clone repositories
+  git:
+    repo: "{{ repositories[item.key].repo }}"
+    dest: "{{ git_folder }}/{{ item.key }}"
+    version: "{{ repositories[item.key].version }}"
+    force: true
+  with_dict: "{{ repositories }}"
+  environment:
+    http_proxy: "{{ lookup('env','http_proxy') }}"
+    https_proxy: "{{ lookup('env','https_proxy') }}"
+    no_proxy: "{{ lookup('env','no_proxy') }}"
 
 # vim: set ts=2 sw=2 expandtab:

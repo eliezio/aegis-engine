@@ -1,0 +1,185 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+# locations of the packaged dependencies
+pkg_folder: "{{ offline_pkg_folder }}/pkg"
+dib_folder: "{{ offline_pkg_folder }}/dib"
+git_folder: "{{ offline_pkg_folder }}/git"
+binaries_folder: "{{ offline_pkg_folder }}/binaries"
+containers_folder: "{{ offline_pkg_folder }}/containers"
+pip_folder: "{{ offline_pkg_folder }}/pip"
+
+helm_download_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+
+# some images require architecture
+image_arch: amd64
+
+dib_images:
+  - https://artifactory.nordix.org/artifactory/cloud-infra/dib/deployment_image/ubuntu1804/deployment_image.qcow2
+  - https://artifactory.nordix.org/artifactory/cloud-infra/dib/ipa_image/coreos/ipa.initramfs
+  - https://artifactory.nordix.org/artifactory/cloud-infra/dib/ipa_image/coreos/ipa.kernel
+
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+
+k8s_binaries:
+  - calicoctl
+  - cni
+  - kubeadm
+  - kubectl
+  - kubelet
+
+k8s_misc_images:
+  - addon_resizer
+  - calico_cni
+  - calico_node
+  - calico_policy
+  - coredns
+  - dashboard
+  - dnsautoscaler
+  - etcd
+  - flannel
+  - flannel_cni
+  - helm
+  - metrics_server
+  - multus
+  - nginx
+  - nodelocaldns
+  - pod_infra
+  - registry_proxy
+  - tiller
+  - weave_kube
+  - weave_npc
+
+other_images:
+  # ceph
+  ceph:
+    repo: ceph/ceph
+    tag: "{{ ceph_version }}"
+  cephcsi:
+    repo: quay.io/cephcsi/cephcsi
+    tag: "{{ cephcsi_version }}"
+  csi-attacher:
+    repo: quay.io/k8scsi/csi-attacher
+    tag: "{{ csi_attacher_version }}"
+  csi-node-driver-registrar:
+    repo: quay.io/k8scsi/csi-node-driver-registrar
+    tag: "{{ csi_node_driver_registrar_version }}"
+  csi-provisioner:
+    repo: quay.io/k8scsi/csi-provisioner
+    tag: "{{ csi_provisioner_version }}"
+  csi-snapshotter:
+    repo: quay.io/k8scsi/csi-snapshotter
+    tag: "{{ csi_snapshotter_version }}"
+  rook:
+    repo: rook/ceph
+    tag: "{{ rook_version }}"
+  # prometheus
+  prom-alertmanager:
+    repo: docker.io/prom/alertmanager
+    tag: "{{ prom_alertmanager_version }}"
+  prom-node-exporter:
+    repo: docker.io/prom/node-exporter
+    tag: "{{ prom_node_exporter_version }}"
+  prom-prometheus:
+    repo: docker.io/prom/prometheus
+    tag: "{{ prom_prometheus_version }}"
+  prom-pushgateway:
+    repo: docker.io/prom/pushgateway
+    tag: "{{ prom_push_gateway_version }}"
+  # docker
+  docker-registry:
+    repo: docker.io/registry
+    tag: "{{ docker_registry_version }}"
+  # other - we don't know where this comes from
+  configmap-reload:
+    repo: docker.io/jimmidyson/configmap-reload
+    tag: "{{ configmap_reload_version }}"
+  kube-state-metrics:
+    repo: quay.io/coreos/kube-state-metrics
+    tag: "{{ kube_state_metrics_version }}"
+
+repositories:
+  # NOTE (fdegir): OpenDev Git Repositories
+  bifrost:
+    repo: "https://opendev.org/openstack/bifrost.git"
+    version: "{{ bifrost_version }}"
+  diskimage-builder:
+    repo: "https://opendev.org/openstack/diskimage-builder.git"
+    version: "{{ diskimage_builder_version }}"
+  ironic:
+    repo: "https://opendev.org/openstack/ironic.git"
+    version: "{{ ironic_version }}"
+  ironic-inspector:
+    repo: "https://opendev.org/openstack/ironic-inspector.git"
+    version: "{{ ironic_inspector_version }}"
+  ironic-python-agent:
+    repo: "https://opendev.org/openstack/ironic-python-agent.git"
+    version: "{{ ironic_python_agent_version }}"
+  ironic-python-agent-builder:
+    repo: "https://opendev.org/openstack/ironic-python-agent-builder.git"
+    version: "{{ ironic_python_agent_builder_version }}"
+  ironic-staging-drivers:
+    repo: "https://opendev.org/x/ironic-staging-drivers"
+    version: "{{ ironic_staging_drivers_version }}"
+  keystone:
+    repo: "https://opendev.org/openstack/keystone.git"
+    version: "{{ keystone_version }}"
+  openstacksdk:
+    repo: "https://opendev.org/openstack/openstacksdk.git"
+    version: "{{ openstacksdk_version }}"
+  python-ironicclient:
+    repo: "https://opendev.org/openstack/python-ironicclient.git"
+    version: "{{ python_ironicclient_version }}"
+  python-ironic-inspector-client:
+    repo: "https://opendev.org/openstack/python-ironic-inspector-client.git"
+    version: "{{ python_ironic_inspector_client_version }}"
+  requirements:
+    repo: "https://opendev.org/openstack/requirements.git"
+    version: "{{ requirements_version }}"
+  shade:
+    repo: "https://opendev.org/openstack/shade.git"
+    version: "{{ shade_version }}"
+  sushy:
+    repo: "https://opendev.org/openstack/sushy.git"
+    version: "{{ sushy_version }}"
+  # NOTE (fdegir): Kubespray and Helm Git Repositories
+  charts:
+    repo: "https://github.com/helm/charts.git"
+    version: "{{ charts_version }}"
+  kubespray:
+    repo: "https://github.com/kubernetes-sigs/kubespray.git"
+    version: "{{ kubespray_version }}"
+  # NOTE (fdegir): Nordix Git Repositories
+  engine:
+    repo: "https://gerrit.nordix.org/infra/engine.git"
+    version: "master"
+  hwconfig:
+    repo: "https://gerrit.nordix.org/infra/hwconfig.git"
+    version: "master"
+  swconfig:
+    repo: "https://gerrit.nordix.org/infra/swconfig.git"
+    version: "master"
+  test:
+    repo: "https://gerrit.nordix.org/infra/test.git"
+    version: "master"
+
+# vim: set ts=2 sw=2 expandtab:

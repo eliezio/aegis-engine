@@ -35,4 +35,8 @@ apps_path: "{{ lookup('env', 'APPS_PATH') }}"
 offline_deployment: "{{ lookup('env', 'OFFLINE_DEPLOYMENT') }}"
 offline_dependencies: "{{ lookup('env', 'OFFLINE_DEPENDENCIES') }}"
 
+# NOTE (fdegir): additional vars for standalone packaging
+offline_pkg_folder: "{{ lookup('env', 'OFFLINE_PKG_FOLDER') | default('/tmp/offline-package', true) }}"
+offline_pkg_file: "{{ lookup('env', 'OFFLINE_PKG_FILE') | default('/tmp/offline-package.tgz', true) }}"
+
 # vim: set ts=2 sw=2 expandtab:

@@ -27,7 +27,7 @@ export ANSIBLE_LIBRARY="$HOME/.ansible/plugins/modules:/usr/share/ansible/plugin
 
 # configure target hosts
 echo "-------------------------------------------------------------------------"
-echo "Info: Configure target hosts"
+echo "Info  : Configure target hosts"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -36,7 +36,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 
 # configure kolla installer
 echo "-------------------------------------------------------------------------"
-echo "Info: Configure kolla installer"
+echo "Info  : Configure kolla installer"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -46,7 +46,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 # TODO: we need to run scenario pre-deployment tasks here in order to configure
 # bootstrap scenario
 echo "-------------------------------------------------------------------------"
-echo "Info: Execute scenario pre deployment tasks"
+echo "Info  : Execute scenario pre deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
@@ -55,7 +55,7 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
 
 # kolla-ansible: bootstrap servers
 echo "-------------------------------------------------------------------------"
-echo "Info: Kolla-ansible bootstrap servers"
+echo "Info  : Kolla-ansible bootstrap servers"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 ./kolla-ansible \
@@ -67,7 +67,7 @@ cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 
 # kolla-ansible: prechecks
 echo "-------------------------------------------------------------------------"
-echo "Info: Kolla-ansible prechecks"
+echo "Info  : Kolla-ansible prechecks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 ./kolla-ansible \
@@ -79,7 +79,7 @@ cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 
 # kolla-ansible: deploy
 echo "-------------------------------------------------------------------------"
-echo "Info: Kolla-ansible deploy"
+echo "Info  : Kolla-ansible deploy"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 ./kolla-ansible \
@@ -91,7 +91,7 @@ cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 
 # kolla-ansible: post-deploy
 echo "-------------------------------------------------------------------------"
-echo "Info: Kolla-ansible post-deploy"
+echo "Info  : Kolla-ansible post-deploy"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_CACHE}/repos/kolla-ansible/tools"
 ./kolla-ansible \
@@ -108,7 +108,7 @@ source "${ENGINE_CACHE}/config/admin-openrc.sh"
 
 # run post-deployment tasks
 echo "-------------------------------------------------------------------------"
-echo "Info: Execute scenario and common post deployment tasks"
+echo "Info  : Execute scenario and common post deployment tasks"
 echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
