@@ -17,24 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-chrony_service_name: chrony
-chrony_config_location: /etc/chrony/chrony.conf
-chrony_config_driftfile: /var/lib/chrony/chrony.drift
-chrony_config_keyfile: /etc/chrony/chrony.keys
-chrony_config_logdir: /var/log/chrony
-
-packages:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - gnupg-agent
-  - software-properties-common
-  - chrony
-  - dbus
-
-packages_offline:
-  - docker-ce
-  - docker-ce-cli
-  - containerd.io
+kubespray_git_url: https://github.com/kubernetes-sigs/kubespray.git
 
 # vim: set ts=2 sw=2 expandtab:

@@ -16,9 +16,18 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-jumphost: "{{ 'jumphost' if provisioner_type == 'heat' else 'localhost' }}"
 
-kubectl_download_url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
-helm_client_download_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+# TODO: for the nodes provisioned from openstack using heat, we might not need
+# to adjust the network. apart from that, we don't have pdf & idf for them so
+# it is tricky to make it work quickly so we skip it for those nodes
+- include: configure-network.yml
+  when: provisioner_type == "bifrost"
+
+- include: "configure-{{ execution_mode }}.yaml"
+
+# TODO: NTP is not working in offline mode. We should look either into a proper
+# configuration or bringing up a local npt server in kickstart.
+- include: sync-time.yml
+  when: execution_mode == 'online-deployment'
 
 # vim: set ts=2 sw=2 expandtab:

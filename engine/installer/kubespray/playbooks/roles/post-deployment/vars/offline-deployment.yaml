@@ -17,24 +17,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-chrony_service_name: chrony
-chrony_config_location: /etc/chrony/chrony.conf
-chrony_config_driftfile: /var/lib/chrony/chrony.drift
-chrony_config_keyfile: /etc/chrony/chrony.keys
-chrony_config_logdir: /var/log/chrony
-
-packages:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - gnupg-agent
-  - software-properties-common
-  - chrony
-  - dbus
-
-packages_offline:
-  - docker-ce
-  - docker-ce-cli
-  - containerd.io
+kubectl_download_url: "http://{{ server_fqdn }}/binaries/kubectl"
+helm_client_download_url: "http://{{ server_fqdn }}/binaries/helm-{{ helm_version }}-linux-amd64.tar.gz"
 
 # vim: set ts=2 sw=2 expandtab:

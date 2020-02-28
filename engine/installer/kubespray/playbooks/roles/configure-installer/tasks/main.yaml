@@ -1,0 +1,95 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+- name: Load execution mode variables
+  include_vars: "{{ execution_mode }}.yaml"
+
+# clone kubespray repo from internet when running in online mode
+- block:
+  - name: Remove existing files and directories
+    file:
+      path: "{{ engine_cache }}/repos/kubespray"
+      state: absent
+
+  - name: Clone kubespray repository and checkout '{{ kubespray_version }}'
+    git:
+      repo: "{{ kubespray_git_url }}"
+      dest: "{{ engine_cache }}/repos/kubespray"
+      version: "{{ kubespray_version }}"
+      force: true
+    environment: "{{ idf.proxy_settings | default({}) }}"
+  when: execution_mode == 'online-deployment'
+
+# TODO: some stuff below could and perhaps should be pushed into the scenario
+# it is put here to make basic installation work without complexities
+- name: Put initial structure in place
+  synchronize:
+    src: "{{ engine_cache }}/repos/kubespray/inventory/sample/"
+    dest: "{{ engine_cache }}/repos/kubespray/inventory/engine"
+    recursive: true
+    delete: true
+
+# place generated kubespray inventory to kubespray/inventory/engine
+- name: Place inventory
+  copy:
+    src: "{{ inventory_path }}/inventory.ini"
+    dest: "{{ engine_cache }}/repos/kubespray/inventory/engine/inventory.ini"
+    mode: 0644
+
+# update proxy if settings are provided
+- name: Update proxy settings in all.yml
+  lineinfile:
+    path: "{{ engine_cache }}/repos/kubespray/inventory/engine/group_vars/all/all.yml"
+    regexp: "^[#\\s]*{{ item.name }}"
+    line: "{{ item.name }}: {{ item.value }}"
+  with_items:
+    - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}'}
+    - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}'}
+    - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}'}
+  when:
+    idf.proxy_settings is defined
+
+# look for kube feature gates
+- name: Check if KUBE_FEATURE_GATES is set
+  set_fact:
+    kube_feature_gates: []
+    feature_gate_list: "{{ lookup('env', 'KUBE_FEATURE_GATES') }}"
+
+- name: Setup feature gates list
+  set_fact:
+    kube_feature_gates: "{{ kube_feature_gates + [feature] }}"
+  with_items: "{{ feature_gate_list.split(',') }}"
+  loop_control:
+    loop_var: feature
+  when: feature_gate_list | length > 0
+
+- name: Generate kubespray variables
+  template:
+    src: kubespray-vars.yml.j2
+    dest: "{{ kubespray_vars_file }}"
+    force: true
+
+- name: Fix path for nginx docker image
+  replace:
+    path: "{{ engine_cache }}/repos/kubespray/roles/download/defaults/main.yml"
+    regexp: 'library/nginx'
+    replace: 'nginx'
+  when: execution_mode == 'offline-deployment'
+
+# vim: set ts=2 sw=2 expandtab:

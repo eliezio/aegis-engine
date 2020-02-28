@@ -16,6 +16,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
-kubespray_git_url: https://github.com/kubernetes-sigs/kubespray.git
+
+# location of the generated kubespray-vars.yaml
+kubespray_vars_file: "{{ config_path }}/kubespray-vars.yml"
+
+# common/default configuration
+kubeconfig_localhost: true
+dashboard_enabled: false
+docker_iptables_enabled: true
+helm_enabled: true
+metrics_server_enabled: true
+metrics_server_metric_resolution: 60s
+metrics_server_kubelet_preferred_address_types: "'InternalIP'"
 
 # vim: set ts=2 sw=2 expandtab:

@@ -26,4 +26,11 @@
     state: present
     update_cache: true
 
+- name: Install docker
+  apt:
+    name: "{{ packages_offline }}"
+    state: present
+    update_cache: true
+  when: execution_mode == "offline-deployment"
+
 # vim: set ts=2 sw=2 expandtab:

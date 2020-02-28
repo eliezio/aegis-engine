@@ -29,14 +29,14 @@ heat_env_file: "{{ lookup('env', 'HEAT_ENV_FILE') }}"
 distro: "{{ lookup('env', 'DISTRO') | default('ubuntu1804', true) }}"
 provisioner_type: "{{ lookup('env', 'PROVISIONER_TYPE') }}"
 installer_type: "{{ lookup('env', 'INSTALLER_TYPE') }}"
-deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeture', true) }}"
+deploy_scenario: "{{ lookup('env', 'DEPLOY_SCENARIO') | default('k8-calico-nofeature', true) }}"
 stack_name: "{{ lookup('env', 'STACK_NAME') | default('nordix-' + deploy_scenario + '-custom', true) }}"
 apps_path: "{{ lookup('env', 'APPS_PATH') }}"
-offline_deployment: "{{ lookup('env', 'OFFLINE_DEPLOYMENT') }}"
 
 # NOTE (fdegir): additional vars for standalone packaging and offline deployment
+execution_mode: "{{ lookup('env', 'EXECUTION_MODE') }}"
 offline_pkg_folder: "{{ lookup('env', 'OFFLINE_PKG_FOLDER') | default('/tmp/offline-package', true) }}"
-offline_pkg_file: "{{ lookup('env', 'OFFLINE_PKG_FILE') | default('/tmp/offline-package.tgz', true) }}"
+offline_pkg_file: "{{ lookup('env', 'OFFLINE_PKG_FILE') }}"
 server_fqdn: "engine.local"
 
 # vim: set ts=2 sw=2 expandtab:

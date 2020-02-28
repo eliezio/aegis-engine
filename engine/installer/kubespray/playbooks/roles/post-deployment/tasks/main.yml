@@ -17,13 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# TODO: implement this in a more Ansible-like manner
-- name: Override helm and kubectl locations to local file
-  set_fact:
-    kubectl_download_url: "file://{{ engine_cache }}/offline/kubespray_cache/kubectl-{{ kubectl_version }}-amd64"
-    helm_client_download_url: "{{ engine_cache }}/offline/helm/helm-{{ helm_version }}-linux-amd64.tar.gz"
-  when: offline_deployment|bool
-
 # NOTE: Install OpenShift and configure kubectl & helm on localhost
 # we operate against Kubernetes cluster from localhost
 - include_tasks: configure-{{ jumphost }}.yml

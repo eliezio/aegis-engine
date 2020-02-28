@@ -1,3 +1,4 @@
+---
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -16,6 +17,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-kube_feature_gates: {{ kube_feature_gates }}
+helm_skip_refresh: true
+# NOTE (fdegir): this makes it possible for us to avoid issues that
+# could happen if docker is attempted to be installed
+deploy_container_engine: false
+gcr_image_repo: "{{ server_fqdn }}"
+docker_image_repo: "{{ server_fqdn }}"
+quay_image_repo: "{{ server_fqdn }}"
+kubelet_download_url: "http://{{ server_fqdn }}/binaries/kubelet"
+kubectl_download_url: "http://{{ server_fqdn }}/binaries/kubectl"
+kubeadm_download_url: "http://{{ server_fqdn }}/binaries/kubeadm"
+cni_download_url: "http://{{ server_fqdn }}/binaries/cni"
+calicoctl_download_url: "http://{{ server_fqdn }}/binaries/calicoctl"
 
 # vim: set ts=2 sw=2 expandtab:

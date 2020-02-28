@@ -72,7 +72,7 @@
   file:
     path: "{{ engine_cache }}/repos/swconfig"
     state: absent
-  when: not offline_deployment|bool
+  when: execution_mode == 'online-deployment'
 
 - name: Fail if the scenario '{{ deploy_scenario }}' is not supported by the provisioner '{{ provisioner_type }}'
   fail:
@@ -90,7 +90,7 @@
     http_proxy: "{{ lookup('env','http_proxy') }}"
     https_proxy: "{{ lookup('env','https_proxy') }}"
     no_proxy: "{{ lookup('env','no_proxy') }}"
-  when: not offline_deployment|bool
+  when: execution_mode == 'online-deployment'
 
 - name: Check if the role for the scenario exists
   stat:

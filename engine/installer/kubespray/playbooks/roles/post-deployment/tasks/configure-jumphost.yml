@@ -17,6 +17,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- name: Load execution mode variables
+  include_vars: "{{ execution_mode }}.yaml"
+
 - name: Install pip
   action: |
     {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=true

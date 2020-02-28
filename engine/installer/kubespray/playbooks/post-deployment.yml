@@ -17,34 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# TODO: move these tasks to a more suitable place
-# TODO: load only the necessary images in each node according to their node
-- hosts: k8s-cluster
-  gather_facts: false
-  tasks:
-    - name: Execute preparation for post-deployment in offline mode
-      block:
-        # Load docker images in cache for offline installation
-        # TODO: we should set-up a Docker local repository in kickstart
-        - name: Find cached docker images
-          find:
-            paths: "/tmp/kubespray_cache/images"
-            patterns: '^.*\.tar'
-            use_regex: true
-            file_type: file
-          register: docker_images
-
-        # TODO: use the docker_image Ansible module
-        - name: Load missing docker images into node's memory
-          shell: |
-            set -o pipefail
-            cat  "{{ item.path }}" | docker load
-          changed_when: false
-          args:
-            executable: /bin/bash
-          with_items: "{{ docker_images.files }}"
-      when: offline_deployment|bool
-
 # check if any post-deployment task defined for the scenario
 - hosts: localhost
   connection: local

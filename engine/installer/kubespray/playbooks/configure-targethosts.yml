@@ -22,7 +22,7 @@
   become: false
 
   tasks:
-    - name: Do initial configuration jumphost
+    - name: Do initial configuration on jumphost
       block:
         - name: Install python and python-dev
           script: files/install-python.sh
@@ -44,6 +44,27 @@
   become: false
 
   tasks:
+    # TODO (fdegir): the IP extracted below and put in to /etc/hosts is the IP of
+    # libvirt bridge br_public which means that this only works for virtual deployments
+    # we need to make sure we update this to make things work for baremetal as well
+    # TODO (fdegir): ip address is hardcoded here - get rid of it!!!
+    - name: Update /etc/hosts with server FQDN
+      raw: echo "10.2.0.1 {{ server_fqdn }}" >> /etc/hosts
+      args:
+        executable: /bin/bash
+      changed_when: true
+      when: execution_mode == "offline-deployment"
+      become: true
+
+    # NOTE (fdegir): This is done here in order to ensure we can do the same for heat based deployments
+    - name: Update /etc/apt/sources.list to use local apt repository
+      raw: echo "deb [trusted=yes] http://{{ server_fqdn }}/pkg amd64/" > /etc/apt/sources.list
+      args:
+        executable: /bin/bash
+      changed_when: true
+      when: execution_mode == "offline-deployment"
+      become: true
+
     - name: Do initial configuration on target hosts
       block:
         - name: Install python and python-dev

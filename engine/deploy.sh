@@ -28,8 +28,10 @@ ENGINE_PATH=$(git rev-parse --show-toplevel)
 export ENGINE_PATH
 
 #-------------------------------------------------------------------------------
-# Source engine library
+# Source deploy and engine libraries
 #-------------------------------------------------------------------------------
+# shellcheck source=engine/library/deploy-lib.sh
+source "${ENGINE_PATH}/engine/library/deploy-lib.sh"
 # shellcheck source=engine/library/engine-lib.sh
 source "${ENGINE_PATH}/engine/library/engine-lib.sh"
 
@@ -99,7 +101,7 @@ fi
 #-------------------------------------------------------------------------------
 # Provision local apt repo, docker registry, and ntp server services
 #-------------------------------------------------------------------------------
-if [[ "${OFFLINE_DEPLOYMENT}" == "true" ]]; then
+if [[ "${EXECUTION_MODE}" == "offline-deployment" ]]; then
   echo "Info  : Provision local services"
   echo "-------------------------------------------------------------------------"
   cd "${ENGINE_PATH}"
@@ -120,6 +122,10 @@ if [[ "${DO_INSTALL}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   # Install all the curated apps
   #-----------------------------------------------------------------------------
+  echo "-------------------------------------------------------------------------"
+  echo "Info  : Install curated apps on stack"
+  echo "-------------------------------------------------------------------------"
+
   cd "${APPS_PATH}"
   ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
       -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \

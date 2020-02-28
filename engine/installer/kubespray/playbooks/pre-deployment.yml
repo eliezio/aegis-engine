@@ -29,6 +29,17 @@
         path: "{{ engine_cache }}/repos/swconfig/{{ scenario[deploy_scenario].installers[installer_type].role }}/tasks/pre-deployment.yml"
       register: pre_deployment_yml
 
+# copy binaries to webserver and load/tag/push images to local registry
+- hosts: jumphost
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Prepare kubespray artifacts
+      include_role:
+        name: prepare-kubespray-artifacts
+      when: execution_mode == "offline-deployment"
+
 # run the scenario pre-deployment tasks before running the deployment itself
 - hosts: all
   gather_facts: true

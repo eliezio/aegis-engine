@@ -650,3 +650,62 @@ is the file and what should be modified.
       k8-flannel-nofeature:
       scm: git
       src: https://gerrit.nordix.org/infra/swconfig.git
+
+Offline Packaging and Deployment
+================================
+
+Nordix Cloud Infra Automation Framework supports packaging of open source technologies
+for installing them in a closed and secure environment. In order to enable this, open
+source dependencies are required to be packaged so anything that is necessary to provision
+nodes, install stack, and test it can be retrieved without the need to have internet
+connection. This is also important for security purposes as the packaged dependencies
+can be scanned to identify potential security and vulnerability issues.
+
+Following sections describe the details of the implementation followed by user guide.
+
+Please note that the currently implementation can be considered as beta as it lacks
+support for key items and not optimized timewise. Further work will be done to introduce
+support for additional technologies and improve the user experience.
+
+Supported Technologies
+----------------------
+
+- **Provisioning**: Provisioning of nodes to deploy stack on them is supported using
+*Bifrost/Ironic* only for virtual machine based deployments. This means that baremetal
+deployments are not yet supported but it will be introduced as soon as the basic
+packaging and offline deployment functionality is accepted. Deployments done on
+public cloud (OpenStack) using *Heat* is not supported either and will be done right
+after baremetal support is introduced.
+- **Deployment**: Offline deployment of Kubernetes on provisioned nodes is supported using
+installer *Kubespray*. Supported network plugins are
+  - calico
+  - canal
+  - flannel
+  - multus
+  - weave
+In addition to various network plugins, CEPH and Prometheus are also supported. Support
+for Istio and Spinnaker will be introduced in future. ONAP installation will be introduced
+as separate packaging and deployment steps. OpenStack installation in offline environment
+is not currently being supported.
+- **Testing**: Packaging and use of test frameworks is not currently being supported.
+This will be implemented in the near future.
+
+in offline envirronment is currently supported
+
+Packaging and Offline Deployment Process
+----------------------------------------
+
+
+User Guide
+----------
+
+Development of the functionality to provide packaging for Kubernetes Offline
+Deployments is currently in progress but basic packaging functionality is
+ready for testing.
+
+The script **package.sh** could be used for testing packaging functionality.
+
+::
+
+  cd <path_to_engine>/engine
+  ./package.sh

@@ -28,8 +28,10 @@ ENGINE_PATH=$(git rev-parse --show-toplevel)
 export ENGINE_PATH
 
 #-------------------------------------------------------------------------------
-# Source engine library
+# Source package and engine libraries
 #-------------------------------------------------------------------------------
+# shellcheck source=engine/library/package-lib.sh
+source "${ENGINE_PATH}/engine/library/package-lib.sh"
 # shellcheck source=engine/library/engine-lib.sh
 source "${ENGINE_PATH}/engine/library/engine-lib.sh"
 

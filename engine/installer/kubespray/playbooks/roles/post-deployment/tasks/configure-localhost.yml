@@ -17,6 +17,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- name: Load execution mode variables
+  include_vars: "{{ execution_mode }}.yaml"
+
 - name: Ensure /home/{{ ansible_env.SUDO_USER }}/.kube folder exists and empty
   file:
     path: "/home/{{ ansible_env.SUDO_USER }}/.kube"
@@ -45,7 +48,7 @@
 - name: Download helm client
   unarchive:
     src: "{{ helm_client_download_url }}"
-    remote_src: "{{ not offline_deployment|bool }}"
+    remote_src: true
     dest: /tmp
 
 - name: Place helm and tiller binaries to /usr/local/bin
