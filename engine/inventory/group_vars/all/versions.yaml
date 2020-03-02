@@ -59,6 +59,7 @@ openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('train', tru
 # helm version
 # -------------------------------------------------------------------------------
 helm_version: "{{ lookup('env', 'HELM_VERSION') | default('v2.16.1', true) }}"
+charts_version: "{{ lookup('env', 'CHARTS_VERSION') | default('0b64349aeb537d0fd038df0e1d40ec5cf1206609', true) }}"
 
 # -------------------------------------------------------------------------------
 # app versions
