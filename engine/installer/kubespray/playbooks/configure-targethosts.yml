@@ -25,7 +25,7 @@
     - name: Do initial configuration on jumphost
       block:
         - name: Install python and python-dev
-          script: files/install-python.sh
+          script: "{{ playbook_dir }}/roles/configure-targethosts/files/install-python.sh"
 
         - name: Copy SSH keys to jumphost for target node access
           copy:
@@ -39,37 +39,20 @@
             - "/home/{{ local_user }}/.ssh/id_rsa.pub"
       when: provisioner_type == 'heat'
 
+# TODO (fdegir): the difference between the 2 following plays below is fact gathering.
+# We can't gather facts if the nodes don't have python on them but we can still
+# think of combining them in future
+# NOTE (fdegir): in order for this to work for bifrost, jumphost IP information needs
+# to be added to PDFs
 - hosts: baremetal
   gather_facts: false
   become: false
 
   tasks:
-    # TODO (fdegir): the IP extracted below and put in to /etc/hosts is the IP of
-    # libvirt bridge br_public which means that this only works for virtual deployments
-    # we need to make sure we update this to make things work for baremetal as well
-    # TODO (fdegir): ip address is hardcoded here - get rid of it!!!
-    - name: Update /etc/hosts with server FQDN
-      raw: echo "10.2.0.1 {{ server_fqdn }}" >> /etc/hosts
-      args:
-        executable: /bin/bash
-      changed_when: true
-      when: execution_mode == "offline-deployment"
-      become: true
-
-    # NOTE (fdegir): This is done here in order to ensure we can do the same for heat based deployments
-    - name: Update /etc/apt/sources.list to use local apt repository
-      raw: echo "deb [trusted=yes] http://{{ server_fqdn }}/pkg amd64/" > /etc/apt/sources.list
-      args:
-        executable: /bin/bash
-      changed_when: true
-      when: execution_mode == "offline-deployment"
-      become: true
-
-    - name: Do initial configuration on target hosts
-      block:
-        - name: Install python and python-dev
-          script: files/install-python.sh
-      when: provisioner_type == 'heat'
+    - name: Do initial configuration of {{ provisioner_type }} hosts
+      include_role:
+        name: configure-targethosts
+        tasks_from: "{{ provisioner_type }}-hosts-initial-config.yaml"
 
 - hosts: baremetal
   gather_facts: true

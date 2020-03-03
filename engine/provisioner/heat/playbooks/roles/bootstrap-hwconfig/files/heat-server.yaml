@@ -159,7 +159,7 @@ resources:
       config_drive: true
 
 outputs:
-  instance_ip:
+  instance_private_ip:
     value: {if: ["create_volume", {get_attr: [instance_with_volume, first_address]}, {get_attr: [instance_without_volume, first_address]}]}
 
 # vim: set ts=2 sw=2 expandtab:

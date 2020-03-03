@@ -1,0 +1,60 @@
+---
+# ============LICENSE_START=======================================================
+#  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
+# ================================================================================
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+# ============LICENSE_END=========================================================
+
+# we need the private/internal IP of the jumphost so the nodes could reach to it
+- name: Get internal IP of jumphost from openstack stack output
+  command: "openstack stack output show {{ stack_name }} jumphost_private_ip -c output_value -f json"
+  register: stack_output
+  changed_when: false
+  until: "'output_value' in stack_output.stdout"
+  retries: 10
+  delay: 3
+  environment:
+    PATH: "{{ engine_venv }}/bin"
+  delegate_to: localhost
+  run_once: true
+
+- name: Set IP of jumphost
+  set_fact:
+    jumphost_ips: "{{ stack_output.stdout }}"
+
+- name: Log jumphost IP to console
+  debug:
+    msg: "Jumphost internal IP is {{ jumphost_ips.output_value[0] }}"
+
+- name: Update /etc/hosts with server FQDN
+  raw: echo "{{ jumphost_ips.output_value[0] }} {{ server_fqdn }}" >> /etc/hosts
+  args:
+    executable: /bin/bash
+  changed_when: true
+  become: true
+
+# NOTE (fdegir): apt sources.list is only updated for offline deployments
+- name: Update /etc/apt/sources.list to use local apt repository
+  raw: echo "deb [trusted=yes] http://{{ server_fqdn }}/pkg amd64/" > /etc/apt/sources.list
+  args:
+    executable: /bin/bash
+  changed_when: true
+  become: true
+  when: execution_mode == "offline-deployment"
+
+- name: Install python and python-dev
+  script: "install-python.sh"
+
+# vim: set ts=2 sw=2 expandtab:

@@ -252,11 +252,13 @@ resources:
 
 
 outputs:
-  jumphost_ip:
-    value: {get_attr: [jumphost, instance_ip]}
-  master_ip:
-    value: {get_attr: [master_nodes, instance_ip]}
-  worker_ip:
-    value: {get_attr: [worker_nodes, instance_ip]}
+  jumphost_public_ip:
+    value: {get_attr: [jumphost, instance_public_ip]}
+  jumphost_private_ip:
+    value: {get_attr: [jumphost, instance_private_ip]}
+  master_private_ip:
+    value: {get_attr: [master_nodes, instance_private_ip]}
+  worker_private_ip:
+    value: {get_attr: [worker_nodes, instance_private_ip]}
 
 # vim: set ts=2 sw=2 expandtab:

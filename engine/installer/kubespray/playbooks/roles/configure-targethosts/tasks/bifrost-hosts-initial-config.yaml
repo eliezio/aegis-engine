@@ -22,6 +22,10 @@
     jumphost_ip: "{{ jumphost.interfaces[idf.net_config.public.interface].address }}"
   delegate_to: localhost
 
+- name: Log jumphost IP to console
+  debug:
+    msg: "Jumphost IP is {{ jumphost_ip }}"
+
 - name: Update /etc/hosts with server FQDN
   blockinfile:
     path: /etc/hosts
@@ -29,16 +33,13 @@
       {{ jumphost_ip }} {{ server_fqdn }}
     marker: "# {mark} Ansible managed {{ server_fqdn }}"
 
-- name: Install and configure nginx
-  include_tasks: "nginx.yaml"
-
-- name: Create local mirror for operating system packages
-  include_tasks: "package-mirror-{{ ansible_os_family }}.yaml"
-
-- name: Create local docker registry for container images
-  include_tasks: "docker-registry.yaml"
-
-- name: Create local ntp server for time sync
-  include_tasks: "ntp-server.yaml"
+# NOTE (fdegir): apt sources.list is only updated for offline deployments
+- name: Update /etc/apt/sources.list to use local apt repository
+  raw: echo "deb [trusted=yes] http://{{ server_fqdn }}/pkg amd64/" > /etc/apt/sources.list
+  args:
+    executable: /bin/bash
+  changed_when: true
+  become: true
+  when: execution_mode == "offline-deployment"
 
 # vim: set ts=2 sw=2 expandtab:

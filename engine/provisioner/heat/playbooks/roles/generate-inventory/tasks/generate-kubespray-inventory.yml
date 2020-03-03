@@ -18,30 +18,30 @@
 # ============LICENSE_END=========================================================
 
 - name: Get IP of jumphost
-  command: "openstack stack output show {{ stack_name }} jumphost_ip -c output_value -f json"
-  register: stack_output_jumphost_ip
+  command: "openstack stack output show {{ stack_name }} jumphost_public_ip -c output_value -f json"
+  register: stack_output_jumphost_public_ip
   changed_when: false
-  until: "'output_value' in stack_output_jumphost_ip.stdout"
+  until: "'output_value' in stack_output_jumphost_public_ip.stdout"
   retries: 10
   delay: 3
   environment:
     PATH: "{{ engine_venv }}/bin"
 
 - name: Get IPs of master nodes
-  command: "openstack stack output show {{ stack_name }} master_ip -c output_value -f json"
-  register: stack_output_master_ip
+  command: "openstack stack output show {{ stack_name }} master_private_ip -c output_value -f json"
+  register: stack_output_master_private_ip
   changed_when: false
-  until: "'output_value' in stack_output_master_ip.stdout"
+  until: "'output_value' in stack_output_master_private_ip.stdout"
   retries: 10
   delay: 3
   environment:
     PATH: "{{ engine_venv }}/bin"
 
 - name: Get IPs of worker nodes
-  command: "openstack stack output show {{ stack_name }} worker_ip -c output_value -f json"
-  register: stack_output_worker_ip
+  command: "openstack stack output show {{ stack_name }} worker_private_ip -c output_value -f json"
+  register: stack_output_worker_private_ip
   changed_when: false
-  until: "'output_value' in stack_output_worker_ip.stdout"
+  until: "'output_value' in stack_output_worker_private_ip.stdout"
   retries: 10
   delay: 3
   environment:
@@ -49,9 +49,9 @@
 
 - name: Register IPs of master and worker nodes
   set_fact:
-    jumphost_ip: "{{ stack_output_jumphost_ip.stdout }}"
-    master_ip: "{{ stack_output_master_ip.stdout }}"
-    worker_ip: "{{ stack_output_worker_ip.stdout }}"
+    jumphost_public_ip: "{{ stack_output_jumphost_public_ip.stdout }}"
+    master_private_ip: "{{ stack_output_master_private_ip.stdout }}"
+    worker_private_ip: "{{ stack_output_worker_private_ip.stdout }}"
 
 # TODO: update jobs and scenarios to ensure inventory.ini is not used from /tmp
 - name: Ensure outdated inventory.ini does not exist

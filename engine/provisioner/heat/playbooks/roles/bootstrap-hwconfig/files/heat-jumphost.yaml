@@ -147,7 +147,9 @@ resources:
 
 
 outputs:
-  instance_ip:
+  instance_public_ip:
     value: {get_attr: [floating_ip, floating_ip_address]}
+  instance_private_ip:
+    value: {get_attr: [instance_with_volume, first_address]}
 
 # vim: set ts=2 sw=2 expandtab:
