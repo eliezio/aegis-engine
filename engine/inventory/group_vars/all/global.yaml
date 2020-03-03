@@ -18,6 +18,7 @@
 # ============LICENSE_END=========================================================
 local_user: "{{ lookup('env', 'USER') }}"
 engine_path: "{{ lookup('env', 'ENGINE_PATH') }}"
+engine_workspace: "{{ lookup('env', 'ENGINE_WORKSPACE') }}"
 engine_cache: "{{ lookup('env', 'ENGINE_CACHE') }}"
 engine_venv: "{{ lookup('env', 'ENGINE_VENV') }}"
 config_path: "{{ engine_cache }}/config"
@@ -35,8 +36,9 @@ apps_path: "{{ lookup('env', 'APPS_PATH') }}"
 
 # NOTE (fdegir): additional vars for standalone packaging and offline deployment
 execution_mode: "{{ lookup('env', 'EXECUTION_MODE') }}"
-offline_pkg_folder: "{{ lookup('env', 'OFFLINE_PKG_FOLDER') | default('/tmp/offline-package', true) }}"
+offline_pkg_folder: "{{ lookup('env', 'OFFLINE_PKG_FOLDER') }}"
 offline_pkg_file: "{{ lookup('env', 'OFFLINE_PKG_FILE') }}"
+offline_installer_file: "{{ lookup('env', 'OFFLINE_INSTALLER_FILE') }}"
 server_fqdn: "engine.local"
 
 # vim: set ts=2 sw=2 expandtab:

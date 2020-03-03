@@ -70,7 +70,9 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
     engine/playbooks/package-dependencies.yaml
 echo "-------------------------------------------------------------------------"
-
+echo
+echo "Info  : Packaging is done!"
+echo "        You can take $OFFLINE_INSTALLER_FILE and use it for offline deployment!"
 #-------------------------------------------------------------------------------
 # Log total time it took to finish to console
 #-------------------------------------------------------------------------------

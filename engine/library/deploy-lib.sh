@@ -35,7 +35,7 @@ function usage() {
   # shellcheck disable=SC2086
   cat <<EOF
 
-Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l "<provision>,<installer>"] [-f <path to offline deployment file>] [-v] [-c] [-h]
+Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l "<provision>,<installer>"] [-x] [-v] [-c] [-h]
 
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -r: Provisioner type to use for provisioning nodes. (Default bifrost)
@@ -48,7 +48,7 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -o: Operating System to provision nodes with. (Default ubuntu1804)
     -l: List of stages to run in a comma separated fashion. (Default execute all)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
-    -f: Path to file for offline installation. (No default)
+    -x: Enable offline installation. Requires offline dependencies to be present in the machine. (Default false)
     -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
 
@@ -89,7 +89,7 @@ function parse_cmdline_opts() {
 
   # get values passed as command line arguments, overriding the defaults or
   # the ones set by using env variables
-  while getopts ":hd:r:s:b:o:p:i:e:u:l:cvf:" o; do
+  while getopts ":hd:r:s:b:o:p:i:e:u:l:cvfx" o; do
     case "${o}" in
       h) usage ;;
       d) INSTALLER_TYPE="${OPTARG}" ;;
@@ -104,7 +104,7 @@ function parse_cmdline_opts() {
       c) CLEANUP="true" ;;
       v) VERBOSITY="true" ;;
       l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
-      f) OFFLINE_PKG_FILE="${OPTARG}" ;;
+      x) EXECUTION_MODE="offline-deployment" ;;
       *) echo "ERROR : Invalid option '-${OPTARG}'"; usage ;;
     esac
   done
@@ -141,12 +141,7 @@ function parse_cmdline_opts() {
   export CLEANUP="${CLEANUP}"
   export EXECUTION_MODE="${EXECUTION_MODE}"
   export VERBOSITY="${VERBOSITY}"
-
-  # set execution mode
-  if [[ -n "${OFFLINE_PKG_FILE+x}" ]]; then
-    EXECUTION_MODE="offline-deployment"
-    export OFFLINE_PKG_FILE="${OFFLINE_PKG_FILE}"
-  fi
+  export OFFLINE_INSTALLER_FILE="/tmp/k8s-installer-ubuntu1804.bsx"
 
   log_summary
 
@@ -206,7 +201,6 @@ function cleanup() {
 #-------------------------------------------------------------------------------
 function log_summary() {
 
-  echo
   echo "#---------------------------------------------------#"
   echo "#                   Environment                     #"
   echo "#---------------------------------------------------#"
@@ -214,31 +208,29 @@ function log_summary() {
   echo "Hostname        : $HOSTNAME"
   echo "Host OS         : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
   echo "IP              : $(hostname -I | cut -d' ' -f1)"
-  echo
   echo "#---------------------------------------------------#"
   echo "#                Deployment Started                 #"
   echo "#---------------------------------------------------#"
-  echo "Date & Time     : $(date -u '+%F %T UTC')"
-  echo "Execution Mode  : $EXECUTION_MODE"
+  echo "Date & Time      : $(date -u '+%F %T UTC')"
+  echo "Execution Mode   : $EXECUTION_MODE"
   if [[ "$EXECUTION_MODE" == "offline-deployment" ]]; then
-    echo "Offline Pkg File: $OFFLINE_PKG_FILE"
+    echo "Offline Installer: $OFFLINE_INSTALLER_FILE"
   fi
-  echo "Scenario        : $DEPLOY_SCENARIO"
-  echo "Target OS       : $DISTRO"
-  echo "Installer       : $INSTALLER_TYPE"
-  echo "Provisioner     : $PROVISIONER_TYPE"
+  echo "Scenario         : $DEPLOY_SCENARIO"
+  echo "Target OS        : $DISTRO"
+  echo "Installer        : $INSTALLER_TYPE"
+  echo "Provisioner      : $PROVISIONER_TYPE"
   if [[ "$PROVISIONER_TYPE" == "heat" ]]; then
-    echo "Openrc File     : $OPENRC"
-    echo "Heat Env File   : $HEAT_ENV_FILE"
+    echo "Openrc File      : $OPENRC"
+    echo "Heat Env File    : $HEAT_ENV_FILE"
   else
-    echo "PDF             : $PDF"
-    echo "IDF             : $IDF"
+    echo "PDF              : $PDF"
+    echo "IDF              : $IDF"
   fi
-  echo "SDF             : $SDF"
-  echo "Cleanup         : $CLEANUP"
-  echo "Verbosity       : $VERBOSITY"
+  echo "SDF              : $SDF"
+  echo "Cleanup          : $CLEANUP"
+  echo "Verbosity        : $VERBOSITY"
   echo "#---------------------------------------------------#"
-  echo
 
 }
 
@@ -251,8 +243,8 @@ function log_elapsed_time() {
   echo "#---------------------------------------------------#"
   echo "#               Deployment Completed                #"
   echo "#---------------------------------------------------#"
-  echo "Date & Time   : $(date -u '+%F %T UTC')"
-  echo "Elapsed       : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
+  echo "Date & Time    : $(date -u '+%F %T UTC')"
+  echo "Elapsed        : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
   echo "#---------------------------------------------------#"
 
 }
@@ -268,26 +260,22 @@ function prepare_offline() {
   fi
 
   # Offline mode requires dependencies to be present on the machine
-  if [[ ! -f "$OFFLINE_PKG_FILE" ]]; then
-    echo "ERROR : Offline dependencies file, $OFFLINE_PKG_FILE, does not exist!"
+  if [[ ! -f "$ENGINE_WORKSPACE/offline/install.sh" ]]; then
+    echo "ERROR : Offline dependencies do not exist on the machine!"
     echo "        You may want to run package.sh to package dependencies"
     exit 1
   fi
 
-  # Create the offline folder and repository folder (not available yet)
-  mkdir -p "$ENGINE_CACHE/offline"
+  echo "Info  : Placing packages and repositories in place for offline deployment"
+  # Create the folder for repositories
   mkdir -p "$ENGINE_CACHE/repos"
 
-  # Extract offline components
-  echo "Info  : Preparing for offline deployment"
-  tar -zxf "$OFFLINE_PKG_FILE" -C "$ENGINE_CACHE/offline"
-
   # Copy repos to engine default folder
-  cp -r "$ENGINE_CACHE/offline/git/." "$ENGINE_CACHE/repos"
+  cp -rf "$ENGINE_WORKSPACE/offline/git/." "$ENGINE_CACHE/repos"
 
   # move apt cache to the directory which will become the root directory of web server
   rm -rf "$ENGINE_CACHE/www" && mkdir -p "$ENGINE_CACHE/www"
-  mv -fi "$ENGINE_CACHE/offline/pkg" "$ENGINE_CACHE/www"
+  cp -rf "$ENGINE_WORKSPACE/offline/pkg" "$ENGINE_CACHE/www"
 
   # NOTE (fdegir): we don't have nginx yet so we use local directory
   # as the apt repository to continue with basic preperation

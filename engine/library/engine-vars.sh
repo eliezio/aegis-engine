@@ -52,8 +52,17 @@ export ENGINE_VERSION="${ENGINE_VERSION:-master}"
 #   - packaging
 export EXECUTION_MODE="${EXECUTION_MODE:-online-deployment}"
 
+#-------------------------------------------------------------------------------
+# Packaging and offline deployment parameters
+#-------------------------------------------------------------------------------
 # the Engine offline package folder
-export OFFLINE_PKG_FOLDER="${OFFLINE_PKG_FOLDER:-/tmp/offline-package}"
+export OFFLINE_PKG_FOLDER="/tmp/offline-package"
+
+# the Engine offline package folder
+export OFFLINE_PKG_FILE="/tmp/offline-package.tgz"
+
+# the Engine offline self extracting installer file
+export OFFLINE_INSTALLER_FILE="/tmp/k8s-installer-ubuntu1804.bsx"
 
 #-------------------------------------------------------------------------------
 # Set the inventory for bifrost

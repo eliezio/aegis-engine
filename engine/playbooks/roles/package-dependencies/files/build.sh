@@ -1,4 +1,4 @@
----
+#!/bin/bash
 # ============LICENSE_START=======================================================
 #  Copyright (C) 2019 The Nordix Foundation. All rights reserved.
 # ================================================================================
@@ -17,8 +17,21 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-cert_folder: "{{ engine_cache }}/certs"
-docker_registry_image_path: "{{ engine_workspace }}/offline/containers/docker.io_registry_{{ docker_registry_version }}.tar"
-docker_registry_container_name: "docker-registry"
+set -o errexit
+set -o nounset
+set -o pipefail
 
-# vim: set ts=2 sw=2 expandtab:
+export OFFLINE_PKG_FOLDER="${OFFLINE_PKG_FOLDER:-/tmp/offline-package}"
+export OFFLINE_PKG_FILE="${OFFLINE_PKG_FILE:-/tmp/offline-package.tgz}"
+
+# TODO (fdegir): this is put here to allow testing of the functionality
+# in an offline environment and will be removed once the changes are reviewed!
+cd "$OFFLINE_PKG_FOLDER/git/engine"
+git fetch "https://gerrit.nordix.org/infra/engine" refs/changes/67/3867/16 && git checkout FETCH_HEAD
+
+# compress & archive offline dependencies
+tar -C "$OFFLINE_PKG_FOLDER" -czf "$OFFLINE_PKG_FILE" .
+
+# create self extracting installer
+cat /tmp/decompress.sh "$OFFLINE_PKG_FILE" > "$OFFLINE_INSTALLER_FILE"
+chmod +x "$OFFLINE_INSTALLER_FILE"

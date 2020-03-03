@@ -49,17 +49,29 @@
 - name: Fetch container images
   include_tasks: containers.yaml
 
-# ensure we don't have leftover tarball
-- name: Delete outdated archive
+# ensure we don't have leftovers
+- name: Delete outdated files
   file:
     path: "{{ offline_pkg_file }}"
     state: absent
+  with_items:
+    - "{{ offline_pkg_file }}"
+    - "{{ offline_pkg_folder }}/install.sh"
+    - "{{ offline_installer_file }}"
+    - "/tmp/decompress.sh"
+
+# ensure we don't have leftovers
+- name: Copy decompress and install scripts
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0755
+  with_items:
+    - {src: "install.sh", dest: "{{ offline_pkg_folder }}/install.sh"}
+    - {src: "decompress.sh", dest: "/tmp/decompress.sh"}
 
 # create tarball
-- name: Archive dependencies for offline deployment
-  archive:
-    path: "{{ offline_pkg_folder }}/*"
-    dest: "{{ offline_pkg_file }}"
-    mode: 0644
+- name: Create engine installer file
+  script: build.sh
 
 # vim: set ts=2 sw=2 expandtab:

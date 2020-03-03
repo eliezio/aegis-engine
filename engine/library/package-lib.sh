@@ -35,11 +35,8 @@ function usage() {
   # shellcheck disable=SC2086
   cat <<EOF
 
-Usage: $(basename ${0}) [-o <filename>] [-c] [-h] [-v]
+Usage: $(basename ${0}) [-h]
 
-    -f: Filename to save the archive upon the completion of the packaging. (Default /tmp/offline-package.tgz)
-    -c: Wipeout leftovers before execution. (Default false)
-    -v: Increase verbosity for troubleshooting. (Default false)
     -h: This message.
 
 EOF
@@ -61,28 +58,21 @@ EOF
 #-------------------------------------------------------------------------------
 function parse_cmdline_opts() {
 
-  # set variables to the values set in env - otherwise, set them to defaults
-  OFFLINE_PKG_FILE=${OFFLINE_PKG_FILE:-/tmp/offline-package.tgz}
-  CLEANUP=${CLEANUP:-false}
-  VERBOSITY=${VERBOSITY:-false}
-
+  # TODO (fdegir): This function is left here so we can introduce additional
+  # arguments when we introduce support for other stacks than Kubernetes only
   # get values passed as command line arguments, overriding the defaults or
   # the ones set by using env variables
-  while getopts ":hf:cvx" o; do
+  while getopts ":h" o; do
     case "${o}" in
       h) usage ;;
-      f) OFFLINE_PKG_FILE="${OPTARG}" ;;
-      c) CLEANUP="true" ;;
-      v) VERBOSITY="true" ;;
       *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
     esac
   done
 
   # Do all the exports
-  export OFFLINE_PKG_FILE="${OFFLINE_PKG_FILE}"
   export EXECUTION_MODE="packaging"
-  export CLEANUP="${CLEANUP}"
-  export VERBOSITY="${VERBOSITY}"
+  export OFFLINE_PKG_FILE="/tmp/offline-package.tgz"
+  export OFFLINE_INSTALLER_FILE="/tmp/k8s-installer-ubuntu1804.bsx"
 
   # NOTE (fdegir): we currently support packaging and offline deployments
   # for Kubernetes. At the same time, we strive to package all the Kubernetes
@@ -101,11 +91,6 @@ function parse_cmdline_opts() {
 # so this function is important to use but it is not executed by default.
 #-------------------------------------------------------------------------------
 function cleanup() {
-
-  # skip cleanup if not requested
-  if [[ "${CLEANUP}" != "true" ]]; then
-      return 0
-  fi
 
   echo "Info  : Remove leftovers of previous run"
 
@@ -129,21 +114,17 @@ function log_summary() {
   echo "#---------------------------------------------------#"
   echo "#                   Environment                     #"
   echo "#---------------------------------------------------#"
-  echo "User            : $USER"
-  echo "Hostname        : $HOSTNAME"
-  echo "Host OS         : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
-  echo "IP              : $(hostname -I | cut -d' ' -f1)"
-  echo
+  echo "User             : $USER"
+  echo "Hostname         : $HOSTNAME"
+  echo "Host OS          : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
+  echo "IP               : $(hostname -I | cut -d' ' -f1)"
   echo "#---------------------------------------------------#"
   echo "#                 Packaging Started                 #"
   echo "#---------------------------------------------------#"
-  echo "Date & Time     : $(date -u '+%F %T UTC')"
-  echo "Execution Mode  : packaging"
-  echo "Offline Pkg File: $OFFLINE_PKG_FILE"
-  echo "Cleanup         : $CLEANUP"
-  echo "Verbosity       : $VERBOSITY"
+  echo "Date & Time      : $(date -u '+%F %T UTC')"
+  echo "Execution Mode   : packaging"
+  echo "Offline Installer: $OFFLINE_INSTALLER_FILE"
   echo "#---------------------------------------------------#"
-  echo
 
 }
 
@@ -155,8 +136,8 @@ function log_elapsed_time() {
   echo "#---------------------------------------------------#"
   echo "#                Packaging Completed                #"
   echo "#---------------------------------------------------#"
-  echo "Date & Time     : $(date -u '+%F %T UTC')"
-  echo "Elapsed         : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
+  echo "Date & Time      : $(date -u '+%F %T UTC')"
+  echo "Elapsed          : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
   echo "#---------------------------------------------------#"
 }
 

@@ -651,61 +651,318 @@ is the file and what should be modified.
       scm: git
       src: https://gerrit.nordix.org/infra/swconfig.git
 
-Offline Packaging and Deployment
-================================
+Offline Packaging, Deployment and Testing
+=========================================
 
 Nordix Cloud Infra Automation Framework supports packaging of open source technologies
-for installing them in a closed and secure environment. In order to enable this, open
-source dependencies are required to be packaged so anything that is necessary to provision
-nodes, install stack, and test it can be retrieved without the need to have internet
-connection. This is also important for security purposes as the packaged dependencies
-can be scanned to identify potential security and vulnerability issues.
+for offline installation in closed environments where internet access is either not
+available or not desired due to security reasons.
+
+The framework enables this by packaging open source dependencies necessary to provision
+cloud, virtual, and baremetal resources and install stack on the provisioned resources. In
+addition to providing dependencies for provisioning and installation, test frameworks and
+test cases are also packaged so the deployment can be verified. The resulting package
+can then be put on to a USB stick or burnt to a DVD for installing in a closed environment
+where there is no internet connection.
 
 Following sections describe the details of the implementation followed by user guide.
 
-Please note that the currently implementation can be considered as beta as it lacks
-support for key items and not optimized timewise. Further work will be done to introduce
+Please note that the current implementation can be considered as *beta* as it lacks
+support for key items and it is not time optimized. Further work will be done to introduce
 support for additional technologies and improve the user experience.
 
 Supported Technologies
 ----------------------
 
-- **Provisioning**: Provisioning of nodes to deploy stack on them is supported using
-*Bifrost/Ironic* only for virtual machine based deployments. This means that baremetal
-deployments are not yet supported but it will be introduced as soon as the basic
-packaging and offline deployment functionality is accepted. Deployments done on
-public cloud (OpenStack) using *Heat* is not supported either and will be done right
-after baremetal support is introduced.
-- **Deployment**: Offline deployment of Kubernetes on provisioned nodes is supported using
-installer *Kubespray*. Supported network plugins are
-  - calico
-  - canal
-  - flannel
-  - multus
-  - weave
-In addition to various network plugins, CEPH and Prometheus are also supported. Support
-for Istio and Spinnaker will be introduced in future. ONAP installation will be introduced
-as separate packaging and deployment steps. OpenStack installation in offline environment
-is not currently being supported.
-- **Testing**: Packaging and use of test frameworks is not currently being supported.
-This will be implemented in the near future.
+Nordix Cloud Infra Automation Framework utilizes open source tools to provision
+nodes, install various technologies on provisioned nodes, and test deployments.
+In order to enable packaging, offline deployments, and testing  of the relevant
+technologies, the tools used to install those technologies require to be packaged
+and configured to work in closed environments.
 
-in offline envirronment is currently supported
+Following sections lists what technologies are currently supported and which tools
+are used in different phases.
 
-Packaging and Offline Deployment Process
-----------------------------------------
+Provisioning
+************
 
+Provisioning is the operation of making the nodes operational so the stack can be installed
+on them. This includes and not limited to powering the nodes on and off remotely using remote
+management protocols such as `IPMI <https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface>`_,
+providing Linux kernel to the nodes for initial boot, and supplying images so operating system
+can be installed on disk. This is followed by initial network configuration so target nodes
+are accessible via SSH and ready for further configuration and installation.
+
+The framework uses `Bifrost <https://docs.openstack.org/bifrost/latest/>`_ for provisioning
+virtual and baremetal nodes in a closed/offline environment. `Ubuntu 18.04 Bionic <http://releases.ubuntu.com/18.04/>`_
+is the supported operating system both on jumphost and target nodes and support for other
+other operating systems will be introduced on a need basis.
+
+Installation
+************
+
+Installation phase includes configuring the provisioned nodes for the stack installation,
+assigning roles to nodes based on the user needs, and installing stack on them. In some
+cases, the installation of basic applications is also part of the stack installation.
+
+The framework uses `Kubespray <https://kubespray.io/#/>`_ for installing `Kubernetes <https://kubernetes.io/>`_
+on provisioned nodes in an offline environment. Ubuntu is the supported operating system
+on target and support for other operating systems will be introduced on a need basis.
+
+Kubernetes can be installed using the following network configurations.
+
+* `Calico <https://www.projectcalico.org/>`_
+* `Canal <https://docs.projectcalico.org/getting-started/kubernetes/installation/flannel>`_
+* `Flannel <https://github.com/coreos/flannel>`_
+* `Multus <https://github.com/intel/multus-cni>`_
+* `Weave <https://www.weave.works/docs/net/latest/kubernetes/kube-addon/>`_
+
+In addition to having capability to install Kubernetes with various network plugins,
+installation of below applications in a closed environment is supported as well.
+
+* `Rook CEPH <https://rook.io/>`_
+* `Prometheus <https://prometheus.io/>`_
+
+Testing
+*******
+
+The work to package and test the target deployments is still in progress.
 
 User Guide
 ----------
 
-Development of the functionality to provide packaging for Kubernetes Offline
-Deployments is currently in progress but basic packaging functionality is
-ready for testing.
+In order to deploy Kubernetes using the framework in an offline environment, you need
+the package that is generated by the framework itself. Users can either package the
+dependencies themselves or fetch a promoted package that is produced and verified
+by Nordix CI/CD.
 
-The script **package.sh** could be used for testing packaging functionality.
+Packaging
+*********
 
-::
+In order to run the packaging, you need to have a machine with internet connectivity.
+The minimum requirements for the machine are
 
-  cd <path_to_engine>/engine
-  ./package.sh
+* CPU: 2 cores
+* RAM: 4GB
+* Storage: 300GB
+* OS: Ubuntu 18.04
+* Software: git
+* Passswordless sudo
+* Internet connection
+
+The packaging process is verified on Ubuntu 18.04 and Ubuntu 18.04.2 and it is expected
+to work on latest Ubuntu 18.04 as well so you can attempt running packaging on a machine
+with any Ubuntu 18.04 version you may already have.
+
+In addition to the need of having capable computer with supported operating system, the
+configuration of it needs to be adjusted as documented below.
+
+* You must have SSH keypair generated before running any commands.
+  If you have one already, you are good to go. If not, you can
+  generate keypair using the command below.
+
+  | ``ssh-keygen -t rsa``
+
+* Your user must be member of **sudo** group and have passwordless
+  sudo enabled. Click `here <https://unix.stackexchange.com/questions/468416/setting-up-passwordless-sudo-on-linux-distributions>`_
+  for how to do this.
+
+Please follow the steps below to get the package created for offline deployments.
+
+.. caution:: **Use regular user**
+
+  All the commands in this guide must be executed as **regular** user
+  and not as **root** user! The framework elevates privileges itself
+  as necessary.
+
+1. Clone the framework repository from Nordix Gerrit
+
+   | ``git clone https://gerrit.nordix.org/infra/engine.git``
+
+2. Navigate to engine directory in your clone
+
+   | ``cd engine/engine``
+
+3. Issue the command to initiate the packaging process
+
+   | ``./package.sh``
+
+After you issue **package.sh**  command, the packaging process will start, fetching the
+dependencies from the internet. The packaging process could take up to 40 minutes depending
+depending on the specs of the machine you are using and your connection speed & bandwidth.
+During the packaging process, the framework fetches the dependencies listed below.
+
+* Linux kernel and Operating System Images to boot and provision nodes.
+* Operating system packages (Debian only)
+* Python packages
+* Git repositories
+* Binaries/executables
+* Container images
+* Installation script
+
+Upon completion of the packaging process, the self extracting archive file **/tmp/k8s-installer-ubuntu1804.bsx**
+is created. This file is approximately 4GB.
+
+
+You can now use this file to an offline environment to provision nodes and install
+Kubernetes on them!
+
+Advanced usage instructions will be made available soon.
+
+Offline Deployment
+******************
+
+Offline installation is as simple as taking the generated self extracting archive file
+**/tmp/k8s-installer-ubuntu1804.bsx**, copying it to jumphost, and executing it. Once the file
+file is executed, the dependencies will be extracted **/opt/engine/offline** folder
+which is where the framework will consume them during the deployment process. It is
+important that you do not modify the contents of this folder manually.
+
+Once the decompression ends, you will be instructed with regards to the next step
+you need to take, which is initiating the actual deployment.
+
+One important point to highlight here is that if you are provisioning and deploying
+on baremetal nodes, you must ensure you have PDF and IDF files for the POD available
+on jumphost and pass their location to engine **deploy.sh** script using **-p** and
+**-i** arguments.
+
+Offline deployment functionality can best be demonstrated using virtual machines as
+the PDF and IDF files are delivered in the archive file. In order to try this out,
+please ensure you have a machine with minimum requirements below.
+
+* CPU: 12 cores
+* RAM: 16GB
+* Storage: 300GB
+* OS: Ubuntu 18.04
+* Software: git
+* Passswordless sudo
+
+In addition to the need of having capable computer, the configuration
+of it needs to be adjusted as well.
+
+* You must have SSH keypair generated before running any commands.
+  If you have one already, you are good to go. If not, you can
+  generate keypair using the command below.
+
+  | ``ssh-keygen -t rsa``
+
+* Your user must be member of **sudo** group and have passwordless
+  sudo enabled. Click `here <https://unix.stackexchange.com/questions/468416/setting-up-passwordless-sudo-on-linux-distributions>`_
+  for how to do this.
+* Your machine should have **nested virtualization** enabled. Otherwise,
+  the VMs that are going to be created by the framework will have
+  bad performance due to not using qemu with kvm extensions. Click
+  `this link <https://www.juniper.net/documentation/en_US/vsrx/topics/task/installation/security-vsrx-kvm-nested-virt-enable.html>`_
+  to see how you can configure and verify nested virtualization.
+  Please note that you may need to enable CPU nested virtualization
+  capabilities on your computer's BIOS if you encounter any issues.
+  Consult your computer's manual in this case.
+* Framework will create libvirt networks 10.1.0.0/24, 10.2.0.0/24,
+  10.3.0.0/24, and 10.4.0.0/24 for this deployment. You must ensure
+  that these networks are not in use on your machine. Otherwise,
+  the deployment will fail.
+
+The steps below assume that you copied the self extracting archive file to
+jumphost and it is located as **/home/ubuntu/k8s-installer-ubuntu1804.bsx**. If
+the file is located some place else, please adjust the file path.
+
+.. caution:: **Use regular user**
+
+  All the commands in this guide must be executed as **regular** user
+  and not as **root** user! The framework elevates privileges itself
+  as necessary.
+
+1. Execute the self extracting archive file
+
+   | ``/home/ubuntu/k8s-installer-ubuntu1804.bsx``
+
+2. Navigate to engine directory
+
+   | ``cd /opt/engine/offline/git/engine/engine``
+
+3. Issue the command to initiate the deployment process
+
+   | ``./deploy.sh -c -x -p file:///opt/engine/offline/git/hwconfig/pods/nordix-vpod1-pdf.yml -i file:///opt/engine/offline/git/hwconfig/pods/nordix-vpod1-idf.yml``
+
+Once the command is issued, the deployment process will start with preparation
+followed by bifrost installation, provisioning, and finally Kubernetes installation.
+The installation could take up to 2 hours.
+
+During the offline deployment process, several local services are provisioned
+on jumphost to serve artifacts for consumption by jumphost and target hosts.
+The local services and what they are served by them are listed below
+
+* Nginx
+    - Linux kernel and operating system images used for provisioning (only Ubuntu 18.04 currently)
+    - OS Package mirror to serve packages (only Debian currently)
+    - Mirror for Kubernetes binaries such as kubeadm, kubectl, kubelet
+* Pip mirror: Python packages
+* Git mirror: git repositories
+* Local Docker Registry: Kubernetes and other relevant container images
+* NTP Server: to provide time synchronization for the nodes within the POD
+
+After the succesful completion of the deployment, you should be able to issue
+**kubectl** commands on the machine you initiated the deployment on to operate
+against the cluster you just deployed.
+
+   | ``kubectl get nodes``
+
+Baremetal deployments are same as the virtual deployments. As noted before, you must
+have PDF and IDF files available on the machine.
+
+In addition to having PDF and IDF files, jumphost should have the minimum  requirements
+below.
+
+* CPU: 4 cores
+* RAM: 8GB
+* Storage: 200GB
+* OS: Ubuntu 18.04
+* Software: git
+* Passswordless sudo
+
+Similar to virtual deployments, you must have SSH keys and your user must
+be member of sudo group.
+
+* You must have SSH keypair generated before running any commands.
+  If you have one already, you are good to go. If not, you can
+  generate keypair using the command below.
+
+  | ``ssh-keygen -t rsa``
+
+* Your user must be member of **sudo** group and have passwordless
+  sudo enabled. Click `here <https://unix.stackexchange.com/questions/468416/setting-up-passwordless-sudo-on-linux-distributions>`_
+  for how to do this.
+
+.. caution:: **Use regular user**
+
+  All the commands in this guide must be executed as **regular** user
+  and not as **root** user! The framework elevates privileges itself
+  as necessary.
+
+The steps below assume that you copied the self extracting archive file to
+jumphost and it is located as **/home/ubuntu/k8s-installer-ubuntu1804.bsx**. If
+the file is located some place else, please adjust the file path.
+
+1. Execute the self extracting archive file
+
+   | ``/home/ubuntu/k8s-installer-ubuntu1804.bsx``
+
+2. Navigate to engine directory
+
+   | ``cd /opt/engine/offline/git/engine/engine``
+
+3. Issue the command to initiate the deployment process
+
+   | ``./deploy.sh -c -x -p <path to PDF file> -i <path fo IDF file>``
+
+
+After the succesful completion of the deployment, you should be able to issue
+**kubectl** commands on the machine you initiated the deployment on to operate
+against the cluster you just deployed.
+
+   | ``kubectl get nodes``
+
+Testing the Deployment
+**********************
+
+Documentation for how to test the deployments will be available soon.

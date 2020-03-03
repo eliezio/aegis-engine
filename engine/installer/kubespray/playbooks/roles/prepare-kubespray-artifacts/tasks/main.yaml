@@ -27,12 +27,12 @@
 
 - name: Place binaries to webserver
   synchronize:
-    src: "{{ engine_cache }}/offline/binaries/"
+    src: "{{ engine_workspace }}/offline/binaries/"
     dest: "{{ engine_cache }}/www/binaries"
 
 - name: Get list of k8s container image tarfiles
   find:
-    path: "{{ engine_cache }}/offline/containers"
+    path: "{{ engine_workspace }}/offline/containers"
     patterns: '*.tar'
   register: container_image
 

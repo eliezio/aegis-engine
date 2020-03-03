@@ -152,7 +152,7 @@ function install_ansible() {
   if [[ "${EXECUTION_MODE}" == "offline-deployment" ]]; then
     virtualenv --python python3 --quiet --never-download "${ENGINE_VENV}" > /dev/null 2>&1
     # Configure pip options to force offline operations
-    cp "${ENGINE_CACHE}/offline/pip/pip.conf" "${ENGINE_VENV}"
+    cp "${ENGINE_WORKSPACE}/offline/pip/pip.conf" "${ENGINE_VENV}"
   else
     virtualenv --python python3 --quiet --no-site-packages "${ENGINE_VENV}" > /dev/null 2>&1
   fi
@@ -171,7 +171,7 @@ function install_ansible() {
 
   # since we use bindep.txt to control distro packages to install, we need to install bindep first using pip
   echo "Info  : Install bindep using pip"
-  pip install --upgrade --no-color --quiet bindep
+  pip install --upgrade --quiet bindep
 
   echo "Info  : Install system packages listed in bindep.txt using $PKG_MGR"
   cd "$ENGINE_PATH"
@@ -182,7 +182,7 @@ function install_ansible() {
   set -o pipefail
 
   echo "Info  : Install python packages listed in requirements.txt using pip"
-  pip install --force-reinstall --no-color --quiet -r requirements.txt
+  pip install --force-reinstall --quiet -r requirements.txt
 
   # NOTE (fdegir): We need to profile packaging and deployments to identify what takes
   # time and perhaps attempt to fix it thus ara could become handy
