@@ -162,8 +162,6 @@ function install_ansible() {
   source "${ENGINE_VENV}/bin/activate"
   set -u
 
-  # Pip might come by default with an old version that does not have the
-  # --no-color option making the following commands fail
   if [[ "${EXECUTION_MODE}" == "offline-deployment" ]]; then
     echo "Info  : Upgrading pip in offline mode"
     pip install --upgrade --quiet pip

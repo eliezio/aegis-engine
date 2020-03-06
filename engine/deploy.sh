@@ -122,20 +122,14 @@ if [[ "${DO_INSTALL}" -eq 1 ]]; then
   #-----------------------------------------------------------------------------
   # Install all the curated apps
   #-----------------------------------------------------------------------------
-  # TODO (fdegir): support for app deployment in offline mode is proposed to be
-  # introduced in swconfig repo for ceph and prometheus and until that change gets
-  # in, app installation will not work. Disabling it until the change is in.
-  # Ref: https://gerrit.nordix.org/c/infra/swconfig/+/3839
-  if [[ "${EXECUTION_MODE}" == "online-deployment" ]]; then
-    echo "-------------------------------------------------------------------------"
-    echo "Info  : Install curated apps on stack"
-    echo "-------------------------------------------------------------------------"
+  echo "-------------------------------------------------------------------------"
+  echo "Info  : Install curated apps on stack"
+  echo "-------------------------------------------------------------------------"
 
-    cd "${APPS_PATH}"
-    ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
-        -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
-        install-apps.yml
-  fi
+  cd "${APPS_PATH}"
+  ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
+      -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+      install-apps.yml
 else
   echo "Warning: No installer selected!"
 fi

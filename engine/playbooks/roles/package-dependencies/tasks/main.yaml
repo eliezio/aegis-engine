@@ -63,7 +63,6 @@
     - "{{ offline_installer_file }}"
     - "/tmp/decompress.sh"
 
-# ensure we don't have leftovers
 - name: Copy decompress and install scripts
   copy:
     src: "{{ item.src }}"

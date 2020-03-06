@@ -35,8 +35,9 @@ function usage() {
   # shellcheck disable=SC2086
   cat <<EOF
 
-Usage: $(basename ${0}) [-h]
+Usage: $(basename ${0}) [-v] [-h]
 
+    -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -h: This message.
 
 EOF
@@ -58,18 +59,23 @@ EOF
 #-------------------------------------------------------------------------------
 function parse_cmdline_opts() {
 
+  # set variables to the values set in env - otherwise, set them to defaults
+  VERBOSITY=${VERBOSITY:-false}
+
   # TODO (fdegir): This function is left here so we can introduce additional
   # arguments when we introduce support for other stacks than Kubernetes only
   # get values passed as command line arguments, overriding the defaults or
   # the ones set by using env variables
-  while getopts ":h" o; do
+  while getopts ":h:v" o; do
     case "${o}" in
+      v) VERBOSITY="true" ;;
       h) usage ;;
       *) echo "ERROR: Invalid option '-${OPTARG}'"; usage ;;
     esac
   done
 
   # Do all the exports
+  export VERBOSITY="${VERBOSITY}"
   export EXECUTION_MODE="packaging"
   export OFFLINE_PKG_FILE="/tmp/offline-package.tgz"
   export OFFLINE_INSTALLER_FILE="/tmp/k8s-installer-ubuntu1804.bsx"
@@ -112,19 +118,21 @@ function log_summary() {
 
   echo
   echo "#---------------------------------------------------#"
-  echo "#                   Environment                     #"
+  echo "#                    Environment                    #"
   echo "#---------------------------------------------------#"
   echo "User             : $USER"
   echo "Hostname         : $HOSTNAME"
   echo "Host OS          : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
   echo "IP               : $(hostname -I | cut -d' ' -f1)"
   echo "#---------------------------------------------------#"
-  echo "#                 Packaging Started                 #"
+  echo "#                 Execution Started                 #"
   echo "#---------------------------------------------------#"
   echo "Date & Time      : $(date -u '+%F %T UTC')"
   echo "Execution Mode   : packaging"
   echo "Offline Installer: $OFFLINE_INSTALLER_FILE"
+  echo "Verbosity        : $VERBOSITY"
   echo "#---------------------------------------------------#"
+  echo
 
 }
 
@@ -132,13 +140,15 @@ function log_summary() {
 # Log elapsed time to console
 #-------------------------------------------------------------------------------
 function log_elapsed_time() {
+
   elapsed_time=$SECONDS
   echo "#---------------------------------------------------#"
-  echo "#                Packaging Completed                #"
+  echo "#                Execution Completed                #"
   echo "#---------------------------------------------------#"
   echo "Date & Time      : $(date -u '+%F %T UTC')"
   echo "Elapsed          : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
   echo "#---------------------------------------------------#"
+
 }
 
 # vim: set ts=2 sw=2 expandtab:

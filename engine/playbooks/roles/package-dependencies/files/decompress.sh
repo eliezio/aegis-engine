@@ -36,11 +36,11 @@ Info  : Please wait while extracting dependencies.
 EOF
 
 ENGINE_WORKSPACE=/opt/engine
-DESTINATION_FOLDER=/opt/engine/offline
+DESTINATION_FOLDER="$ENGINE_WORKSPACE/offline"
 export ENGINE_WORKSPACE DESTINATION_FOLDER
 
 # NOTE (fdegir): we need to clean things up in order to prevent side effects from leftovers
-sudo rm -rf "$DESTINATION_FOLDER" "$ENGINE_WORKSPACE/.cache" "$ENGINE_WORKSPACE/.venv"
+sudo rm -rf "$ENGINE_WORKSPACE"
 sudo mkdir -p "$DESTINATION_FOLDER"
 sudo chown -R "$USER":"$USER" "$ENGINE_WORKSPACE"
 

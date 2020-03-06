@@ -35,7 +35,7 @@ function usage() {
   # shellcheck disable=SC2086
   cat <<EOF
 
-Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l "<provision>,<installer>"] [-x] [-v] [-c] [-h]
+Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scenario>] [-b <scenario baseline file>] [-o <operating system>] [-p <pod descriptor file>] [-i <installer decriptor file>] [-e <heat environment file>] [-l "<provision>,<installer>"] [-x] [-v] [-h]
 
     -d: Installer type to use for deploying selected scenario. (Default kubespray)
     -r: Provisioner type to use for provisioning nodes. (Default bifrost)
@@ -49,7 +49,6 @@ Usage: $(basename ${0}) [-d <installer type>] [-r <provisioner type>] [-s <scena
     -l: List of stages to run in a comma separated fashion. (Default execute all)
     -v: Increase verbosity and keep logs for troubleshooting. (Default false)
     -x: Enable offline installation. Requires offline dependencies to be present in the machine. (Default false)
-    -c: Wipeout leftovers before execution. (Default false)
     -h: This message.
 
 EOF
@@ -83,13 +82,12 @@ function parse_cmdline_opts() {
   DO_PROVISION=${DO_PROVISION:-1}
   DO_INSTALL=${DO_INSTALL:-1}
   DEPLOY_STAGE_LIST=${DEPLOY_STAGE_LIST:-""}
-  CLEANUP=${CLEANUP:-false}
   VERBOSITY=${VERBOSITY:-false}
   EXECUTION_MODE=${EXECUTION_MODE:-online-deployment}
 
   # get values passed as command line arguments, overriding the defaults or
   # the ones set by using env variables
-  while getopts ":hd:r:s:b:o:p:i:e:u:l:cvfx" o; do
+  while getopts ":hd:r:s:b:o:p:i:e:u:l:vfx" o; do
     case "${o}" in
       h) usage ;;
       d) INSTALLER_TYPE="${OPTARG}" ;;
@@ -101,7 +99,6 @@ function parse_cmdline_opts() {
       i) IDF="${OPTARG}" ;;
       e) HEAT_ENV_FILE="${OPTARG}" ;;
       u) OPENRC="${OPTARG}" ;;
-      c) CLEANUP="true" ;;
       v) VERBOSITY="true" ;;
       l) DEPLOY_STAGE_LIST="${OPTARG}" ;;
       x) EXECUTION_MODE="offline-deployment" ;;
@@ -138,7 +135,6 @@ function parse_cmdline_opts() {
   export HEAT_ENV_FILE="${HEAT_ENV_FILE}"
   export DO_PROVISION="${DO_PROVISION}"
   export DO_INSTALL="${DO_INSTALL}"
-  export CLEANUP="${CLEANUP}"
   export EXECUTION_MODE="${EXECUTION_MODE}"
   export VERBOSITY="${VERBOSITY}"
   export OFFLINE_INSTALLER_FILE="/tmp/k8s-installer-ubuntu1804.bsx"
@@ -153,11 +149,6 @@ function parse_cmdline_opts() {
 # so this function is important to use but it is not executed by default.
 #-------------------------------------------------------------------------------
 function cleanup() {
-
-  # skip cleanup if not requested
-  if [[ "${CLEANUP}" != "true" ]]; then
-      return 0
-  fi
 
   echo "Info  : Remove leftovers of previous run"
 
@@ -201,15 +192,16 @@ function cleanup() {
 #-------------------------------------------------------------------------------
 function log_summary() {
 
+  echo
   echo "#---------------------------------------------------#"
-  echo "#                   Environment                     #"
+  echo "#                    Environment                    #"
   echo "#---------------------------------------------------#"
-  echo "User            : $USER"
-  echo "Hostname        : $HOSTNAME"
-  echo "Host OS         : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
-  echo "IP              : $(hostname -I | cut -d' ' -f1)"
+  echo "User             : $USER"
+  echo "Hostname         : $HOSTNAME"
+  echo "Host OS          : $(source /etc/os-release &> /dev/null || source /usr/lib/os-release &> /dev/null; echo "${PRETTY_NAME}")"
+  echo "IP               : $(hostname -I | cut -d' ' -f1)"
   echo "#---------------------------------------------------#"
-  echo "#                Deployment Started                 #"
+  echo "#                 Execution Started                 #"
   echo "#---------------------------------------------------#"
   echo "Date & Time      : $(date -u '+%F %T UTC')"
   echo "Execution Mode   : $EXECUTION_MODE"
@@ -228,9 +220,9 @@ function log_summary() {
     echo "IDF              : $IDF"
   fi
   echo "SDF              : $SDF"
-  echo "Cleanup          : $CLEANUP"
   echo "Verbosity        : $VERBOSITY"
   echo "#---------------------------------------------------#"
+  echo
 
 }
 
@@ -240,12 +232,14 @@ function log_summary() {
 function log_elapsed_time() {
 
   elapsed_time=$SECONDS
+  echo
   echo "#---------------------------------------------------#"
-  echo "#               Deployment Completed                #"
+  echo "#                Execution Completed                #"
   echo "#---------------------------------------------------#"
-  echo "Date & Time    : $(date -u '+%F %T UTC')"
-  echo "Elapsed        : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
+  echo "Date & Time      : $(date -u '+%F %T UTC')"
+  echo "Elapsed          : $((elapsed_time / 60)) minutes and $((elapsed_time % 60)) seconds"
   echo "#---------------------------------------------------#"
+  echo
 
 }
 
@@ -274,7 +268,7 @@ function prepare_offline() {
   cp -rf "$ENGINE_WORKSPACE/offline/git/." "$ENGINE_CACHE/repos"
 
   # move apt cache to the directory which will become the root directory of web server
-  rm -rf "$ENGINE_CACHE/www" && mkdir -p "$ENGINE_CACHE/www"
+  mkdir -p "$ENGINE_CACHE/www"
   cp -rf "$ENGINE_WORKSPACE/offline/pkg" "$ENGINE_CACHE/www"
 
   # NOTE (fdegir): we don't have nginx yet so we use local directory

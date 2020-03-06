@@ -27,7 +27,6 @@ export OFFLINE_PKG_FILE="${OFFLINE_PKG_FILE:-/tmp/offline-package.tgz}"
 # TODO (fdegir): this is put here to allow testing of the functionality
 # in an offline environment and will be removed once the changes are reviewed!
 cd "$OFFLINE_PKG_FOLDER/git/engine"
-git fetch "https://gerrit.nordix.org/infra/engine" refs/changes/67/3867/16 && git checkout FETCH_HEAD
 
 # compress & archive offline dependencies
 tar -C "$OFFLINE_PKG_FOLDER" -czf "$OFFLINE_PKG_FILE" .
