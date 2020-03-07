@@ -18,7 +18,8 @@
 # ============LICENSE_END=========================================================
 
 - hosts: baremetal
-  gather_facts: true
+  gather_facts: false
+  become: false
 
   roles:
     - role: configure-targethosts

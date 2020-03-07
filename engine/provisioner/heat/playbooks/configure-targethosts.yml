@@ -17,8 +17,28 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- hosts: jumphost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Install python and python-dev on jumphost
+      script: "{{ playbook_dir }}/roles/configure-targethosts/files/install-python.sh"
+
+    - name: Copy SSH keys to jumphost for target node access
+      copy:
+        src: "{{ item }}"
+        dest: "/root/.ssh/"
+        owner: "root"
+        group: "root"
+        mode: 0600
+      with_items:
+        - "/home/{{ local_user }}/.ssh/id_rsa"
+        - "/home/{{ local_user }}/.ssh/id_rsa.pub"
+
 - hosts: baremetal
-  gather_facts: true
+  gather_facts: false
+  become: false
 
   roles:
     - role: configure-targethosts

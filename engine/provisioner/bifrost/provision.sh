@@ -92,6 +92,14 @@ ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     "${PROVISIONER_ROOT_DIR}/playbooks/generate-inventory.yml"
 
 echo "-------------------------------------------------------------------------"
+echo "Info  : Configure target hosts provisioned using Bifrost"
+echo "-------------------------------------------------------------------------"
+cd "${ENGINE_PATH}"
+ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
+    -i "${ENGINE_PATH}/engine/inventory/inventory.ini" \
+    "${PROVISIONER_ROOT_DIR}/playbooks/configure-targethosts.yml"
+
+echo "-------------------------------------------------------------------------"
 echo "Info  : Nodes are provisioned using bifrost!"
 echo "-------------------------------------------------------------------------"
 
