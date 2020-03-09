@@ -18,7 +18,11 @@
 # ============LICENSE_END=========================================================
 
 # package names
-docker_package_name: docker-ce
+packages:
+  - dpkg-dev
+  - docker-ce={{ docker_ce_version }}
+  - docker-ce-cli={{ docker_ce_cli_version }}
+  - containerd.io={{ containerd_io_version }}
 
 # service names
 docker_service_name: docker

@@ -18,9 +18,6 @@
 # ============LICENSE_END=========================================================
 
 helm_skip_refresh: true
-# NOTE (fdegir): this makes it possible for us to avoid issues that
-# could happen if docker is attempted to be installed
-deploy_container_engine: false
 gcr_image_repo: "{{ server_fqdn }}"
 docker_image_repo: "{{ server_fqdn }}"
 quay_image_repo: "{{ server_fqdn }}"

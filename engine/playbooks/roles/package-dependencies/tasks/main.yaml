@@ -25,6 +25,9 @@
     - absent
     - directory
 
+- name: Install packages on {{ ansible_os_family }}
+  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+
 # TODO (fdegir): we need to switch to build with dib here
 - name: Fetch operating system images for provisioning
   include_tasks: dib.yaml

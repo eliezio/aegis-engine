@@ -35,11 +35,6 @@ dib_images:
   - https://artifactory.nordix.org/artifactory/cloud-infra/dib/ipa_image/coreos/ipa.initramfs
   - https://artifactory.nordix.org/artifactory/cloud-infra/dib/ipa_image/coreos/ipa.kernel
 
-docker_packages:
-  - docker-ce
-  - docker-ce-cli
-  - containerd.io
-
 k8s_binaries:
   - calicoctl
   - cni

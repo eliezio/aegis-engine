@@ -371,6 +371,7 @@ libldap-2.4-2:amd64
 libldap-common
 liblocale-gettext-perl
 liblsan0:amd64
+libltdl7
 liblvm2app2.2:amd64
 liblvm2cmd2.02:amd64
 liblwp-mediatypes-perl
@@ -850,7 +851,7 @@ xz-utils
 zerofree
 zlib1g:amd64
 zlib1g-dev:amd64
-# NOTE (fdegir): docker probably needs to move to separate place due to version pinning
-docker-ce
-docker-ce-cli
-containerd.io
+# NOTE (fdegir): pinned docker versions
+docker-ce={{ docker_ce_version }}
+docker-ce-cli={{ docker_ce_cli_version }}
+containerd.io={{ containerd_io_version }}

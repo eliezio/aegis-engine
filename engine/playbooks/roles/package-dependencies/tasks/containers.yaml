@@ -17,9 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Load distribution variables
-  include_vars: '{{ ansible_os_family }}.yaml'
-
 - name: Create directory to store container images
   file:
     path: "{{ containers_folder }}"
@@ -27,17 +24,6 @@
   with_items:
     - absent
     - directory
-
-- name: Install docker
-  action: |
-    {{ ansible_pkg_mgr }} name={{ docker_package_name }} state=present update_cache=true
-  become: true
-
-- name: Restart docker service
-  service:
-    name: "{{ docker_service_name }}"
-    state: restarted
-  become: true
 
 - name: Set versions of k8s components in Kubespray downloads role
   lineinfile:

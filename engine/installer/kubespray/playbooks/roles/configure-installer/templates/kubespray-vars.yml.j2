@@ -24,6 +24,10 @@ kube_feature_gates: {{ kube_feature_gates }}
 kubeconfig_localhost: {{ kubeconfig_localhost }}
 dashboard_enabled: {{ dashboard_enabled }}
 
+# we handle the installation of docker ourselves in order
+# to match online and offline deployments
+deploy_container_engine: {{ deploy_container_engine }}
+
 # docker configuration
 docker_iptables_enabled: {{ docker_iptables_enabled }}
 
@@ -39,16 +43,12 @@ metrics_server_kubelet_preferred_address_types: {{ metrics_server_kubelet_prefer
 {% if execution_mode == "offline-deployment" %}
 # configuration for offline deployments
 helm_skip_refresh: {{ helm_skip_refresh }}
-# NOTE (fdegir): this makes it possible for us to avoid issues that
-# could happen if docker is attempted to be installed
-deploy_container_engine: {{ deploy_container_engine }}
 gcr_image_repo: {{ gcr_image_repo }}
 docker_image_repo: {{ docker_image_repo }}
 quay_image_repo: {{ quay_image_repo }}
 kubelet_download_url: {{ kubelet_download_url }}
 kubectl_download_url: {{ kubectl_download_url }}
 kubeadm_download_url: {{ kubeadm_download_url }}
-# TODO (fdegir): remove hardcoded version of the plugin
 cni_download_url: {{ cni_download_url }}
 calicoctl_download_url: {{ calicoctl_download_url }}
 {% endif %}

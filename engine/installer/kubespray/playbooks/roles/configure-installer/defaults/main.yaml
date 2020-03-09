@@ -29,4 +29,8 @@ metrics_server_enabled: true
 metrics_server_metric_resolution: 60s
 metrics_server_kubelet_preferred_address_types: "'InternalIP'"
 
+# we handle the installation of docker ourselves in order
+# to match online and offline deployments
+deploy_container_engine: false
+
 # vim: set ts=2 sw=2 expandtab:

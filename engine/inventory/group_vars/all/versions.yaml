@@ -38,6 +38,15 @@ nordix_hwconfig_version: "{{ lookup('env', 'NORDIX_HWCONFIG_VERSION') | default(
 nordix_test_version: "{{ lookup('env', 'NORDIX_TEST_VERSION') | default('master', true) }}"
 
 # -------------------------------------------------------------------------------
+# Nordix: Docker version
+# -------------------------------------------------------------------------------
+# NOTE (fdegir): versions of docker as of 13.02.2020 matching to what Kubespray uses
+# Please note that docker-ce version is configured to be overrideable since some scenarios
+# require different docker versions
+docker_ce_version: "{{ lookup('env', 'DOCKER_CE_VERSION') | default('5:18.09.9~3-0~ubuntu-bionic', true) }}"
+docker_ce_cli_version: "{{ docker_ce_version }}"
+containerd_io_version: "1.2.6-3"
+# -------------------------------------------------------------------------------
 # OpenDev: Bifrost and Ironic versions
 # TODO (fdegir): These versions will potentially move to infra/provisioner/bifrost
 # repository in future
