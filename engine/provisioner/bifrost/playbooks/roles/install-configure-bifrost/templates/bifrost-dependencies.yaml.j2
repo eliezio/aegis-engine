@@ -1,0 +1,31 @@
+---
+{% if execution_mode == "offline-deployment" %}
+# Offline installation must use local directories for bifrost dependencies
+dib_git_url: {{ engine_cache }}/repos/diskimage-builder
+ipa_git_url: {{ engine_cache }}/repos/ironic-python-agent
+ipa_builder_git_url: {{ engine_cache }}/repos/ironic-python-agent-builder
+ironic_git_url: {{ engine_cache }}/repos/ironic
+ironicclient_git_url: {{ engine_cache }}/repos/python-ironicclient
+ironicinspectorclient_git_url: {{ engine_cache }}/repos/python-ironic-inspector-client
+ironicinspector_git_url: {{ engine_cache }}/repos/ironic-inspector
+keystone_git_url: {{ engine_cache }}/repos/keystone
+openstacksdk_git_url: {{ engine_cache }}/repos/openstacksdk
+reqs_git_url: {{ engine_cache }}/repos/requirements
+shade_git_url: {{ engine_cache }}/repos/shade
+staging_drivers_git_url: {{ engine_cache }}/repos/ironic-staging-drivers
+sushy_git_url: {{ engine_cache }}/repos/sushy
+{% endif %}
+# These versions are pinned in engine/inventory/group_vars/all/versions.yaml
+dib_git_branch: "{{ diskimage_builder_version }}"
+ipa_git_branch: "{{ ironic_python_agent_version }}"
+ipa_builder_git_branch: "{{ ironic_python_agent_builder_version }}"
+ironic_git_branch: "{{ ironic_version }}"
+ironicclient_git_branch: "{{ python_ironicclient_version }}"
+ironicinspectorclient_git_branch: "{{ python_ironic_inspector_client_version }}"
+ironicinspector_git_branch: "{{ ironic_inspector_version }}"
+keystone_git_branch: "{{ keystone_version }}"
+openstacksdk_git_branch: "{{ openstacksdk_version }}"
+reqs_git_branch: "{{ requirements_version }}"
+shade_git_branch: "{{ shade_version }}"
+staging_drivers_git_branch: "{{ ironic_staging_drivers_version }}"
+sushy_git_branch: "{{ sushy_version }}"

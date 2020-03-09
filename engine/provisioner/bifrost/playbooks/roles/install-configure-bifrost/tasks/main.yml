@@ -65,6 +65,19 @@
 - include_tasks: configure-bifrost-offline.yml
   when: execution_mode == 'offline-deployment'
 
+- name: Create folder to override Bifrost dependencies
+  file:
+    path: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/vars"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
+
+- name: Create Bifrost dependencies file to set git repos and pinned versions
+  template:
+    src: "bifrost-dependencies.yaml.j2"
+    dest: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/vars/main.yml"
+
 - name: Create folders to put ipa and deployment images
   file:
     path: "{{ item }}"

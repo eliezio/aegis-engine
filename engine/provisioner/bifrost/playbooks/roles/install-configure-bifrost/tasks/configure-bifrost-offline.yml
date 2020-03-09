@@ -23,16 +23,6 @@
     src: "{{ engine_workspace }}/offline/git/"
     dest: "{{ engine_cache }}/repos"
 
-- name: Create folder to override Bifrost dependencies
-  file:
-    path: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/vars"
-    state: directory
-
-- name: Configure local copy of Bifrost dependencies
-  template:
-    src: "offline-repos.j2"
-    dest: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/vars/main.yml"
-
 - name: Enable use of local repositories in Bifrost
   lineinfile:
     path: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/defaults/main.yml"
