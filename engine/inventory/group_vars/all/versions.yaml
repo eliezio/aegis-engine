@@ -62,7 +62,9 @@ ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('cfa58afd8f43add65
 # TODO (fdegir): These versions will potentially move to infra/provisioner/bifrost
 # repository in future
 # -------------------------------------------------------------------------------
-diskimage_builder_version: "9d08848f2576781e1d94bc25e05c1c412e447a82"
+# HEAD of diskimage-builder "master" as of 10.03.2020
+diskimage_builder_version: "61b72ca2c278daf122abac54f9a7e06cc6958d27"
+# "stable/train" versions matching to Bifrost
 ironic_inspector_version: "355cab804ffdaaaa5bdc0059e4a530f82d1b8557"
 ironic_python_agent_version: "4c69b3c0c0b07f5f390f663393f254c0c209e39f"
 ironic_python_agent_builder_version: "044ae3f2d6be8f732e75de4cb7ba6d352580b7e4"
