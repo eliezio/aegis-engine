@@ -158,21 +158,21 @@ function cleanup() {
   # stop docker service since docker registry keeps creating
   # $ENGINE_CACHE/certs folder, making engine prep to fail due
   # to ownership issus
-  sudo systemctl stop docker > /dev/null 2>&1 || true
+  redirect_cmd sudo systemctl stop docker || true
 
   # stop ironic-conductor service before dropping ironic database
-  sudo systemctl stop ironic-conductor > /dev/null 2>&1 || true
+  redirect_cmd sudo systemctl stop ironic-conductor || true
 
   # remove ironic and inspector database
   if command -v mysql &> /dev/null; then
-      sudo mysql --execute "drop database ironic;" > /dev/null 2>&1 || true
-      sudo mysql --execute "drop database inspector;" > /dev/null 2>&1 || true
+      redirect_cmd sudo mysql --execute "drop database ironic;" || true
+      redirect_cmd sudo mysql --execute "drop database inspector;" || true
   fi
 
   # restart ironic services
-  sudo systemctl restart ironic-api > /dev/null 2>&1 || true
-  sudo systemctl restart ironic-conductor > /dev/null 2>&1 || true
-  sudo systemctl restart ironic-inspector > /dev/null 2>&1 || true
+  redirect_cmd sudo systemctl restart ironic-api || true
+  redirect_cmd sudo systemctl restart ironic-conductor || true
+  redirect_cmd sudo systemctl restart ironic-inspector || true
 
   # in some cases, apt-get purge complains with "E: Unable to locate package rabbitmq-server"
   # and exits 100, causing this script and deploy.sh to fail.
@@ -180,9 +180,9 @@ function cleanup() {
   # This is not needed in offline installation mode and apt will fail since the proxy/mirror
   # is not configured yet
   if [[ "${EXECUTION_MODE}" == "online-deployment" ]]; then
-    sudo apt-get update -qq
+    redirect_cmd sudo apt-get update
     # clean and remove rabbitmq service
-    sudo apt-get purge --auto-remove -y -qq rabbitmq-server > /dev/null
+    redirect_cmd sudo apt-get purge --auto-remove -y rabbitmq-server
   fi
 
 }
@@ -277,7 +277,7 @@ function prepare_offline() {
   sudo bash -c "echo deb [trusted=yes] file:$ENGINE_CACHE/www/pkg amd64/ > /etc/apt/sources.list"
 
   # run apt update to ensure our apt mirror works or we bail out before proceeding further
-  sudo apt update > /dev/null 2>&1
+  redirect_cmd sudo apt update
 
 }
 

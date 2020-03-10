@@ -107,7 +107,7 @@ function cleanup() {
   # stop docker service since docker registry keeps creating
   # $ENGINE_CACHE/certs folder, making engine prep to fail due
   # to ownership issus
-  sudo systemctl stop docker > /dev/null 2>&1 || true
+  redirect_cmd sudo systemctl stop docker || true
 
 }
 
