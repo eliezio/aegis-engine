@@ -98,8 +98,8 @@ Basic configuration of the VMs is followed by yet another clone operation
 which we pull down the installer for the platform we have chosen to install.
 The default configuration that gets deployed by the framework is Kubernetes
 with Calico Network Plugin. The framework uses another open source tool
-from CNCF named `Kubespray <https://github.com/kubernetes-sigs/kubespray>`_.
-Kubespray is a `CNCF certified Kubernetes Distribution <https://www.cncf.io/certification/software-conformance/>`_
+from CNCF named `Kubespray <https://kubespray.io/>`_. Kubespray is a
+`CNCF certified Kubernetes Distribution <https://www.cncf.io/certification/software-conformance/>`_
 so what you get in the end is pretty solid. In addition to Kubernetes itself
 with Calico Network Plugin, the stack will have `Helm <https://helm.sh/>`_
 and `Prometheus <https://prometheus.io/>`_ so you can use this deployment
@@ -294,7 +294,7 @@ Installation phase includes configuring the provisioned nodes for the stack inst
 assigning roles to nodes based on the user needs, and installing stack on them. In some
 cases, the installation of basic applications is also part of the stack installation.
 
-The framework uses `Kubespray <https://kubespray.io/#/>`_ for installing `Kubernetes <https://kubernetes.io/>`_
+The framework uses `Kubespray <https://kubespray.io/>`_ for installing `Kubernetes <https://kubernetes.io/>`_
 on provisioned nodes in an offline environment. Ubuntu is the supported operating system
 on target and support for other operating systems will be introduced on a need basis.
 
