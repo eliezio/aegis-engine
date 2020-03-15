@@ -46,15 +46,6 @@ nordix_test_version: "{{ lookup('env', 'NORDIX_TEST_VERSION') | default('master'
 docker_ce_version: "{{ lookup('env', 'DOCKER_CE_VERSION') | default('5:18.09.9~3-0~ubuntu-bionic', true) }}"
 docker_ce_cli_version: "{{ docker_ce_version }}"
 containerd_io_version: "1.2.6-3"
-# -------------------------------------------------------------------------------
-# OpenDev: Bifrost and Ironic versions
-# TODO (fdegir): These versions will potentially move to infra/provisioner/bifrost
-# repository in future
-# -------------------------------------------------------------------------------
-# HEAD of bifrost "stable/train" as of 15.11.2019
-bifrost_version: "{{ lookup('env', 'BIFROST_VERSION') | default('1ec396d8e473587c4d653b6f518bcaa25c819b34', true) }}"
-# HEAD of ironic "stable/train" as of 26.11.2019
-ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('cfa58afd8f43add656c680c649006cefd3e6a296', true) }}"
 
 # -------------------------------------------------------------------------------
 # OpenDev: Versions of Bifrost and Ironic dependencies
@@ -62,20 +53,21 @@ ironic_version: "{{ lookup('env', 'IRONIC_VERSION') | default('cfa58afd8f43add65
 # TODO (fdegir): These versions will potentially move to infra/provisioner/bifrost
 # repository in future
 # -------------------------------------------------------------------------------
-# HEAD of diskimage-builder "master" as of 10.03.2020
-diskimage_builder_version: "61b72ca2c278daf122abac54f9a7e06cc6958d27"
-# "stable/train" versions matching to Bifrost
-ironic_inspector_version: "355cab804ffdaaaa5bdc0059e4a530f82d1b8557"
-ironic_python_agent_version: "4c69b3c0c0b07f5f390f663393f254c0c209e39f"
-ironic_python_agent_builder_version: "044ae3f2d6be8f732e75de4cb7ba6d352580b7e4"
-ironic_staging_drivers_version: "bcedf4332c4b43cb136ea1967ad455ef92eca57f"
-keystone_version: "40b7de87e04fbc49ab3a96b5114a9ab09c2734b7"
-openstacksdk_version: "50c989891e5e6f9d92cc84619ba237182bd1d14a"
-python_ironicclient_version: "1220d7685723b8235135d2d02c11008c7f7fb18a"
-python_ironic_inspector_client_version: "3a411274c261d66b1d5cfb803c0d4322ccd279f6"
-requirements_version: "c669fbb2b7617b8b8016962ea9b6e52b0f156e3e"
-shade_version: "e1e0f47e31f933648042b1c23a326917c605c8aa"
-sushy_version: "3f08acc80369d0f226da87ab106682b68cb1c0ae"
+# HEAD of "master" as of 27.03.2020
+bifrost_version: "9440e5489cc1a9f13e56beb381a1654fa7ac2979"
+diskimage_builder_version: "1ac31afd6297c2a9a0673b0cde17e18230c3b977"
+ironic_version: "ec42ca77a1ad242ac9738c888c1dcdc2bb6cb2fc"
+ironic_inspector_version: "4eefb425507c5ca9c876774fad3ac90ba6db3cb3"
+ironic_python_agent_version: "d73d27afbdbec41e395fb1abc901441fb3ae4d18"
+ironic_python_agent_builder_version: "0f20afb47848c724ec483d9500ab55dee3823786"
+ironic_staging_drivers_version: "d8191f9ab2c079433ab900559850ace90cb0c41a"
+keystone_version: "bf9f5dec55e17e7aa71ac21b6c10108ebe0c538c"
+openstacksdk_version: "ab2fcb753f6e25cb810d6d19a4c358fdafd4b096"
+python_ironicclient_version: "b7cb687b5ed61d40bbb5f1d3038af43e8621c75c"
+python_ironic_inspector_client_version: "f4c5d5136ec9b88c73ddf2ad1f01fbde320b0bb5"
+requirements_version: "c25104da3d306d353774c8c26d239c0fbf734ee3"
+shade_version: "e7c7f29ae9b9ec84ad05ba984cb62a15e4c33e7e"
+sushy_version: "439eb8e99730f76bb71b5f77abd410bbb3a54844"
 
 # -------------------------------------------------------------------------------
 # OpenDev: kolla-ansible and openstack versions

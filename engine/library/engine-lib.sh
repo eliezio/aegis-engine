@@ -179,8 +179,11 @@ function install_ansible() {
   bindep -b &> /dev/null || redirect_cmd ${INSTALLER_CMD} $(bindep -b)
   set -o pipefail
 
+  # TODO (fdegir): installation of pip packages fail due to not being able to find setuptools
+  # as build dependency so we do --no-use-pep517 as workaround.
+  # This needs to be revisited later on.
   echo "Info  : Install python packages listed in requirements.txt using pip"
-  redirect_cmd pip install --force-reinstall -r requirements.txt
+  redirect_cmd pip install --no-use-pep517 --force-reinstall -r requirements.txt
 
   # NOTE (fdegir): We need to profile packaging and deployments to identify what takes
   # time and perhaps attempt to fix it thus ara could become handy

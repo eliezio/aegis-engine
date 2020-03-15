@@ -75,6 +75,10 @@
   become: yes
   gather_facts: no
   tasks:
+    - name: Set engine_verbosity
+      set_fact:
+        engine_verbosity: "{{ lookup('env', 'VERBOSITY') }}"
+
     - name: Add deploy_logs_collect field into Ironic configuration file
       blockinfile:
         dest: /etc/ironic/ironic.conf
@@ -82,7 +86,7 @@
         block: |
           [agent]
           deploy_logs_collect = always
-      when: "{{ lookup('env', 'VERBOSITY') }} == true"
+      when: engine_verbosity
 
     - name: Restart Ironic service
       service:
@@ -92,8 +96,7 @@
         - ironic-api
         - ironic-conductor
         - ironic-inspector
-      when:
-        - "{{ lookup('env', 'VERBOSITY') }} == true"
+      when: engine_verbosity
 
 - hosts: localhost
   connection: local

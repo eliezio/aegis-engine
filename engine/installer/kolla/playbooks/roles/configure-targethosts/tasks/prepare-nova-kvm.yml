@@ -59,7 +59,7 @@
         delay: 120
         timeout: 300
       register: result
-      until: result | succeeded
+      until: result is succeeded
       retries: 3
 
   when:

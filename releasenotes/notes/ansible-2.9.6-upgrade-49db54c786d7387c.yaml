@@ -1,0 +1,6 @@
+---
+prelude: >
+    Upgrade Ansible to 2.9.6
+features:
+  - |
+    Ansible version is upgrade to 2.9.6 with a workaround for Bifrost.

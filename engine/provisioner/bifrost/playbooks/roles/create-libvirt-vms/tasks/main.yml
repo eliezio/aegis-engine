@@ -22,28 +22,9 @@
     vms: "{{ idf[installer_type].hostnames }}"
     networks: "{{ idf[installer_type].network }}"
 
+- include_tasks: prepare-vbmc.yaml
+
 - include_tasks: create-libvirt-pool.yml
-
-- name: Stop existing virtualbmc processes
-  command: killall -w vbmc
-  args:
-    removes: "{{ ansible_env.HOME }}/.vbmc/master.pid"
-  ignore_errors: true
-
-- name: Remove outdated virtualbmc folder
-  file:
-    path: "{{ ansible_env.HOME }}/.vbmc/"
-    state: absent
-
-- name: Create virtualbmc folder
-  file:
-    path: "{{ ansible_env.HOME }}/.vbmc/"
-    state: directory
-
-- name: Create vbmc configuration
-  template:
-    src: virtualbmc.conf.j2
-    dest: "{{ ansible_env.HOME }}/.vbmc/virtualbmc.conf"
 
 - include_tasks: create-libvirt-vms.yml
   with_dict: "{{ vms }}"

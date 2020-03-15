@@ -65,6 +65,18 @@
 - include_tasks: configure-bifrost-offline.yml
   when: execution_mode == 'offline-deployment'
 
+# TODO (fdegir): this task is really messy but at least it gives us an
+# idea about what needs to be done for Ansible 2.9. Here are the details
+#   - bootstrap.yml: Jinja2 ipaddr filter behaves differently on 2.9 and it could be a bug
+#     in Ansible itself. The file we use works in both 2.7 and 2.9 but I am
+#     not so sure about if this is the problem. This is not proposed to upstream
+#     yet.
+- name: Overwrite bifrost-ironic-install role for Ansible 2.9
+  copy:
+    src: "bootstrap.yml"
+    dest: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-ironic-install/tasks/bootstrap.yml"
+    force: true
+
 - name: Create folder to override Bifrost dependencies
   file:
     path: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/vars"
