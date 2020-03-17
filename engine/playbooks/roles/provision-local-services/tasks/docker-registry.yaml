@@ -24,6 +24,7 @@
   pip:
     name: pyopenssl
     state: present
+    virtualenv: "{{ engine_venv }}"
 
 - name: Create folder to store self-signed certificates docker registry service
   file:
