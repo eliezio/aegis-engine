@@ -24,9 +24,22 @@ set -o pipefail
 export OFFLINE_PKG_FOLDER="${OFFLINE_PKG_FOLDER:-/tmp/offline-package}"
 export OFFLINE_PKG_FILE="${OFFLINE_PKG_FILE:-/tmp/offline-package.tgz}"
 
-# TODO (fdegir): this is put here to allow testing of the functionality
-# in an offline environment and will be removed once the changes are reviewed!
-cd "$OFFLINE_PKG_FOLDER/git/engine"
+# NOTE (fdegir): In order to package and test the change for offline deployment,
+# we need to include the change/patch within the package since that is what should
+# be used during the deployment phase.
+# check if we are running as part of CI verify job
+GERRIT_CHANGE_ID="${GERRIT_CHANGE_ID:-}"
+if [[ -n "${GERRIT_CHANGE_ID:-}" ]]; then
+  # we need to get rid of infra/ from the project name to go to right folder in /tmp
+  REPO_FOLDER_NAME="${GERRIT_PROJECT//*\//}"
+  # repo git url to checkout from
+  REPO_GIT_URL="https://gerrit.nordix.org/$GERRIT_PROJECT"
+  echo "Info  : Running in CI so the change/patch will be packaged for testing."
+  echo "        Checking out the change/patch $GERRIT_REFSPEC from $REPO_GIT_URL."
+  # navigate to the folder and checkout the patch
+  cd "$OFFLINE_PKG_FOLDER/git/$REPO_FOLDER_NAME"
+  git fetch "$REPO_GIT_URL" "$GERRIT_REFSPEC" && git checkout FETCH_HEAD
+fi
 
 # compress & archive offline dependencies
 tar -C "$OFFLINE_PKG_FOLDER" -czf "$OFFLINE_PKG_FILE" .

@@ -75,5 +75,10 @@
 # create tarball
 - name: Create engine installer file
   script: build.sh
+  register: build_script
+
+- name: Log build script output to console
+  debug:
+    msg: "{{ build_script.stdout_lines }}"
 
 # vim: set ts=2 sw=2 expandtab:
