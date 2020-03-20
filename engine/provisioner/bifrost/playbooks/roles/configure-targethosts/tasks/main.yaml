@@ -19,7 +19,7 @@
 
 - name: Get IP of the jumphost from PDF
   set_fact:
-    jumphost_ip: "{{ jumphost.interfaces[idf.net_config.public.interface].address }}"
+    jumphost_ip: "{{ jumphost.interfaces[idf.net_config[engine.public_network | default('public')].interface].address }}"
   delegate_to: localhost
 
 - name: Log jumphost IP to console

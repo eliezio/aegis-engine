@@ -42,7 +42,6 @@
     num_nodes: "{{ nodes | length }}"
     hosts: "{{ idf[installer_type].hostnames }}"
     host_roles: "{{ idf[installer_type].nodes_roles }}"
-    networks: "{{ idf[installer_type].network }}"
     bifrost_inventory: {}
 
 - name: Create DHCP hosts directory

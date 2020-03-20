@@ -38,6 +38,7 @@
   loop_control:
     loop_var: interface
   when:
+    - idf.net_config.mgmt is defined
     - interface.macaddress == node.interfaces[idf.net_config.mgmt.interface].mac_address
     - "'.' not in interface.device"
 
@@ -52,6 +53,7 @@
   loop_control:
     loop_var: interface
   when:
+    - idf.net_config.neutron is defined
     - interface.macaddress == node.interfaces[idf.net_config.neutron.interface].mac_address
     - "'.' not in interface.device"
 

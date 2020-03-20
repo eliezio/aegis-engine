@@ -1,14 +1,16 @@
 [all:vars]
 ansible_ssh_extra_args=' -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+{% if idf.net_config.neutron is defined %}
 neutron_network={{ idf.net_config.neutron.network }}
 neutron_netmask={{ idf.net_config.neutron.mask }}
+{% endif %}
 
 [baremetal]
 {% for node in nodes %}
 {% set ansible_host = node.interfaces[idf.net_config[engine.pxe_network].interface].address %}
 {% set ip = node.interfaces[idf.net_config[engine.kubespray_network | default('public')].interface].address %}
 {% set ansible_hostname = idf[installer_type].hostnames[node.name] %}
-{{ ansible_hostname }} ansible_host={{ ansible_host }} ip={{ ip }} ansible_user=root neutron_external_interface={{hostvars[ansible_hostname].neutron_ifname}}
+{{ ansible_hostname }} ansible_host={{ ansible_host }} ip={{ ip }} ansible_user=root {% if idf.net_config.neutron is defined %} neutron_external_interface={{hostvars[ansible_hostname].neutron_ifname}} {% endif %}
 {% endfor %}
 
 [localhost]
