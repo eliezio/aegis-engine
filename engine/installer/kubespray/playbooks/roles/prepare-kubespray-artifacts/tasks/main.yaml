@@ -17,19 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Create directory to serve binaries
-  file:
-    path: "{{ engine_cache }}/www/binaries"
-    state: "{{ item }}"
-  with_items:
-    - absent
-    - directory
-
-- name: Place binaries to webserver
-  synchronize:
-    src: "{{ engine_workspace }}/offline/binaries/"
-    dest: "{{ engine_cache }}/www/binaries"
-
 - name: Get list of k8s container image tarfiles
   find:
     path: "{{ engine_workspace }}/offline/containers"
@@ -46,10 +33,11 @@
 
 # NOTE (fdegir): the escape of curly brackets in ansible is really messy unfortunately
 # we also shouldn't attempt to tag and push container images that are already on local registry
+# NOTE (fdegir): we do not push any image that is already on engine.local and any image without tag
 - name: Get list of loaded k8s container images to push
   shell: |
     set -o pipefail
-    docker images --format '{{ '{{' }}.Repository{{ '}}' }}':'{{ '{{' }}.Tag{{ '}}' }}' | grep -v {{ server_fqdn }} | sort
+    docker images --format '{{ '{{' }}.Repository{{ '}}' }}':'{{ '{{' }}.Tag{{ '}}' }}' | grep -v '{{ server_fqdn }}\|<none>' | sort
   args:
     executable: /bin/bash
   changed_when: false

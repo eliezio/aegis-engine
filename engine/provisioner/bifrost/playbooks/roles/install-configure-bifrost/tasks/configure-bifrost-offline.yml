@@ -17,12 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-# Set-up Bifrost dependencies for offline installation
-- name: Unpack local repositories in engine cache
-  synchronize:
-    src: "{{ engine_workspace }}/offline/git/"
-    dest: "{{ engine_cache }}/repos"
-
 - name: Enable use of local repositories in Bifrost
   lineinfile:
     path: "{{ engine_cache }}/repos/bifrost/playbooks/roles/bifrost-prep-for-install/defaults/main.yml"
@@ -36,10 +30,17 @@
     regexp: "^ci_testing_zuul:.*"
     line: "ci_testing_zuul: true"
 
-- name: Copy offline images
-  synchronize:
-    src: "{{ engine_workspace }}/offline/dib/"
+- name: Ensure /httpboot is removed
+  file:
+    path: /httpboot
+    state: absent
+  become: true
+
+- name: Symlink dib images folder to /httpboot
+  file:
+    src: "{{ engine_workspace }}/offline/dib"
     dest: "/httpboot"
+    state: link
   become: true
 
 # vim: set ts=2 sw=2 expandtab:

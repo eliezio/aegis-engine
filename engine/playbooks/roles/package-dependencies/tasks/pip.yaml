@@ -32,8 +32,9 @@
     chdir: "{{ pip_folder }}"
 
 - name: Copy pip.conf
-  copy:
-    src: pip.conf
+  template:
+    src: pip.conf.j2
     dest: "{{ pip_folder }}/pip.conf"
+    force: true
 
 # vim: set ts=2 sw=2 expandtab:

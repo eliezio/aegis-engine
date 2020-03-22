@@ -42,8 +42,14 @@
 - name: Install packages
   apt:
     name: "{{ packages }}"
-    state: present
+    state: "{{ item }}"
+    force: true
+    install_recommends: true
+    autoremove: true
     update_cache: true
+  with_items:
+    - absent
+    - present
   become: true
 
 - name: Restart docker service

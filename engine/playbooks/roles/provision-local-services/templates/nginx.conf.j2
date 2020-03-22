@@ -43,9 +43,10 @@ http {
     listen 80;
 {% endraw %}
     server_name {{ server_fqdn }};
+    root {{ engine_workspace }}/offline;
 {% raw %}
-    root /opt/engine/.cache/www;
     location / {
+      autoindex on;
       try_files $uri $uri/ =404;
     }
   }

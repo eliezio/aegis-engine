@@ -260,21 +260,14 @@ function prepare_offline() {
     exit 1
   fi
 
-  echo "Info  : Placing packages and repositories in place for offline deployment"
-  # Create the folder for repositories
-  mkdir -p "$ENGINE_CACHE/repos"
-
-  # Copy repos to engine default folder
-  cp -rf "$ENGINE_WORKSPACE/offline/git/." "$ENGINE_CACHE/repos"
-
-  # move apt cache to the directory which will become the root directory of web server
-  mkdir -p "$ENGINE_CACHE/www"
-  cp -rf "$ENGINE_WORKSPACE/offline/pkg" "$ENGINE_CACHE/www"
+  # NOTE (fdegir): we can skip the copy and instead just symlink it
+  mkdir -p "$ENGINE_CACHE"
+  ln -s "$ENGINE_WORKSPACE/offline/git" "$ENGINE_CACHE/repos"
 
   # NOTE (fdegir): we don't have nginx yet so we use local directory
   # as the apt repository to continue with basic preperation
   sudo cp -f /etc/apt/sources.list /etc/apt/sources.list.bak
-  sudo bash -c "echo deb [trusted=yes] file:$ENGINE_CACHE/www/pkg amd64/ > /etc/apt/sources.list"
+  sudo bash -c "echo deb [trusted=yes] file:$ENGINE_WORKSPACE/offline/pkg amd64/ > /etc/apt/sources.list"
 
   # run apt update to ensure our apt mirror works or we bail out before proceeding further
   redirect_cmd sudo apt update

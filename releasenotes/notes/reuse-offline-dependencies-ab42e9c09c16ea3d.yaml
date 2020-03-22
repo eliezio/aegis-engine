@@ -1,0 +1,13 @@
+---
+prelude: >
+    Engine now reuses what is extracted by installer rather than copying them into various places.
+features:
+  - |
+    Engine installer extracts dependencies into ENGINE_WORKSPACE/offline folder to use later on.
+    What is extracted into this folder was originally copied into various places unnecessarily.
+    Engine now reuses what is extracted from that location rather than copying them. This is done
+    by symlinking folders to corresponding places. Some examples are
+        ENGINE_WORKSPACE/offline/dib --> /httpboot
+        ENGINE_WORKSPACE/offline/git --> ENGINE_CACHE/repos
+    Nginx root is also switched to ENGINE_WORKSPACE/offline so everything is directly served from
+    the location where the dependencies are extracted.
