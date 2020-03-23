@@ -178,6 +178,7 @@ pytz==2019.2
 PyYAML==5.1.2
 pyzmq==18.1.1
 repoze.lru==0.7
+reno==3.0.0
 requests==2.22.0
 requests-oauthlib==1.3.0
 requestsexceptions==1.4.0

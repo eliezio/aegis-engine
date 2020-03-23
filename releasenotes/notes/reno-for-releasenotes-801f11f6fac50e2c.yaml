@@ -1,0 +1,13 @@
+---
+prelude: >
+    Introduce reno for release notes documentation.
+features:
+  - |
+    Nordix Cloud Infra Automation Framework now uses OpenStack reno for
+    release notes documentation.
+other:
+  - |
+    OpenStack reno tool is introduced for capturing notes to compose release
+    documentation. When a new feature or bug fix is introduced, it is desirable
+    to accompany it with a release note by using the command
+        reno new <summary-of-change>
