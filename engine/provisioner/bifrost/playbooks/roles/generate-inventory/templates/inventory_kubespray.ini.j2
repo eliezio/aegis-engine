@@ -11,6 +11,7 @@ neutron_netmask={{ idf.net_config.neutron.mask }}
 {% set ip = node.interfaces[idf.net_config[engine.kubespray_network | default('public')].interface].address %}
 {% set ansible_hostname = idf[installer_type].hostnames[node.name] %}
 {{ ansible_hostname }} ansible_host={{ ansible_host }} ip={{ ip }} ansible_user=root {% if idf.net_config.neutron is defined %} neutron_external_interface={{hostvars[ansible_hostname].neutron_ifname}} {% endif %}
+
 {% endfor %}
 
 [localhost]
