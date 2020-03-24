@@ -1,0 +1,8 @@
+---
+prelude: >
+    Enable ONAP deployments on baremetal
+features:
+  - |
+    ONAP can be deployed on baremetal as well as on public cloud. In order for
+    this to be supported, bifrost is declared as the additional provisioner for
+    ONAP scenario and the jumphost is included in the generated Ansible inventory.

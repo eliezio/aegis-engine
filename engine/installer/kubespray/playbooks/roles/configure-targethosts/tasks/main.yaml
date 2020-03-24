@@ -30,4 +30,17 @@
 - include: sync-time.yml
   when: execution_mode == 'online-deployment'
 
+# NOTE (fdegir): in some cases, the provisioned nodes do not have tzdata
+# installed on them, resulting incorrect timezone setting due to missing
+# timezone file and broken /etc/localtime symlink
+- name: Delete /etc/localtime
+  file:
+    path: /etc/localtime
+    state: absent
+  ignore_errors: true
+
+- name: Set timezone to UTC
+  timezone:
+    name: UTC
+
 # vim: set ts=2 sw=2 expandtab:

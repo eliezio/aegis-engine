@@ -162,6 +162,7 @@ scenario:
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
     provisioners:
+      - bifrost
       - heat
     installers:
       kubespray:
