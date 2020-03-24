@@ -17,9 +17,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
-- name: Install packages on {{ ansible_os_family }}
-  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
-
 - name: Config docker proxy
   block:
     - name: Check that /etc/systemd/system/docker.service.d exists
@@ -48,6 +45,9 @@
           Environment="NO_PROXY={{ idf.proxy_settings.no_proxy }}"
   when:
     idf.proxy_settings is defined
+
+- name: Install packages on {{ ansible_os_family }}
+  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
 
 - name: Create folder to store self-signed certificates for docker client
   file:

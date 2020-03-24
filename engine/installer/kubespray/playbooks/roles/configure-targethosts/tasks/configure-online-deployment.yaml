@@ -40,9 +40,6 @@
   apt:
     update_cache: true
 
-- name: Install packages on {{ ansible_os_family }}
-  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
-
 - name: Config docker proxy
   block:
     - name: Check that /etc/systemd/system/docker.service.d exists
@@ -71,5 +68,8 @@
           Environment="NO_PROXY={{ idf.proxy_settings.no_proxy }}"
   when:
     idf.proxy_settings is defined
+
+- name: Install packages on {{ ansible_os_family }}
+  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
 
 # vim: set ts=2 sw=2 expandtab:

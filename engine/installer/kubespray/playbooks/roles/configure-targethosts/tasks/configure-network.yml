@@ -32,17 +32,6 @@
     path: "/etc/udev/rules.d/99-glean.rules"
     state: absent
 
-- name: Add proxy settings to /etc/environment on localhost
-  lineinfile:
-    dest: /etc/environment
-    state: present
-    regexp: "^no_proxy"
-    line: "no_proxy={{ idf.proxy_settings.no_proxy }}"
-  delegate_to: localhost
-  become: true
-  when:
-    idf.proxy_settings is defined
-
 - name: Add proxy settings to /etc/environment on target nodes
   lineinfile:
     dest: /etc/environment
@@ -53,6 +42,9 @@
     - {name: 'http_proxy', value: '{{ idf.proxy_settings.http_proxy }}'}
     - {name: 'https_proxy', value: '{{ idf.proxy_settings.https_proxy }}'}
     - {name: 'no_proxy', value: '{{ idf.proxy_settings.no_proxy }}'}
+    - {name: 'HTTP_PROXY', value: '{{ idf.proxy_settings.http_proxy }}'}
+    - {name: 'HTTPS_PROXY', value: '{{ idf.proxy_settings.https_proxy }}'}
+    - {name: 'NO_PROXY', value: '{{ idf.proxy_settings.no_proxy }}'}
   when:
     idf.proxy_settings is defined
 
