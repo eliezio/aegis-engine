@@ -71,7 +71,7 @@
 - name: Ensure systemd resolved.conf has the correct content
   lineinfile:
     path: /etc/systemd/resolved.conf
-    regexp: "^#?DNS=.*$"
+    regexp: '^#?(DNS|dns)\s*=.*$'
     line: "DNS={{ idf.net_config[engine.public_network | default('public')].dns | join(' ') }}"
   when: idf.net_config[engine.public_network | default('public')].dns is defined
 
