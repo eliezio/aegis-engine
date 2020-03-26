@@ -172,7 +172,7 @@ scenario:
           - ubuntu1804
         curated_apps:
           - openstack-armada
-  onap-nofeature-noha:
+  k8-calico-onap:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
     version: master
@@ -181,9 +181,13 @@ scenario:
       - heat
     installers:
       kubespray:
-        role: scenarios/onap-nofeature-noha/kubespray/role/onap-nofeature-noha
+        role: scenarios/k8-calico-onap/kubespray/role/k8-calico-onap
         distros:
           - ubuntu1804
+        curated_apps:
+          - ceph
+          - prometheus
+          - onap
   k8-calico-istio:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
@@ -219,6 +223,9 @@ apps:
     installers:
       - kubespray
   prometheus:
+    installers:
+      - kubespray
+  onap:
     installers:
       - kubespray
 
