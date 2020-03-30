@@ -191,23 +191,25 @@ function install_ansible() {
     # Get python3-apt and install into venv
     # shellcheck disable=SC2125
     venv_site_packages_dir="${ENGINE_VENV}"/lib/python3*/site-packages
-    cd /tmp
+    tempdir=$(mktemp -d)
+
+    cd "$tempdir"
     echo "Info  : Download and install python3-apt using apt"
     redirect_cmd apt download python3-apt
 
     dpkg -x python3-apt_*.deb python3-apt
-    chown -R "$USER:$USER" /tmp/python3-apt/usr/lib/python3*/dist-packages
+    chown -R "$USER:$USER" "$tempdir"/python3-apt/usr/lib/python3*/dist-packages
 
     # NOTE: we want the globbing
     # shellcheck disable=SC2086
-    cp -r /tmp/python3-apt/usr/lib/python3*/dist-packages/* $venv_site_packages_dir
+    cp -r "$tempdir"/python3-apt/usr/lib/python3*/dist-packages/* $venv_site_packages_dir
     # NOTE: we want the globbing
     # shellcheck disable=SC2086
     cd $venv_site_packages_dir
     mv apt_pkg.*.so apt_pkg.so
     mv apt_inst.*.so apt_inst.so
 
-    rm -rf /tmp/python3-apt*
+    rm -rf "$tempdir"
   fi
 
 }
