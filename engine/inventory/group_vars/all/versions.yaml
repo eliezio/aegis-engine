@@ -92,8 +92,8 @@ openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('train', tru
 # TODO (fdegir): These versions will potentially move to infra/installer/kubespray
 # repository in future
 # -------------------------------------------------------------------------------
-# HEAD of kubespray as of 12.12.2019
-kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('815eebf1d7baa8f7f20cb90e11c64a229666f5fb', true) }}"
+# HEAD of kubespray as of 13.03.2020
+kubespray_version: "{{ lookup('env', 'KUBESPRAY_VERSION') | default('71c856878c3f77731ab399720f71f6f0ea9c0c7e', true) }}"
 # Kubernetes version that is supported by the pinned kubespray version
 kubernetes_version: "{{ lookup('env', 'KUBERNETES_VERSION') | default('v1.17.0', true) }}"
 # version of the kubectl should generally match to the version of kubernetes itself
