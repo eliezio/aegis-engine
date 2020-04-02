@@ -126,6 +126,21 @@ scenario:
         curated_apps:
           - ceph
           - prometheus
+  k8-multus-plugins:
+    scm: git
+    src: https://gerrit.nordix.org/infra/swconfig.git
+    version: master
+    provisioners:
+      - bifrost
+      - heat
+    installers:
+      kubespray:
+        role: scenarios/k8-multus-plugins/kubespray/role/k8-multus-plugins
+        distros:
+          - ubuntu1804
+        curated_apps:
+          - ceph
+          - prometheus
   k8-calico-spinnaker:
     scm: git
     src: https://gerrit.nordix.org/infra/swconfig.git
