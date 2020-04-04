@@ -113,6 +113,11 @@ function install_ansible() {
 
   export LANG="C"
 
+  # Set TZ to avoid the bug https://github.com/regebro/tzlocal/issues/79
+  TZ=$(get_timezone)
+  export TZ
+  echo "Info  : Current timezone is $TZ"
+
   # we only install the most basic dependencies outside of bindep.txt
   CHECK_CMD_PKGS=(
     venv
@@ -230,6 +235,33 @@ redirect_cmd() {
     "$@"
   fi
 
+}
+
+#-------------------------------------------------------------------------------
+# Retrieves the configured system timezone based on /etc/localtime or
+# /etc/timezone, if the former is not present.
+#
+# Based on https://unix.stackexchange.com/a/451925
+#-------------------------------------------------------------------------------
+get_timezone() {
+
+  if filename=$(readlink /etc/localtime); then
+    # /etc/localtime is a symlink as expected
+    timezone=${filename#*zoneinfo/}
+    if [[ $timezone = "$filename" || ! $timezone =~ ^[^/]+/[^/]+$ ]]; then
+      # not pointing to expected location or not Region/City
+      >&2 echo "ERROR : $filename points to an unexpected location"
+      exit 1
+    fi
+    echo "$timezone"
+  elif [ -f /etc/localtime ]; then
+    # compare files by contents
+    # https://stackoverflow.com/questions/12521114/getting-the-canonical-time-zone-name-in-shell-script#comment88637393_12523283
+    find /usr/share/zoneinfo -type f ! -regex ".*/Etc/.*" -exec \
+        cmp -s {} /etc/localtime \; -print | sed -e 's@.*/zoneinfo/@@' | head -n1
+  else
+    cat /etc/timezone
+  fi
 }
 
 # vim: set ts=2 sw=2 expandtab:
