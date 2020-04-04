@@ -159,7 +159,7 @@ function install_ansible() {
     # Configure pip options to force offline operations
     cp "${ENGINE_WORKSPACE}/offline/pip/pip.conf" "${ENGINE_VENV}"
   else
-    redirect_cmd virtualenv --python python3 --no-site-packages "${ENGINE_VENV}"
+    redirect_cmd virtualenv --python python3 "${ENGINE_VENV}"
   fi
   # NOTE: venv is created during runtime so shellcheck SC1090 is disabled
   set +u
