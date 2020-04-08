@@ -15,10 +15,10 @@ neutron_netmask={{ idf.net_config.neutron.mask }}
 {% endfor %}
 
 [localhost]
-127.0.0.1 ansible_connection=local become=true ansible_python_interpreter={{ engine_venv }}/bin/python
+127.0.0.1 ansible_connection=local ansible_python_interpreter={{ engine_venv }}/bin/python
 
 [jumphost]
-jumphost ansible_host=127.0.0.1 ansible_connection=local become=true ansible_python_interpreter={{ engine_venv }}/bin/python
+jumphost ansible_host=127.0.0.1 ansible_connection=local ansible_python_interpreter={{ engine_venv }}/bin/python
 
 [kube-master]
 {% for node in nodes %}
