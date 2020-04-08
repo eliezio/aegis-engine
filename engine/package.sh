@@ -68,7 +68,7 @@ echo "-------------------------------------------------------------------------"
 cd "${ENGINE_PATH}"
 ansible-playbook "${ENGINE_ANSIBLE_PARAMS[@]}" \
     -i "${ENGINE_PATH}/engine/inventory/localhost.ini" \
-    engine/playbooks/package-dependencies.yaml
+    engine/playbooks/package.yaml
 echo "-------------------------------------------------------------------------"
 echo
 echo "Info  : Packaging is done!"
