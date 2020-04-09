@@ -17,29 +17,19 @@
 # SPDX-License-Identifier: Apache-2.0
 # ============LICENSE_END=========================================================
 
+- name: Load distribution variables
+  include_vars: '{{ ansible_os_family }}.yml'
+
 - name: Install packages
   apt:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: true
-  with_items:
-    - "apt-transport-https"
-    - "ca-certificates"
-    - "curl"
-    - "gnupg-agent"
-    - "software-properties-common"
-    - "chrony"
-    - "dbus"
-    - "lvm2"
-    - "nfs-kernel-server"
-    - "tzdata"
-    - "parted"
 
-# NOTE: raw install is required to support cloud images which do not have python installed
-# This is copied from kolla-ansible: ansible/roles/baremetal/tasks/pre-install.yml
-# DEBIAN_FRONTEND=noninteractive is added for uninterrupted installation of packages
-- name: Install python2.7
-  raw: "DEBIAN_FRONTEND=noninteractive apt-get install -y python2.7"
-  changed_when: true
+- name: Install docker
+  apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: true
 
 # vim: set ts=2 sw=2 expandtab:

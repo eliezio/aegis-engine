@@ -22,4 +22,23 @@ chrony_config_driftfile: /var/lib/chrony/chrony.drift
 chrony_config_keyfile: /etc/chrony/chrony.keys
 chrony_config_logdir: /var/log/chrony
 
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - chrony
+  - dbus
+  - lvm2
+  - nfs-kernel-server
+  - tzdata
+  - parted
+  - inetutils-ping
+
+docker_packages:
+  - docker-ce={{ docker_ce_version }}
+  - docker-ce-cli={{ docker_ce_cli_version }}
+  - containerd.io={{ containerd_io_version }}
+
 # vim: set ts=2 sw=2 expandtab:

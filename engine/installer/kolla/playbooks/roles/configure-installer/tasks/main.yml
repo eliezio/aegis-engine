@@ -45,6 +45,12 @@
     src: "{{ kolla_ansible_path }}/etc/kolla/globals.yml"
     dest: "{{ config_path }}/globals.yml"
 
+- name: Ensure there is atleast one variable in globals.yml
+  lineinfile:
+    path: "{{ config_path }}/globals.yml"
+    regexp: '^openstack_release:.*'
+    line: "openstack_release: {{ openstack_version }}"
+
 - name: Copy passwords.yml
   copy:
     src: "{{ kolla_ansible_path }}/etc/kolla/passwords.yml"
@@ -67,12 +73,6 @@
 - name: Assign distro specific variables
   include_vars:
     file: "{{ distro }}.yml"
-
-- name: Set kolla internal VIP address in globals.yml
-  lineinfile:
-    path: "{{ config_path }}/globals.yml"
-    regexp: "^kolla_internal_vip_address:.*"
-    line: "kolla_internal_vip_address: {{ os_kolla_internal_vip_address }}"
 
 - name: Populate extra variables
   template:

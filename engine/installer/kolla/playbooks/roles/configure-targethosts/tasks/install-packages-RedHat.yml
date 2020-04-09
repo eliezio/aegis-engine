@@ -31,5 +31,20 @@
     - "nfs-kernel-server"
     - "tzdata"
     - "parted"
+    - "inetutils-ping"
+
+- name: Add docker-ce yum repository
+  command: "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo"
+  register: yumcfg_status
+  become: true
+  changed_when: false
+
+- name: Install docker
+  action: |
+    {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+  with_items:
+    - "docker-ce"
+    - "docker-ce-cli"
+    - "containerd.io"
 
 # vim: set ts=2 sw=2 expandtab:
