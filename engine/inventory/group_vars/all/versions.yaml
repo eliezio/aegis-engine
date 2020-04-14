@@ -74,8 +74,8 @@ sushy_version: "439eb8e99730f76bb71b5f77abd410bbb3a54844"
 # TODO (fdegir): These versions will potentially move to infra/installer/kolla
 # repository in future
 # -------------------------------------------------------------------------------
-# kolla-ansible for stable/train as of 20.01.2020
-kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('81e00d3c8981c6a3b0cf7443a00a53a652a7d3f7', true) }}"
+# kolla-ansible for stable/train as of 08.04.2020
+kolla_ansible_version: "{{ lookup('env', 'KOLLA_ANSIBLE_VERSION') | default('779b1caa114a43e63f04aa431caf7524dc3e31a9', true) }}"
 # openstack version that is supported by the pinned kolla-ansibe version
 openstack_version: "{{ lookup('env', 'OPENSTACK_VERSION') | default('train', true) }}"
 
