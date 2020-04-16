@@ -23,20 +23,20 @@
 parameters:
   # parameters for jumphost
   jumphost_image: 'Ubuntu 18.04 Bionic Beaver'
-  jumphost_flavor: 2C-4GB
-  jumphost_volume_size: 150
+  jumphost_flavor: 4C-8GB
+  jumphost_volume_size: 100
 
   # parameters for master nodes
   no_of_master_nodes: 1
   master_image: 'Ubuntu 18.04 Bionic Beaver'
-  master_flavor: 2C-4GB
-  master_volume_size: 150
+  master_flavor: 8C-16GB
+  master_volume_size: 50
 
   # parameters for worker nodes
-  no_of_worker_nodes: 1
+  no_of_worker_nodes: 4
   worker_image: 'Ubuntu 18.04 Bionic Beaver'
-  worker_flavor: 2C-4GB
-  worker_volume_size: 150
+  worker_flavor: 16C-32GB
+  worker_volume_size: 50
 
   # common parameters
   public_network: ext-net
