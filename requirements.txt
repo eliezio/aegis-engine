@@ -43,7 +43,7 @@ cliff==3.0.0
 cmd2==0.8.9
 configparser==5.0.0
 construct==2.8.22
-cryptography==3.2
+cryptography==3.3.2
 debtcollector==2.0.0
 decorator==4.4.2
 dictdiffer==0.8.1
